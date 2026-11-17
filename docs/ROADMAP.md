@@ -27,11 +27,12 @@ Done when:
 
 Goal: the code can tell whether a board is valid and how many solutions it has. No UI.
 
-- Define the `Puzzle` type in `src/game/`.
+- Define the `Puzzle` and `SolvedPuzzle` types in `src/game/` (see Data model in `docs/ARCHITECTURE.md`). The solver works on `Puzzle`, which has no solution field.
 - `isValidPlacement(puzzle, cats)`: one cat per row, column and zone, none touching.
 - `countSolutions(puzzle, limit)`: backtracking search that stops at `limit`.
 - `solve(puzzle)`: returns the solution, or nothing if there is not exactly one.
-- Hand-write a few small fixture puzzles: one with a unique solution, one with several, one with none.
+- Hand-write a few small fixture puzzles: one with a unique solution, one with several, one with none. They can be smaller than the game's boards (4x4 is fine) so they stay checkable by hand.
+- Add one 9x9 fixture for the timing check below.
 
 Done when:
 - Tests cover each rule on its own (row, column, zone, side contact, diagonal contact).
@@ -40,16 +41,16 @@ Done when:
 
 ## Phase 3: Generator
 
-Goal: `generatePuzzle(level)` returns a valid, unique puzzle, always the same one for the same level.
+Goal: `generatePuzzle(level)` returns a valid, unique `SolvedPuzzle`, always the same one for the same level.
 
 - Seeded random number generator in `src/game/rng.ts`.
 - Random valid cat placement.
 - Zone growth from each cat, with uneven sizes.
-- Uniqueness loop: check with the solver, then repair or retry.
+- Uniqueness loop: check with the solver, then repair or retry. Attach the solution the solver confirmed.
 - `levelConfig(level)` in `src/game/progression.ts`: returns the world, board size and number of starting cats for a level, read from a worlds data table, and, past the end of the table, from the rule for later worlds (longer worlds, capped length; see Progression in `docs/GAME_RULES.md`). Test that world lengths never decrease and never pass the cap.
 
 Done when:
-- A test generates levels 1 to 200 and asserts each has exactly one solution and contiguous zones.
+- A test generates levels 1 to 200 and asserts each has exactly one solution, that it matches the attached `solution`, and that zones are contiguous.
 - Calling `generatePuzzle(n)` twice returns identical puzzles.
 - Boards up to 10x10 generate without a visible wait on a phone.
 - 11x11 and 12x12 generate in a Web Worker behind a loading state, and the time is measured on a real phone.

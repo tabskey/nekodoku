@@ -109,15 +109,22 @@ The board uses Pointer Events, which cover touch, mouse and pen with one code pa
 ```ts
 type CellMark = 'empty' | 'marked' | 'cat';
 
+// What the solver works on. It has no solution: solve() exists to find it,
+// and test fixtures with zero or several solutions have none to give.
 interface Puzzle {
   size: number;        // N, board is N x N
   zones: number[];     // length N*N, zone id 0..N-1 per cell, row-major
+}
+
+// What the game plays. Only generatePuzzle() creates it, after solve()
+// confirms exactly one solution, so no level reaches the player without one.
+interface SolvedPuzzle extends Puzzle {
   solution: number[];  // length N, cell index of the cat in each row
 }
 
 interface LevelState {
   level: number;
-  puzzle: Puzzle;
+  puzzle: SolvedPuzzle; // the reducer checks placed cats against the solution
   marks: CellMark[];   // length N*N
   lives: number;
   score: number;
@@ -143,14 +150,17 @@ interface SaveData {
 }
 ```
 
+`isValidPlacement`, `countSolutions` and `solve` take a `Puzzle`. A `SolvedPuzzle` is also a `Puzzle`, so the solver accepts both.
+
 ## Puzzle generation
 
-A level's puzzle is a pure function of its level number: `generatePuzzle(level)` seeds a deterministic RNG with the level, so level 12 is the same board every time and puzzles are never stored.
+A level's puzzle is a pure function of its level number: `generatePuzzle(level)` seeds a deterministic RNG with the level, so level 12 is the same board every time and puzzles are never stored. It returns a `SolvedPuzzle`.
 
 1. Pick a valid cat placement: one per row and column, no two in adjacent rows within one column of each other.
 2. Grow one zone outward from each cat until the board is full. Zone sizes are free and uneven.
 3. Count solutions with the solver, stopping at 2.
 4. If there is more than one solution, repair the zones (move a border cell so the alternative solution breaks) or retry with the next RNG draw.
+5. Attach the solution confirmed by the solver and return the `SolvedPuzzle`.
 
 Cost grows quickly with board size, because a unique solution gets rarer as the board grows. A quick prototype of this approach, measured on a desktop-class machine over 40 seeds per size:
 
