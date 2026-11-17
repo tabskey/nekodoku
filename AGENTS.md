@@ -85,6 +85,7 @@ Vite defaults; update this list if the scripts change.
 - `npm test`: Vitest
 - `npm run build`: production build into `dist/`
 - `npm run lint`: ESLint
+- `npm run format`: Prettier, writes files in place
 
 In the container (replace `docker` with `podman` if that is the engine in use; `:Z` is for SELinux hosts and harmless elsewhere):
 

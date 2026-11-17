@@ -1,0 +1,7 @@
+dist
+node_modules
+coverage
+
+# Hand-written reference docs; not reformatted automatically.
+docs/
+README.md
