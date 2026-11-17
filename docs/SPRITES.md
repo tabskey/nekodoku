@@ -31,6 +31,18 @@ Sizes are in sprite pixels. "Fixed" sizes are tied to the layout; "free" ones ca
 
 The style is closer to 8-bit than 16-bit: very small canvases and few colors per sprite.
 
+## Head frames
+
+Every cat head has three frames in the same Aseprite file. Only the eye rows change between them.
+
+| Frame | Eyes | When it shows | Eye pixels use the role |
+| --- | --- | --- | --- |
+| 1 | Open (shine on top, eye color below) | All the time | shine, eye |
+| 2 | Closed, flat line "- -" | Normal blink, every few seconds | lid |
+| 3 | Happy, arcs "^ ^" | When the player makes a correct move | eye |
+
+Tag the frames in Aseprite so the code knows which range to play: **idle** for frames 1 and 2, **happy** for frame 3. In idle, frame 1 stays on screen much longer than frame 2.
+
 ## Body types
 
 Every cat has one of three body types under the same 12x12 head:
@@ -41,7 +53,7 @@ Every cat has one of three body types under the same 12x12 head:
 | Regular | The default sitting body |
 | Chubby | Wide, round body, short legs, the head sits a little lower into the body |
 
-Each body is one pixel map using the same color roles as the head, so any palette works on any body. Each needs an eyes-open and an eyes-closed frame only for the head rows; the body does not blink.
+Each body is one pixel map using the same color roles as the head, so any palette works on any body. The head frames (see Head frames) change only the head rows; the body does not blink.
 
 The chubby body sits one row lower so its head sinks a little into the body. All three keep the head at the same column, so they line up when shown side by side.
 
@@ -63,12 +75,12 @@ Cats, the ghost and the scenery are recolored by palette, so one drawing serves 
 - Use exactly one color per role, and never reuse a color for two roles. The color is how the code knows which pixel is fur and which is patch.
 - Cat roles (9): outline, fur, patch, ear, eye, shine, nose, muzzle, lid. The lid is the closed-eye line and only appears in the blink frame.
 - Scenery roles (6): sky, speck (stars at night, small clouds by day), disc (moon or sun), far hills, near hills, ground. A scenery may use fewer roles, not more, unless the palette type is extended.
-- Draw the blink as a second frame of the same file, changing only the eye rows.
+- Draw the blink and the happy eyes as extra frames of the same file, changing only the eye rows (see Head frames).
 - A hand-drawn shop cat that will never be recolored can ignore these rules and use any colors.
 
 ## Exporting from Aseprite
 
-Aseprite exports PNG, not SVG. Export at 1x (no scaling), with transparency, one PNG per frame or a sprite sheet.
+Aseprite exports PNG, not SVG. Export at 1x (no scaling), with transparency. Prefer a sprite sheet (File → Export Sprite Sheet, layout Horizontal Strip, with the JSON data so the frame tags come along); one PNG per frame also works.
 
 There are two ways to use the PNG in the app:
 
@@ -112,7 +124,7 @@ Each biome is a small kit, reused by every world that rotates onto it:
 
 1. Canvas at the size in the table, transparent background.
 2. Flat colors, one per role, no black outline.
-3. Blink frame, if it is a cat.
+3. Head frames, if it is a cat: open, blink "- -" and happy "^ ^", tagged idle and happy.
 4. Export PNG at 1x.
 5. Decide: fixed colors (use the PNG) or recolorable (convert to a pixel map).
 6. Check it on screen at the multiples it will be shown at.
