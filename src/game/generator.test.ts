@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { generate, growZones, placeCats, sideNeighbors } from './generator';
+import {
+  generate,
+  generatePuzzle,
+  growZones,
+  placeCats,
+  sideNeighbors,
+} from './generator';
 import { createRng } from './rng';
 import { countSolutions, isValidPlacement } from './solver';
 import type { Puzzle } from './types';
@@ -117,5 +123,20 @@ describe('generate', () => {
 
   it('gives the same puzzle for the same seed', () => {
     expect(generate(9, 7)).toEqual(generate(9, 7));
+  });
+});
+
+describe('generatePuzzle', () => {
+  it('gives levels 1 to 200 one solution, the attached one, and contiguous zones', () => {
+    for (let level = 1; level <= 200; level++) {
+      const puzzle = generatePuzzle(level);
+      expect(countSolutions(puzzle, 2)).toBe(1);
+      expect(isValidPlacement(puzzle, puzzle.solution)).toBe(true);
+      expect(zonesAreContiguous(puzzle)).toBe(true);
+    }
+  }, 120_000);
+
+  it('gives the same puzzle for the same level', () => {
+    expect(generatePuzzle(12)).toEqual(generatePuzzle(12));
   });
 });

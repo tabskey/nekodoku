@@ -2,6 +2,7 @@
 // "Puzzle generation" in docs/ARCHITECTURE.md.
 
 import { createRng, shuffle } from './rng';
+import { levelConfig } from './progression';
 import { findSolutions } from './solver';
 import type { SolvedPuzzle } from './types';
 
@@ -151,4 +152,9 @@ export function generate(size: number, seed: number): SolvedPuzzle {
       if (!fixed) break;
     }
   }
+}
+
+/** The puzzle for a level: same level, same board, every time. */
+export function generatePuzzle(level: number): SolvedPuzzle {
+  return generate(levelConfig(level).size, level);
 }
