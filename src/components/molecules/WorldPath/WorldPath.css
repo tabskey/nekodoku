@@ -151,11 +151,12 @@
   pointer-events: none;
 }
 
-/* Beside the tile, away from where the path comes in, its bottom 6px above
-   the path line. Sized for the Boss, alone on its row (see pathLayout.ts). */
+/* Beside the tile, away from where the path comes in, standing on the same
+   ground as the tile: its bottom lines up with the 52px Boss tile's. The
+   Boss is alone on its row (see pathLayout.ts), so no dot sits there. */
 .world-path-beside {
   position: absolute;
-  top: 20px;
+  top: 52px;
   display: flex;
   transform: translateY(-100%);
 }

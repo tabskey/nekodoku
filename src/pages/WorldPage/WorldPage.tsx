@@ -95,10 +95,15 @@ export function WorldPage({
     const tileLabel = isBoss
       ? text.bossTileLabel(state)
       : text.tileLabel(i + 1, state);
-    // Beside the Boss: its restored cat once beaten, else the floating ghost.
+    // Beside the Boss: its restored cat, full body, once beaten; else the
+    // floating ghost.
     const bossSprite =
       state === 'cleared' ? (
-        <CatSprite palette={catPalette(worldCat(world))} pixelSize={3} />
+        <CatSprite
+          palette={catPalette(worldCat(world))}
+          pose="full"
+          pixelSize={3}
+        />
       ) : (
         <span className="world-page-ghost">
           {/* The 12x14 ghost sprite at 3x, as on the mockup's map. */}

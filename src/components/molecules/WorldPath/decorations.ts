@@ -47,9 +47,12 @@ export function clearZones({ points, tilePoints }: PathLayout): Box[] {
   const dots = points.map((p) => ({ x: p.x - 6, y: p.y - 6, w: 12, h: 12 }));
   const tiles = tilePoints.map((index, i) => {
     const { x, y } = points[index];
-    // The Boss also has its ghost on one side: keep both sides clear.
-    const half = i === tilePoints.length - 1 ? 70 : 30;
-    return { x: x - half, y: y - 56, w: half * 2, h: 104 };
+    // The Boss also has its ghost, or its restored cat in full body (48x54),
+    // on one side, standing on the tile's ground: keep both sides clear.
+    if (i === tilePoints.length - 1) {
+      return { x: x - 80, y: y - 56, w: 160, h: 104 };
+    }
+    return { x: x - 30, y: y - 56, w: 60, h: 104 };
   });
   return [...dots, ...tiles];
 }
