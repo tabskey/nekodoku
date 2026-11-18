@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { levelConfig, worldLength } from './progression';
+import { generate } from './generator';
+import {
+  levelConfig,
+  startingCatCells,
+  worldLength,
+  worldStart,
+} from './progression';
 
 describe('worldLength', () => {
   it('never decreases and never passes the cap', () => {
@@ -46,5 +52,35 @@ describe('levelConfig', () => {
 
   it('rejects levels below 1', () => {
     expect(() => levelConfig(0)).toThrow();
+  });
+});
+
+describe('startingCatCells', () => {
+  const puzzle = generate(5, 1);
+
+  it('picks the requested number of solution cells', () => {
+    const cells = startingCatCells(puzzle, 2, 1);
+    expect(cells).toHaveLength(2);
+    for (const cell of cells) expect(puzzle.solution).toContain(cell);
+    expect(new Set(cells).size).toBe(2);
+  });
+
+  it('picks the same cells for the same level, and none for zero', () => {
+    expect(startingCatCells(puzzle, 1, 5)).toEqual(
+      startingCatCells(puzzle, 1, 5),
+    );
+    expect(startingCatCells(puzzle, 0, 1)).toEqual([]);
+  });
+});
+
+describe('worldStart', () => {
+  it('gives the first level of each world, matching levelConfig', () => {
+    expect([1, 2, 7].map(worldStart)).toEqual([1, 6, 45]);
+    for (let world = 1; world <= 30; world++) {
+      expect(levelConfig(worldStart(world))).toMatchObject({
+        world,
+        levelInWorld: 1,
+      });
+    }
   });
 });

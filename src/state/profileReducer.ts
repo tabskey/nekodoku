@@ -1,0 +1,77 @@
+// Everything that outlives a level. Saved after every action by
+// ProfileProvider. See "State" in docs/ARCHITECTURE.md.
+import { levelConfig } from '../game/progression';
+import { clearReward } from '../game/rewards';
+import { shopCat } from '../game/shop';
+import type { Options, SaveData } from '../storage/save';
+
+export type ProfileAction =
+  | { type: 'levelCleared'; level: number; score: number; seconds: number }
+  | { type: 'spendCoins'; amount: number }
+  | { type: 'buyCat'; id: string }
+  | { type: 'selectCat'; id: string }
+  | {
+      [K in keyof Options]: { type: 'setOption'; key: K; value: Options[K] };
+    }[keyof Options];
+
+export function profileReducer(
+  profile: SaveData,
+  action: ProfileAction,
+): SaveData {
+  switch (action.type) {
+    case 'levelCleared': {
+      const { level, score, seconds } = action;
+      const { size } = levelConfig(level);
+      const best = profile.bestScores[level];
+      const reward = clearReward(level, score, profile.levelsCleared, best);
+      const bestTime = profile.bestTimes[size];
+      return {
+        ...profile,
+        levelsCleared: Math.max(profile.levelsCleared, level),
+        coins: profile.coins + reward.coins,
+        fish: profile.fish + reward.fish,
+        bestScores: {
+          ...profile.bestScores,
+          [level]: Math.max(best ?? 0, score),
+        },
+        bestTimes: {
+          ...profile.bestTimes,
+          [size]:
+            bestTime === undefined ? seconds : Math.min(bestTime, seconds),
+        },
+      };
+    }
+
+    case 'spendCoins':
+      if (action.amount > profile.coins) return profile;
+      return { ...profile, coins: profile.coins - action.amount };
+
+    case 'buyCat': {
+      // Whether the cat is on today's rotation is checked by the shop screen,
+      // which knows the date; this guards the rest.
+      const cat = shopCat(action.id);
+      if (
+        !cat ||
+        profile.ownedCats.includes(cat.id) ||
+        profile.fish < cat.price
+      ) {
+        return profile;
+      }
+      return {
+        ...profile,
+        fish: profile.fish - cat.price,
+        ownedCats: [...profile.ownedCats, cat.id],
+      };
+    }
+
+    case 'selectCat':
+      if (!profile.ownedCats.includes(action.id)) return profile;
+      return { ...profile, selectedCat: action.id };
+
+    case 'setOption':
+      return {
+        ...profile,
+        options: { ...profile.options, [action.key]: action.value },
+      };
+  }
+}

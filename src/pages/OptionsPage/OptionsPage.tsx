@@ -2,7 +2,7 @@ import { Button } from '../../components/atoms/Button/Button';
 import { Switch } from '../../components/atoms/Switch/Switch';
 import { ChoiceGroup } from '../../components/molecules/ChoiceGroup/ChoiceGroup';
 import { useText } from '../../i18n/useText';
-import { useOptions } from '../../state/optionsContext';
+import { useOptions } from '../../state/profileContext';
 import './OptionsPage.css';
 
 interface OptionsPageProps {

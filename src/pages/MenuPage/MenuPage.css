@@ -1,0 +1,39 @@
+.menu-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  max-width: 432px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.menu-page h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--display-large);
+  font-weight: normal;
+}
+
+.menu-page-world {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.menu-page-world h2 {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+.menu-page-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 240px;
+}

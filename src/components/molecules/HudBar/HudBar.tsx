@@ -1,4 +1,4 @@
-import { CoinBadge } from '../../atoms/CoinBadge/CoinBadge';
+import { CurrencyBadge } from '../../atoms/CurrencyBadge/CurrencyBadge';
 import { Heart } from '../../atoms/Heart/Heart';
 import './HudBar.css';
 
@@ -46,7 +46,7 @@ export function HudBar({
       <span className="hud-bar-score" aria-label={scoreLabel}>
         {score}
       </span>
-      <CoinBadge amount={coins} label={coinsLabel} />
+      <CurrencyBadge amount={coins} label={coinsLabel} />
     </div>
   );
 }

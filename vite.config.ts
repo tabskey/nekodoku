@@ -9,7 +9,13 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'node',
-    // No tests exist yet; game-logic tests start in roadmap Phase 2.
-    passWithNoTests: true,
+    // Coverage for SonarQube: lcov is the format it reads. Run with
+    // `npm run test:coverage`; the report lands in coverage/ (git-ignored).
+    coverage: {
+      provider: 'v8',
+      reporter: ['text-summary', 'lcov'],
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/test/**'],
+    },
   },
 });

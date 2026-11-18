@@ -1,7 +1,14 @@
 import type { ButtonHTMLAttributes } from 'react';
 import './Button.css';
 
-/** The coral primary button, with depth from its own darker shade. */
-export function Button(props: ButtonHTMLAttributes<HTMLButtonElement>) {
-  return <button type="button" className="button" {...props} />;
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  /** 'primary' is coral, for the main action; 'card' is cream, for the rest. */
+  variant?: 'primary' | 'card';
+}
+
+/** A pixel button with depth from a darker shade of its own color. */
+export function Button({ variant = 'primary', ...props }: ButtonProps) {
+  return (
+    <button type="button" className={`button button-${variant}`} {...props} />
+  );
 }

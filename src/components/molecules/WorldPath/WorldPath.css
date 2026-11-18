@@ -1,0 +1,42 @@
+.world-path {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.world-path-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  font-family: var(--font-display);
+  font-size: var(--display-small);
+}
+
+.world-path-cleared {
+  background: var(--teal);
+  box-shadow: 0 4px 0 var(--teal-shadow);
+  color: var(--text-on-light);
+}
+
+.world-path-current {
+  background: var(--primary);
+  box-shadow: 0 4px 0 var(--primary-shadow);
+  color: var(--text-on-light);
+}
+
+.world-path-locked {
+  background: var(--panel);
+  color: var(--text-muted);
+}
+
+.world-path-boss {
+  width: 48px;
+  height: 48px;
+}

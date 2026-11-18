@@ -4,6 +4,49 @@ export const pt = {
   levelLabel: (level: number) => `Fase ${level}`,
   loading: 'Preparando o tabuleiro…',
   won: 'Resolvido!',
+  shopButton: 'Loja',
+  shopTitle: 'Loja',
+  todaysCats: 'Gatos de hoje',
+  todaysCatsHint:
+    'Cada gato só pode ser comprado nos dias em que aparece aqui.',
+  noShopCats: 'Nenhum gato novo hoje.',
+  yourCats: 'Seus gatos',
+  helpsTitle: 'Ajudas',
+  helpsHint: 'Compradas com moedas na hora de usar, durante a fase.',
+  revealInfo: 'Coloca um gato certo.',
+  eraserInfo:
+    'Apaga os x que estão em casas de gato. Grátis se não houver nenhum.',
+  fish: (fish: number) => `${fish} peixes`,
+  buyCat: (name: string, price: number) =>
+    `Comprar ${name} por ${price} peixes`,
+  useCat: 'Usar',
+  inUse: 'Em uso',
+  useCatLabel: (name: string) => `Usar ${name}`,
+  inUseLabel: (name: string) => `${name}, em uso`,
+  catNames: {
+    white: 'Mingau',
+    orange: 'Caramelo',
+    gray: 'Fumaça',
+    black: 'Meia-noite',
+    calico: 'Tricolor',
+  } as Record<string, string>,
+  appName: 'Nekodoku',
+  play: 'Jogar',
+  menuButton: 'Menu',
+  worldPath: (world: number) => `Caminho do mundo ${world}`,
+  tileLabel: (level: number, state: 'cleared' | 'current' | 'locked') =>
+    `Fase ${level}: ${{ cleared: 'concluída', current: 'atual', locked: 'bloqueada' }[state]}`,
+  bossTileLabel: (state: 'cleared' | 'current' | 'locked') =>
+    `Chefe: ${{ cleared: 'vencido', current: 'atual', locked: 'bloqueado' }[state]}`,
+  selectedCat: 'Seu gato',
+  worldLabel: (world: number) => `Mundo ${world}`,
+  boss: 'Chefe',
+  finalScore: (score: number) => `${score} pontos`,
+  reward: (coins: number, fish: number) =>
+    fish > 0
+      ? `Ganhou ${coins} moedas e ${fish} peixes`
+      : `Ganhou ${coins} moedas`,
+  noReward: 'Sem recompensa: para ganhar de novo, supere seu recorde.',
   optionsButton: 'Opções',
   optionsTitle: 'Opções',
   languageLegend: 'Idioma',

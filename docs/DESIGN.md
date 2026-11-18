@@ -115,8 +115,11 @@ Day mode neutrals, as used in the light row of the mockup **(proposed)**:
 | Card / light button | `#ffffff` |
 | Shadow under a card button | `#d9c9a3` |
 | Muted text | `#5a4b70` |
+| Board background, behind the cells | `#5a4b70` |
 | Text | `#2a1f3d` |
 | Score and other gold text | `#7a4e00` |
+
+The board background is not the raised panel in day mode: the light panel is almost the same color as the zones (zone 7, `#e2cfa6`, matches it exactly), so cells would merge into the board. Every zone needs at least 3:1 contrast against the board; `#5a4b70` gives 4.2:1 or more. In night mode the board stays on the raised panel color.
 
 Gold text is the one accent that changes: the coin yellow is unreadable on a light background, so text that is gold in night mode uses a dark amber in day mode. Gold as a fill (buttons, the Boss step) stays the same.
 

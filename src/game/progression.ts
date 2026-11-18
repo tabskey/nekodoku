@@ -1,5 +1,7 @@
 // Worlds and levels. Pure data plus the rule for worlds past the table. See
 // "Progression" in docs/GAME_RULES.md.
+import { createRng, shuffle } from './rng';
+import type { SolvedPuzzle } from './types';
 
 interface WorldRow {
   /** Board size of each level, the Boss last. */
@@ -57,6 +59,13 @@ export interface LevelConfig {
   isBoss: boolean;
 }
 
+/** The global number of the first level of `world`. */
+export function worldStart(world: number): number {
+  let first = 1;
+  for (let w = 1; w < world; w++) first += worldLength(w);
+  return first;
+}
+
 /** World, board size and starting cats for a level (1-based, global). */
 export function levelConfig(level: number): LevelConfig {
   if (!Number.isInteger(level) || level < 1) {
@@ -77,4 +86,16 @@ export function levelConfig(level: number): LevelConfig {
     startingCats: row.startingCats?.[index] ?? 0,
     isBoss: index === row.sizes.length - 1,
   };
+}
+
+/**
+ * The cells that start with a cat: `count` cells of the solution, picked at
+ * random but always the same for the same level.
+ */
+export function startingCatCells(
+  puzzle: SolvedPuzzle,
+  count: number,
+  level: number,
+): number[] {
+  return shuffle(puzzle.solution, createRng(level)).slice(0, count);
 }

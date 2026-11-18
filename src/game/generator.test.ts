@@ -7,33 +7,13 @@ import {
   sideNeighbors,
 } from './generator';
 import { createRng } from './rng';
-import { countSolutions, isValidPlacement } from './solver';
+import { isValidPlacement } from './solver';
+import { zonesAreContiguous } from '../test/zones';
 import type { Puzzle } from './types';
 
 // One zone per cell, so only the row, column and touching rules apply.
 function noZones(size: number): Puzzle {
   return { size, zones: Array.from({ length: size * size }, (_, i) => i) };
-}
-
-// True when every zone id 0..size-1 forms one connected group of cells.
-function zonesAreContiguous(puzzle: Puzzle): boolean {
-  const { size, zones } = puzzle;
-  for (let zone = 0; zone < size; zone++) {
-    const cells = zones.flatMap((z, cell) => (z === zone ? [cell] : []));
-    if (cells.length === 0) return false;
-    const seen = new Set([cells[0]]);
-    const stack = [cells[0]];
-    while (stack.length > 0) {
-      for (const n of sideNeighbors(stack.pop()!, size)) {
-        if (zones[n] === zone && !seen.has(n)) {
-          seen.add(n);
-          stack.push(n);
-        }
-      }
-    }
-    if (seen.size !== cells.length) return false;
-  }
-  return true;
 }
 
 describe('placeCats', () => {
@@ -109,33 +89,12 @@ describe('growZones', () => {
 });
 
 describe('generate', () => {
-  it('returns contiguous zones with exactly one solution, the attached one', () => {
-    // 12x12 is left out: a few seconds per board is too slow for this loop.
-    for (let size = 4; size <= 11; size++) {
-      for (let seed = 1; seed <= 10; seed++) {
-        const puzzle = generate(size, seed);
-        expect(countSolutions(puzzle, 2)).toBe(1);
-        expect(isValidPlacement(puzzle, puzzle.solution)).toBe(true);
-        expect(zonesAreContiguous(puzzle)).toBe(true);
-      }
-    }
-  });
-
   it('gives the same puzzle for the same seed', () => {
     expect(generate(9, 7)).toEqual(generate(9, 7));
   });
 });
 
 describe('generatePuzzle', () => {
-  it('gives levels 1 to 200 one solution, the attached one, and contiguous zones', () => {
-    for (let level = 1; level <= 200; level++) {
-      const puzzle = generatePuzzle(level);
-      expect(countSolutions(puzzle, 2)).toBe(1);
-      expect(isValidPlacement(puzzle, puzzle.solution)).toBe(true);
-      expect(zonesAreContiguous(puzzle)).toBe(true);
-    }
-  }, 120_000);
-
   it('gives the same puzzle for the same level', () => {
     expect(generatePuzzle(12)).toEqual(generatePuzzle(12));
   });
