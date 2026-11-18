@@ -234,3 +234,4 @@ Sound effects are synthesized at runtime with the Web Audio API: short oscillato
 - `storage/`: migration and backup round-trip tests.
 - Components: light. Their logic is in the layers above.
 - Coverage: SonarQube Cloud's quality gate asks for 80% coverage on new code. It is measured on `src/game/`, `src/storage/` and the reducers in `src/state/`, where the rules live. Components, pages, text files and the browser glue (providers, hooks around timers and workers, `App.tsx`, `main.tsx`) are listed in `sonar.coverage.exclusions` in `sonar-project.properties`: still analyzed for bugs and security, not counted for coverage. New logic goes in the covered layers, never in a component to dodge the rule.
+- Duplication: the gate allows 3% duplicated code on new code. `src/i18n/pt.ts` and `src/i18n/en.ts` are listed in `sonar.cpd.exclusions`, because the same keys in the same order is how the translations stay in sync, not copied code.
