@@ -19,6 +19,8 @@
 :root {
   --bg: #2a1f3d;
   --panel: #3a2d54;
+  /* A darker shade of the panel, for depth on it (never black). */
+  --panel-shadow: #2a1f3d;
   /* Behind the board's cells. Must contrast with every zone color (3:1 at
      least), which the light panel does not, so day mode darkens it. */
   --board: #3a2d54;
@@ -39,7 +41,9 @@
   --teal-shadow: #3a9c8b;
   /* The card behind the selected cat on the menu, the same in both modes. */
   --cat-card: #f7a8b8;
-  --cat-card-shadow: rgba(0, 0, 0, 0.22);
+  /* A darker shade of the card's own pink, not black (see Colors in
+     docs/DESIGN.md). */
+  --cat-card-shadow: #c98594;
   /* Behind the restoration, cream in both modes for the black silhouette. */
   --restore-bg: #f6ecd4;
   /* The x of a rejected cat, on a zone color in both modes. */
@@ -88,6 +92,7 @@
 :root[data-theme='light'] {
   --bg: #f6ecd4;
   --panel: #e0cfa8;
+  --panel-shadow: #c9b88f;
   --board: #5a4b70;
   --card: #ffffff;
   --card-shadow: #d9c9a3;
@@ -105,4 +110,10 @@ body {
   font-size: 18px;
   /* Pixel fonts must never get a fake bold or slant. */
   font-synthesis: none;
+}
+
+/* Keyboard focus, the same everywhere: a 3px gold square, as in the mockup. */
+:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
 }

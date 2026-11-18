@@ -154,4 +154,7 @@ Both are on Google Fonts. For offline play, bundle the font files with the app i
 - Designed for a 390 px wide phone screen, 24 px side padding.
 - Board cells are separate tiles with a 6 px gap on a raised panel.
 - Touch targets are at least 44 px.
+- Corners are square: no `border-radius`, since curves are drawn with blurred edges and the mockup is square throughout.
+- Depth is always a darker shade of the element's own color (or of the panel, `--panel-shadow`), never translucent black.
+- Keyboard focus is the same everywhere: a 3 px gold outline, 2 px away from the element.
 - The rules popover opens over the screen from the "!" button and closes on the next tap.

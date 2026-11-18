@@ -2,7 +2,6 @@
   max-width: min(342px, calc(100vw - 48px));
   padding: 20px 24px;
   border: none;
-  border-radius: 6px;
   background: var(--card);
   box-shadow: 0 4px 0 var(--card-shadow);
   color: var(--text-on-light);

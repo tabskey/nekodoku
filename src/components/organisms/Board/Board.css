@@ -1,7 +1,6 @@
 .board {
   display: inline-grid;
   background: var(--board);
-  border-radius: 6px;
   /* A drag on the board strokes cells; it must not scroll or zoom the page. */
   touch-action: none;
   user-select: none;

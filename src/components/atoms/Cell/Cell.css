@@ -2,7 +2,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 3px;
   /* Holding a cell must never select text or open a system menu. */
   user-select: none;
   -webkit-user-select: none;

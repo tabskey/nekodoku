@@ -22,7 +22,6 @@
   width: 44px;
   height: 44px;
   border: none;
-  border-radius: 50%;
   background: var(--gold);
   box-shadow: 0 4px 0 var(--gold-shadow);
   color: var(--text-on-light);

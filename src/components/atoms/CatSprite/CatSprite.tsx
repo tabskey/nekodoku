@@ -48,8 +48,12 @@ function toRuns(row: string): PixelRun[] {
   return runs;
 }
 
-// Closes the eyes for a moment every few seconds, at a slightly random pace
-// so several cats on screen do not blink together.
+// Blink timing from docs/DESIGN.md: a 3.4 s cycle, eyes closed for its last
+// 8%. Each cat starts at a random point of the cycle, so cats on the board
+// keep their own rhythm instead of blinking in unison.
+const BLINK_CYCLE_MS = 3400;
+const BLINK_CLOSED_MS = Math.round(BLINK_CYCLE_MS * 0.08);
+
 function useBlink(enabled: boolean): boolean {
   const [closed, setClosed] = useState(false);
 
@@ -58,15 +62,16 @@ function useBlink(enabled: boolean): boolean {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     let timer: number;
-    const open = () => {
+    const open = (wait = BLINK_CYCLE_MS - BLINK_CLOSED_MS) => {
       setClosed(false);
-      timer = window.setTimeout(close, 2500 + Math.random() * 2500);
+      timer = window.setTimeout(close, wait);
     };
     const close = () => {
       setClosed(true);
-      timer = window.setTimeout(open, 160);
+      timer = window.setTimeout(() => open(), BLINK_CLOSED_MS);
     };
-    open();
+    // The first wait sets this cat's offset in the cycle.
+    open(Math.random() * BLINK_CYCLE_MS);
 
     return () => window.clearTimeout(timer);
   }, [enabled]);
