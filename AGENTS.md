@@ -7,7 +7,7 @@ Read this file first. Consult the other two only when the task needs them:
 - `docs/ARCHITECTURE.md`: stack, folder layout, layers, data model, storage, build and deploy pipeline, local container. Read before adding files, moving code, touching state and persistence, or changing the workflow or the `Dockerfile`.
 - `docs/GAME_RULES.md`: puzzle rules, lives, score, helps, currencies, progression. Read before changing anything the player can see or feel. If code and this file disagree, the file wins; ask before changing the file.
 - `docs/DESIGN.md`: mockup link, sprite list, colors, typefaces and layout notes. Read before building or restyling any screen.
-- `docs/SPRITES.md`: canvas sizes, drawing and export rules for pixel art, Boss sceneries and their day and night palettes. Read before adding or changing any sprite.
+- `docs/SPRITES.md`: canvas sizes, drawing and export rules for pixel art, head frames, head centering, Boss sceneries and their day and night palettes. Read before adding or changing any sprite, and before building or changing any component that displays one (`CatSprite` above all).
 - `docs/ROADMAP.md`: the seven project phases, with tasks and a "done when" list for each. Read to know which phase is in progress and what counts as finished.
 
 `docs/FUTURE_BACKEND.md` describes what a server would add if the game ever grew, including serving the build with nginx. It is ideas only: do not implement anything from it unless the owner asks.
@@ -73,7 +73,8 @@ Decisions taken, anything left out on purpose, and follow-ups. Write "None" if e
 - The game ships in two languages, Brazilian Portuguese (default) and English, chosen by the player in Options. No player-facing text is written directly in a component: every string goes through the translation files, with both languages filled in.
 - Components follow atomic design (atoms, molecules, organisms, pages). Atoms and molecules are presentational: props in, events out, no game rules inside.
 - Tests sit next to the file they test: `solver.ts` and `solver.test.ts`.
-- Sprites follow the size rules at the top of `docs/SPRITES.md` (12x12 head, one full-body canvas for every cat). Never scale a sprite to a non-whole multiple.
+- Sprites follow the size rules at the top of `docs/SPRITES.md` (12x12 head drawn in columns 0 to 10 with column 11 empty, one full-body canvas for every cat). Never scale a sprite to a non-whole multiple, and never offset one by a fraction of a CSS pixel.
+- `CatSprite` shifts every cat right by half a sprite pixel, rounded to whole CSS pixels, to center the 11-column drawing (see Centering the head in `docs/SPRITES.md`).
 - Art in `src/assets/` and in the mockup is placeholder. Do not polish or extend it; the owner replaces it with her own.
 - No black outlines in the UI. Depth comes from a darker shade of the element's own color.
 
@@ -85,7 +86,6 @@ Vite defaults; update this list if the scripts change.
 - `npm test`: Vitest
 - `npm run build`: production build into `dist/`
 - `npm run lint`: ESLint
-- `npm run format`: Prettier, writes files in place
 
 In the container (replace `docker` with `podman` if that is the engine in use; `:Z` is for SELinux hosts and harmless elsewhere):
 

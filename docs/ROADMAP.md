@@ -61,7 +61,7 @@ Goal: one level can be played from start to finish on a phone.
 
 - Text through `useText()` from the first component, with Portuguese and English files (see Languages in `docs/ARCHITECTURE.md`).
 - Theme tokens: every color as a CSS variable, with night and day values switched by `data-theme` (see Themes in `docs/DESIGN.md`).
-- Atoms: `Cell`, `CatSprite` (with blink), `Button`.
+- Atoms: `Cell`, `CatSprite`, `Button`. `CatSprite` plays the idle frames (open eyes with an occasional blink), shows the happy frame on a correct move, and applies the centering shift (see Head frames and Centering the head in `docs/SPRITES.md`).
 - Organism: `Board`, presentational, with tiles separated by a gap.
 - `levelReducer` with `tapCell` (empty -> x, x -> empty, cat -> empty), `placeCat` (from double tap or press and hold), `strokeCells` (drag to mark or erase x) and win detection.
 - Board input with Pointer Events: tap versus stroke, live preview during the stroke (see Board input in `docs/ARCHITECTURE.md`).
@@ -74,6 +74,7 @@ Done when:
 - Reducer tests cover single tap, placing a cat, strokes (cats skipped, each cell once, erase mode) and the win condition.
 - Dragging across a row of a 9x9 board marks it in one stroke on Android and iPhone, without scrolling the page.
 - Double tap and press and hold both place a cat on Android and iPhone, and holding never opens a system menu.
+- The cat's nose sits on the center of its cell at 2x and 3x, and the sprite stays crisp.
 
 ## Phase 5: Lives, score, timer and helps
 
