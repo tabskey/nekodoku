@@ -31,12 +31,20 @@ const SWIPE_PX = 50;
 interface WorldPageProps {
   onPlay: (level: number) => void;
   onOpenMenu: () => void;
+  onOpenShop: () => void;
+  onOpenOptions: () => void;
   /** The level just cleared: the cat walks from its tile to the next one. */
   walkFrom?: number;
 }
 
 /** The world map: the cat walks the path to a level, with replay of cleared worlds. */
-export function WorldPage({ onPlay, onOpenMenu, walkFrom }: WorldPageProps) {
+export function WorldPage({
+  onPlay,
+  onOpenMenu,
+  onOpenShop,
+  onOpenOptions,
+  walkFrom,
+}: WorldPageProps) {
   const text = useText();
   const { profile } = useProfile();
   const nextLevel = profile.levelsCleared + 1;
@@ -179,6 +187,7 @@ export function WorldPage({ onPlay, onOpenMenu, walkFrom }: WorldPageProps) {
           label={text.worldPath(world)}
           dimmed={locked}
           palette={MAP_PALETTES[scene.biome][scene.time]}
+          seed={world}
           onSelect={(i) => {
             if (i === catTile) setOpening(true);
             else {
@@ -212,6 +221,14 @@ export function WorldPage({ onPlay, onOpenMenu, walkFrom }: WorldPageProps) {
               playLevel - worldStart(levelConfig(playLevel).world) + 1,
             )}
       </Button>
+      <nav className="world-page-links">
+        <Button variant="card" onClick={onOpenShop}>
+          {text.shopButton}
+        </Button>
+        <Button variant="card" onClick={onOpenOptions}>
+          {text.optionsButton}
+        </Button>
+      </nav>
     </main>
   );
 }

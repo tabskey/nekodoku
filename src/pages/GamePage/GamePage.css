@@ -1,3 +1,7 @@
+.game-page[hidden] {
+  display: none;
+}
+
 .game-page {
   display: flex;
   flex-direction: column;
@@ -85,4 +89,32 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
+}
+
+/* The Boss's 85x18 scenery at 4x, as in the "Boss 12x12" artboard. */
+.game-page-scenery {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.game-page-scenery-ghost {
+  position: absolute;
+  right: 16px;
+  bottom: 8px;
+  display: flex;
+  animation: game-page-float 1.6s steps(2) infinite;
+}
+
+@keyframes game-page-float {
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-page-scenery-ghost {
+    animation: none;
+  }
 }

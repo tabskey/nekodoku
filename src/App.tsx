@@ -19,12 +19,16 @@ export function App() {
     level: number;
     reward: Reward;
   }>();
-  // Set when returning to the map right after a win, so the cat walks on.
+  // The level just won, so the cat walks on from it the next time the map
+  // opens. Cleared once the map has shown the walk.
   const [walkFrom, setWalkFrom] = useState<number>();
-
-  function openWorld(cleared?: number) {
-    setWalkFrom(cleared);
-    setScreen('world');
+  // Shop and Options return to the screen they were opened from.
+  const [backTo, setBackTo] = useState<'menu' | 'world'>('menu');
+  function open(next: 'options' | 'shop', from: 'menu' | 'world') {
+    // The map has already shown the walk; coming back must not replay it.
+    if (from === 'world') setWalkFrom(undefined);
+    setBackTo(from);
+    setScreen(next);
   }
 
   function handleCleared(score: number, seconds: number) {
@@ -40,17 +44,17 @@ export function App() {
   }
 
   if (screen === 'options') {
-    return <OptionsPage onBack={() => setScreen('menu')} />;
+    return <OptionsPage onBack={() => setScreen(backTo)} />;
   }
   if (screen === 'shop') {
-    return <ShopPage onBack={() => setScreen('menu')} />;
+    return <ShopPage onBack={() => setScreen(backTo)} />;
   }
   if (screen === 'menu') {
     return (
       <MenuPage
-        onOpenWorld={() => openWorld()}
-        onOpenOptions={() => setScreen('options')}
-        onOpenShop={() => setScreen('shop')}
+        onOpenWorld={() => setScreen('world')}
+        onOpenOptions={() => open('options', 'menu')}
+        onOpenShop={() => open('shop', 'menu')}
       />
     );
   }
@@ -59,15 +63,21 @@ export function App() {
       <WorldPage
         onPlay={(next) => {
           setLastClear(undefined);
+          setWalkFrom(undefined);
           setLevel(next);
           setScreen('game');
         }}
-        onOpenMenu={() => setScreen('menu')}
+        onOpenMenu={() => {
+          setWalkFrom(undefined);
+          setScreen('menu');
+        }}
+        onOpenShop={() => open('shop', 'world')}
+        onOpenOptions={() => open('options', 'world')}
         walkFrom={walkFrom}
       />
     );
   }
-  // Leaving a level for the map discards it (see Saving in
+  // Leaving a level for the menu discards it (see Saving in
   // docs/GAME_RULES.md).
   return (
     <GamePage
@@ -78,9 +88,10 @@ export function App() {
       onCleared={handleCleared}
       reward={lastClear?.level === level ? lastClear.reward : undefined}
       onNextLevel={() => setLevel(level + 1)}
-      onOpenMenu={() =>
-        openWorld(lastClear?.level === level ? level : undefined)
-      }
+      onOpenMenu={() => {
+        setWalkFrom(lastClear?.level === level ? level : undefined);
+        setScreen('menu');
+      }}
     />
   );
 }

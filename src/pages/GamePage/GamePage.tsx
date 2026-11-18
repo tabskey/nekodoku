@@ -6,13 +6,22 @@ import {
   catPalette,
   silhouettePalette,
 } from '../../components/atoms/CatSprite/catSprites';
+import { Scenery } from '../../components/atoms/Scenery/Scenery';
+import { bossScenery } from '../../components/atoms/Scenery/sceneries';
+import ghostUrl from '../../assets/ghost-cat.svg';
+import { worldScene } from '../../game/biomes';
 import { HelpButton } from '../../components/molecules/HelpButton/HelpButton';
 import { HudBar } from '../../components/molecules/HudBar/HudBar';
 import { ProgressStrip } from '../../components/molecules/ProgressStrip/ProgressStrip';
 import { Board } from '../../components/organisms/Board/Board';
+import { OptionsPage } from '../OptionsPage/OptionsPage';
 import { RulesPopover } from '../../components/organisms/RulesPopover/RulesPopover';
 import { helpCost, type Help } from '../../game/helps';
-import { levelConfig, startingCatCells } from '../../game/progression';
+import {
+  levelConfig,
+  startingCatCells,
+  worldCat,
+} from '../../game/progression';
 import type { Reward } from '../../game/rewards';
 import { LIVES_PER_LEVEL } from '../../game/scoring';
 import type { SolvedPuzzle } from '../../game/types';
@@ -39,6 +48,10 @@ interface GamePageProps {
 }
 
 type LevelProps = Omit<GamePageProps, 'level' | 'onOpenMenu'> & {
+  /** Stops the timer, e.g. while Options is open over the level. */
+  paused: boolean;
+  /** Set on a Boss level: the world whose scenery and ghost to show. */
+  bossWorld?: number;
   puzzle: SolvedPuzzle;
   /** Cells that open with a fixed, correct cat. */
   givens: number[];
@@ -46,54 +59,104 @@ type LevelProps = Omit<GamePageProps, 'level' | 'onOpenMenu'> & {
 
 const HELP_ACTIONS = { reveal: 'useReveal', eraser: 'useEraser' } as const;
 
+// Placeholder 9x9 pixel gear for the Options button, drawn at 2x.
+const GEAR = [
+  '...ooo...',
+  '.o.ooo.o.',
+  '..ooooo..',
+  'oooo.oooo',
+  'ooo...ooo',
+  'oooo.oooo',
+  '..ooooo..',
+  '.o.ooo.o.',
+  '...ooo...',
+];
+
 /** One level, from loading to solved. */
 export function GamePage({ level, onOpenMenu, ...levelProps }: GamePageProps) {
   const text = useText();
   const puzzle = usePuzzle(level);
   const { world, levelInWorld, isBoss, startingCats } = levelConfig(level);
   const [rulesOpen, setRulesOpen] = useState(false);
+  // Options opens over the level, which stays mounted underneath: a level in
+  // progress is never saved, so leaving it would lose it.
+  const [optionsOpen, setOptionsOpen] = useState(false);
 
   return (
-    <main className="game-page">
-      <header className="game-page-header">
-        <button
-          type="button"
-          className="game-page-icon-button game-page-menu"
-          aria-label={text.menuButton}
-          onClick={onOpenMenu}
-        >
-          &lt;
-        </button>
-        <div>
-          <p className="game-page-world">{text.worldLabel(world)}</p>
-          <h1>{isBoss ? text.boss : text.levelLabel(levelInWorld)}</h1>
-        </div>
-        <button
-          type="button"
-          className="game-page-icon-button game-page-rules"
-          aria-label={text.rulesButton}
-          onClick={() => setRulesOpen(true)}
-        >
-          !
-        </button>
-      </header>
-      <RulesPopover
-        open={rulesOpen}
-        title={text.rulesTitle}
-        rules={text.rules}
-        closeHint={text.closeHint}
-        onClose={() => setRulesOpen(false)}
-      />
-      {puzzle ? (
-        <Level
-          puzzle={puzzle}
-          givens={startingCatCells(puzzle, startingCats, level)}
-          {...levelProps}
+    <>
+      {optionsOpen && <OptionsPage onBack={() => setOptionsOpen(false)} />}
+      <main className="game-page" hidden={optionsOpen}>
+        <header className="game-page-header">
+          <button
+            type="button"
+            className="game-page-icon-button game-page-menu"
+            aria-label={text.menuButton}
+            onClick={onOpenMenu}
+          >
+            &lt;
+          </button>
+          <div>
+            <p className="game-page-world">{text.worldLabel(world)}</p>
+            <h1>{isBoss ? text.boss : text.levelLabel(levelInWorld)}</h1>
+          </div>
+          <button
+            type="button"
+            className="game-page-icon-button game-page-rules"
+            aria-label={text.rulesButton}
+            onClick={() => setRulesOpen(true)}
+          >
+            !
+          </button>
+          <button
+            type="button"
+            className="game-page-icon-button game-page-menu"
+            aria-label={text.optionsButton}
+            onClick={() => setOptionsOpen(true)}
+          >
+            <svg
+              viewBox="0 0 9 9"
+              width={18}
+              height={18}
+              shapeRendering="crispEdges"
+              aria-hidden="true"
+            >
+              {GEAR.flatMap((row, y) =>
+                [...row].map((char, x) =>
+                  char === 'o' ? (
+                    <rect
+                      key={`${x}-${y}`}
+                      x={x}
+                      y={y}
+                      width={1}
+                      height={1}
+                      fill="currentColor"
+                    />
+                  ) : null,
+                ),
+              )}
+            </svg>
+          </button>
+        </header>
+        <RulesPopover
+          open={rulesOpen}
+          title={text.rulesTitle}
+          rules={text.rules}
+          closeHint={text.closeHint}
+          onClose={() => setRulesOpen(false)}
         />
-      ) : (
-        <p className="game-page-status">{text.loading}</p>
-      )}
-    </main>
+        {puzzle ? (
+          <Level
+            puzzle={puzzle}
+            givens={startingCatCells(puzzle, startingCats, level)}
+            paused={optionsOpen}
+            bossWorld={isBoss ? world : undefined}
+            {...levelProps}
+          />
+        ) : (
+          <p className="game-page-status">{text.loading}</p>
+        )}
+      </main>
+    </>
   );
 }
 
@@ -105,17 +168,19 @@ function Level({
   onCleared,
   onNextLevel,
   reward,
+  paused,
+  bossWorld,
 }: LevelProps) {
   const text = useText();
   const { options } = useOptions();
   const palette = catPalette(useProfile().profile.selectedCat);
-  // Auto-mark is read once, when the level starts; changing it means leaving
-  // the level, which starts it again.
+  // Auto-mark is read once, when the level starts; a change made in Options
+  // mid-level applies from the next level.
   const [state, dispatch] = useReducer(levelReducer, puzzle, (p) =>
     createLevel(p, options.autoMark, givens),
   );
   const tick = useCallback(() => dispatch({ type: 'tick' }), []);
-  useLevelTimer(state.status === 'playing', tick);
+  useLevelTimer(state.status === 'playing' && !paused, tick);
   const placed = state.marks.filter((mark) => mark === 'cat').length;
   const playing = state.status === 'playing';
 
@@ -136,6 +201,9 @@ function Level({
 
   return (
     <>
+      {bossWorld !== undefined && (
+        <BossStrip world={bossWorld} won={state.status === 'won'} />
+      )}
       <HudBar
         lives={state.lives}
         maxLives={LIVES_PER_LEVEL}
@@ -228,5 +296,24 @@ function RewardLine({ reward }: { reward: Reward }) {
         <CurrencyBadge amount={reward.fish} currency="fish" prefix="+" />
       )}
     </p>
+  );
+}
+
+/** The Boss's scenery, with the ghost waiting until the level is won. */
+function BossStrip({ world, won }: { world: number; won: boolean }) {
+  const text = useText();
+  const { rows, palette } = bossScenery(world, worldScene(world).time);
+  return (
+    <div className="game-page-scenery" role="img" aria-label={text.bossScene}>
+      <Scenery rows={rows} palette={palette} />
+      <span className="game-page-scenery-ghost">
+        {won ? (
+          <CatSprite palette={catPalette(worldCat(world))} />
+        ) : (
+          // 12x14 sprite at 4x.
+          <img src={ghostUrl} width={48} height={56} alt="" draggable={false} />
+        )}
+      </span>
+    </div>
   );
 }

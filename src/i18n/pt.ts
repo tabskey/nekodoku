@@ -61,6 +61,7 @@ export const pt = {
   bestScoreNote: (score: number) => `recorde ${score}`,
   worldLabel: (world: number) => `Mundo ${world}`,
   boss: 'Chefe',
+  bossScene: 'Cenário do mundo, com o fantasminha do gatinho esperando',
   finalScore: (score: number) => `${score} pontos`,
   reward: (coins: number, fish: number) =>
     fish > 0

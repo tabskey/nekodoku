@@ -56,6 +56,7 @@ export const en: Text = {
   bestScoreNote: (score) => `best ${score}`,
   worldLabel: (world) => `World ${world}`,
   boss: 'Boss',
+  bossScene: "The world's scenery, with the cat's ghost waiting",
   finalScore: (score) => `${score} points`,
   reward: (coins, fish) =>
     fish > 0

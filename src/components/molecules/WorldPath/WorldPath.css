@@ -1,9 +1,61 @@
 /* The map: ground, a path of dots, and tiles placed along it. Positions
    come from pathLayout.ts in whole pixels. */
 .world-path {
+  position: relative;
   display: flex;
   justify-content: center;
   background: var(--map-ground);
+}
+
+/* Beach sea along the right edge, outside the 288px field so it never
+   covers a tile: 12px of water behind 6px of foam. */
+.world-path-sea {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 12px;
+  border-left: 6px solid;
+}
+
+.world-path-speck {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+}
+
+/* A 24x12 bush with a 12x6 top, from the mockup. */
+.world-path-bush {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.world-path-bush span:first-child {
+  width: 12px;
+  height: 6px;
+}
+
+.world-path-bush span:last-child {
+  width: 24px;
+  height: 12px;
+}
+
+.world-path-firefly {
+  animation: world-path-glow 2.2s steps(2) infinite;
+}
+
+@keyframes world-path-glow {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-path-firefly {
+    animation: none;
+  }
 }
 
 .world-path-field {

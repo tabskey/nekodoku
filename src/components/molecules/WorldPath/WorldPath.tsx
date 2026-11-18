@@ -5,6 +5,7 @@ import {
   type CSSProperties,
   type ReactNode,
 } from 'react';
+import { decorations } from './decorations';
 import type { MapPalette } from './mapPalettes';
 import { pathLayout } from './pathLayout';
 import './WorldPath.css';
@@ -31,8 +32,10 @@ interface WorldPathProps {
   onSelect: (index: number) => void;
   /** Dims the whole path, for a world not yet unlocked. */
   dimmed?: boolean;
-  /** Ground and path colors of the world's biome and time of day. */
+  /** Colors of the world's biome and time of day. */
   palette: MapPalette;
+  /** Places the decorations, so a world always looks the same: the world number. */
+  seed: number;
   /** The selected cat, 16x18 sprite pixels at 3x. Gets whether it is walking. */
   cat?: (walking: boolean) => ReactNode;
   /** Index of the tile the cat walks to, dot by dot along the path. */
@@ -56,15 +59,16 @@ export function WorldPath({
   onSelect,
   dimmed = false,
   palette,
+  seed,
   cat,
   catAt = 0,
   catFrom = catAt,
   onArrive,
 }: WorldPathProps) {
-  const { width, height, points, tilePoints } = useMemo(
-    () => pathLayout(tiles.length),
-    [tiles.length],
-  );
+  const { width, height, points, tilePoints, decor } = useMemo(() => {
+    const layout = pathLayout(tiles.length);
+    return { ...layout, decor: decorations(layout, seed) };
+  }, [tiles.length, seed]);
   const target = tilePoints[catAt];
   const [stand, setStand] = useState({ at: tilePoints[catFrom], left: false });
 
@@ -94,7 +98,60 @@ export function WorldPath({
         } as CSSProperties
       }
     >
+      {palette.sea && (
+        <span
+          className="world-path-sea"
+          style={{
+            background: palette.sea[0],
+            borderLeftColor: palette.sea[1],
+          }}
+        />
+      )}
       <div className="world-path-field" style={{ width, height }}>
+        {decor.map(({ kind, x, y }, i) => {
+          if (kind === 'bush') {
+            return (
+              palette.bush && (
+                <span
+                  key={i}
+                  className="world-path-bush"
+                  style={{ left: x, top: y }}
+                >
+                  <span style={{ background: palette.bush[1] }} />
+                  <span style={{ background: palette.bush[0] }} />
+                </span>
+              )
+            );
+          }
+          if (kind === 'firefly') {
+            return (
+              palette.firefly && (
+                <span
+                  key={i}
+                  className="world-path-speck world-path-firefly"
+                  style={{
+                    left: x,
+                    top: y,
+                    background: palette.firefly,
+                    // Spread the blinks so the fireflies never pulse together.
+                    animationDelay: `${(i % 5) * -0.45}s`,
+                  }}
+                />
+              )
+            );
+          }
+          return (
+            <span
+              key={i}
+              className="world-path-speck"
+              style={{
+                left: x,
+                top: y,
+                background: palette.specks[kind === 'speck0' ? 0 : 1],
+              }}
+            />
+          );
+        })}
         {points.map((point, i) => (
           <span
             key={i}
