@@ -1,7 +1,7 @@
 // Everything that outlives a level. Saved after every action by
 // ProfileProvider. See "State" in docs/ARCHITECTURE.md.
 import { levelConfig } from '../game/progression';
-import { levelReward } from '../game/rewards';
+import { clearReward } from '../game/rewards';
 import type { Options, SaveData } from '../storage/save';
 
 export type ProfileAction =
@@ -18,14 +18,9 @@ export function profileReducer(
   switch (action.type) {
     case 'levelCleared': {
       const { level, score, seconds } = action;
-      const { isBoss, size } = levelConfig(level);
+      const { size } = levelConfig(level);
       const best = profile.bestScores[level];
-      const reward = levelReward(
-        isBoss,
-        level > profile.levelsCleared,
-        score,
-        best,
-      );
+      const reward = clearReward(level, score, profile.levelsCleared, best);
       const bestTime = profile.bestTimes[size];
       return {
         ...profile,

@@ -1,4 +1,4 @@
-import { CoinBadge } from '../../atoms/CoinBadge/CoinBadge';
+import { CurrencyBadge } from '../../atoms/CurrencyBadge/CurrencyBadge';
 import './HelpButton.css';
 
 interface HelpButtonProps {
@@ -27,7 +27,7 @@ export function HelpButton({
       onClick={onUse}
     >
       <span>{name}</span>
-      <CoinBadge amount={cost} />
+      <CurrencyBadge amount={cost} />
     </button>
   );
 }

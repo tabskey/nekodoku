@@ -65,7 +65,7 @@ src/
   state/         reducers and context providers
   storage/       localStorage access, save schema, migrations, backup code
   components/
-    atoms/       Cell, CatSprite, Heart, Button, CoinBadge
+    atoms/       Cell, CatSprite, Heart, Button, CurrencyBadge
     molecules/   HudBar, ProgressStrip, HelpButton
     organisms/   Board, RulesPopover, ShopGrid
   pages/         MenuPage, GamePage, ShopPage

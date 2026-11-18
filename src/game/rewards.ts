@@ -1,5 +1,6 @@
 // What clearing a level pays. See "Currencies" and "Replaying" in
 // docs/GAME_RULES.md.
+import { levelConfig } from './progression';
 
 export interface Reward {
   coins: number;
@@ -26,4 +27,22 @@ export function levelReward(
   if (bestScore === undefined || score > bestScore)
     return { coins: full.coins, fish: 0 };
   return NO_REWARD;
+}
+
+/**
+ * The reward for clearing `level` with `score`, given the player's progress
+ * so far: levels cleared and the best score on that level, if any.
+ */
+export function clearReward(
+  level: number,
+  score: number,
+  levelsCleared: number,
+  bestScore: number | undefined,
+): Reward {
+  return levelReward(
+    levelConfig(level).isBoss,
+    level > levelsCleared,
+    score,
+    bestScore,
+  );
 }

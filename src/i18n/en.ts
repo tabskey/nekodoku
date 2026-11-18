@@ -4,6 +4,14 @@ export const en: Text = {
   levelLabel: (level) => `Level ${level}`,
   loading: 'Getting the board ready…',
   won: 'Solved!',
+  worldLabel: (world) => `World ${world}`,
+  boss: 'Boss',
+  finalScore: (score) => `${score} points`,
+  reward: (coins, fish) =>
+    fish > 0
+      ? `You earned ${coins} coins and ${fish} fish`
+      : `You earned ${coins} coins`,
+  noReward: 'No reward: beat your best score to earn again.',
   optionsButton: 'Options',
   optionsTitle: 'Options',
   languageLegend: 'Language',

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { Button } from '../../components/atoms/Button/Button';
 import { CatSprite } from '../../components/atoms/CatSprite/CatSprite';
+import { CurrencyBadge } from '../../components/atoms/CurrencyBadge/CurrencyBadge';
 import {
   CAT_PALETTES,
   silhouettePalette,
@@ -11,6 +12,8 @@ import { ProgressStrip } from '../../components/molecules/ProgressStrip/Progress
 import { Board } from '../../components/organisms/Board/Board';
 import { RulesPopover } from '../../components/organisms/RulesPopover/RulesPopover';
 import { helpCost, type Help } from '../../game/helps';
+import { levelConfig } from '../../game/progression';
+import type { Reward } from '../../game/rewards';
 import { LIVES_PER_LEVEL } from '../../game/scoring';
 import type { SolvedPuzzle } from '../../game/types';
 import { useText } from '../../i18n/useText';
@@ -31,6 +34,8 @@ interface GamePageProps {
   onSpendCoins: (amount: number) => void;
   /** Called once when the level is won, with the final score and time. */
   onCleared: (score: number, seconds: number) => void;
+  /** What the win paid, once the profile has it. */
+  reward?: Reward;
   onNextLevel: () => void;
   onOpenOptions: () => void;
 }
@@ -49,12 +54,16 @@ export function GamePage({
 }: GamePageProps) {
   const text = useText();
   const puzzle = usePuzzle(level);
+  const { world, levelInWorld, isBoss } = levelConfig(level);
   const [rulesOpen, setRulesOpen] = useState(false);
 
   return (
     <main className="game-page">
       <header className="game-page-header">
-        <h1>{text.levelLabel(level)}</h1>
+        <div>
+          <p className="game-page-world">{text.worldLabel(world)}</p>
+          <h1>{isBoss ? text.boss : text.levelLabel(levelInWorld)}</h1>
+        </div>
         <button
           type="button"
           className="game-page-icon-button game-page-options"
@@ -94,6 +103,7 @@ function Level({
   onSpendCoins,
   onCleared,
   onNextLevel,
+  reward,
 }: LevelProps) {
   const text = useText();
   const { options } = useOptions();
@@ -183,6 +193,8 @@ function Level({
       {state.status === 'won' && (
         <div className="game-page-end">
           <p className="game-page-status">{text.won}</p>
+          <p className="game-page-score">{text.finalScore(state.score)}</p>
+          {reward && <RewardLine reward={reward} />}
           <Button onClick={onNextLevel}>{text.nextLevel}</Button>
         </div>
       )}
@@ -195,5 +207,24 @@ function Level({
         </div>
       )}
     </>
+  );
+}
+
+function RewardLine({ reward }: { reward: Reward }) {
+  const text = useText();
+  if (reward.coins === 0 && reward.fish === 0) {
+    return <p className="game-page-status">{text.noReward}</p>;
+  }
+  return (
+    <p
+      className="game-page-reward"
+      role="img"
+      aria-label={text.reward(reward.coins, reward.fish)}
+    >
+      <CurrencyBadge amount={reward.coins} prefix="+" />
+      {reward.fish > 0 && (
+        <CurrencyBadge amount={reward.fish} currency="fish" prefix="+" />
+      )}
+    </p>
   );
 }

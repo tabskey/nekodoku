@@ -4,6 +4,14 @@ export const pt = {
   levelLabel: (level: number) => `Fase ${level}`,
   loading: 'Preparando o tabuleiro…',
   won: 'Resolvido!',
+  worldLabel: (world: number) => `Mundo ${world}`,
+  boss: 'Chefe',
+  finalScore: (score: number) => `${score} pontos`,
+  reward: (coins: number, fish: number) =>
+    fish > 0
+      ? `Ganhou ${coins} moedas e ${fish} peixes`
+      : `Ganhou ${coins} moedas`,
+  noReward: 'Sem recompensa: para ganhar de novo, supere seu recorde.',
   optionsButton: 'Opções',
   optionsTitle: 'Opções',
   languageLegend: 'Idioma',
