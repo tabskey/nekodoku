@@ -5,8 +5,10 @@ import {
   CAT_PALETTES,
   silhouettePalette,
 } from '../../components/atoms/CatSprite/catSprites';
+import { HudBar } from '../../components/molecules/HudBar/HudBar';
 import { ProgressStrip } from '../../components/molecules/ProgressStrip/ProgressStrip';
 import { Board } from '../../components/organisms/Board/Board';
+import { LIVES_PER_LEVEL } from '../../game/scoring';
 import type { SolvedPuzzle } from '../../game/types';
 import { useText } from '../../i18n/useText';
 import { createLevel, levelReducer } from '../../state/levelReducer';
@@ -53,6 +55,13 @@ function Level({
 
   return (
     <>
+      <HudBar
+        lives={state.lives}
+        maxLives={LIVES_PER_LEVEL}
+        score={state.score}
+        livesLabel={text.lives(state.lives)}
+        scoreLabel={text.score(state.score)}
+      />
       <div className="game-page-progress">
         <ProgressStrip
           placed={placed}
@@ -82,9 +91,17 @@ function Level({
         }
       />
       {state.status === 'won' && (
-        <div className="game-page-won">
+        <div className="game-page-end">
           <p className="game-page-status">{text.won}</p>
           <Button onClick={onNextLevel}>{text.nextLevel}</Button>
+        </div>
+      )}
+      {state.status === 'lost' && (
+        <div className="game-page-end">
+          <p className="game-page-status">{text.lost}</p>
+          <Button onClick={() => dispatch({ type: 'restart' })}>
+            {text.retry}
+          </Button>
         </div>
       )}
     </>

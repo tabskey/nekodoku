@@ -1,7 +1,7 @@
 // Rules and solver for Nekodoku puzzles. Pure TypeScript: no React, no DOM,
 // no Math.random. See "Puzzle generation" in docs/ARCHITECTURE.md.
 
-import type { Puzzle } from './types';
+import type { Puzzle, SolvedPuzzle } from './types';
 
 function rowOf(cell: number, size: number): number {
   return Math.floor(cell / size);
@@ -120,4 +120,9 @@ export function solve(puzzle: Puzzle): number[] | undefined {
 /** True when `cats` is a full, valid placement: one cat per row and the board is solved. */
 export function isSolved(puzzle: Puzzle, cats: number[]): boolean {
   return cats.length === puzzle.size && isValidPlacement(puzzle, cats);
+}
+
+/** True when the solution has a cat on `cell`. */
+export function isSolutionCell(puzzle: SolvedPuzzle, cell: number): boolean {
+  return puzzle.solution[Math.floor(cell / puzzle.size)] === cell;
 }

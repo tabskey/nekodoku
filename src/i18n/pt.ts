@@ -4,6 +4,10 @@ export const pt = {
   levelLabel: (level: number) => `Fase ${level}`,
   loading: 'Preparando o tabuleiro…',
   won: 'Resolvido!',
+  lost: 'Acabaram as vidas.',
+  retry: 'Tentar de novo',
+  lives: (lives: number) => (lives === 1 ? '1 vida' : `${lives} vidas`),
+  score: (score: number) => `${score} pontos`,
   nextLevel: 'Próxima fase',
   board: 'Tabuleiro',
   cellLabel: (row: number, col: number, mark: 'empty' | 'marked' | 'cat') =>

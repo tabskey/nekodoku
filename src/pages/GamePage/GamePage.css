@@ -20,7 +20,7 @@
   color: var(--text-muted);
 }
 
-.game-page-won {
+.game-page-end {
   display: flex;
   flex-direction: column;
   align-items: center;

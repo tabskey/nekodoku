@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { generate } from './generator';
-import { countSolutions, isSolved, isValidPlacement, solve } from './solver';
+import {
+  countSolutions,
+  isSolutionCell,
+  isSolved,
+  isValidPlacement,
+  solve,
+} from './solver';
 import type { Puzzle } from './types';
 
 // zones where every cell has its own zone id: the zone rule can never fire,
@@ -157,5 +163,16 @@ describe('isSolved', () => {
 
   it('rejects a partial placement, even if valid', () => {
     expect(isSolved(puzzle, puzzle.solution.slice(1))).toBe(false);
+  });
+});
+
+describe('isSolutionCell', () => {
+  const puzzle = generate(5, 3);
+
+  it('is true only on the solution cells', () => {
+    const cells = [...puzzle.zones.keys()].filter((cell) =>
+      isSolutionCell(puzzle, cell),
+    );
+    expect(cells).toEqual(puzzle.solution);
   });
 });
