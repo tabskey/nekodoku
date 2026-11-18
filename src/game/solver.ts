@@ -49,19 +49,23 @@ export function isValidPlacement(puzzle: Puzzle, cats: number[]): boolean {
   return true;
 }
 
-interface SearchResult {
-  count: number;
-  firstSolution?: number[];
-}
-
 // Row-by-row backtracking search with column and zone bitmasks (size is at
 // most 12, so both fit comfortably in a plain number). Adjacency only needs
 // checking against the previous row: rows two or more apart can never touch.
-function search(puzzle: Puzzle, limit: number): SearchResult {
+function search(puzzle: Puzzle, limit: number): number[][] {
   const { size, zones } = puzzle;
   const placement: number[] = new Array(size).fill(-1);
-  let count = 0;
-  let firstSolution: number[] | undefined;
+  const solutions: number[][] = [];
+  // zonesFrom[row]: bit per zone with a cell in `row` or below. A zone with
+  // no cat yet and no cells left below is a dead end.
+  const zonesFrom: number[] = new Array(size + 1).fill(0);
+  for (let row = size - 1; row >= 0; row--) {
+    zonesFrom[row] = zonesFrom[row + 1];
+    for (let col = 0; col < size; col++) {
+      zonesFrom[row] |= 1 << zones[row * size + col];
+    }
+  }
+  const allZones = (1 << size) - 1;
 
   function backtrack(
     row: number,
@@ -69,12 +73,12 @@ function search(puzzle: Puzzle, limit: number): SearchResult {
     zoneMask: number,
     prevCol: number,
   ): void {
-    if (count >= limit) return;
+    if (solutions.length >= limit) return;
     if (row === size) {
-      count++;
-      firstSolution ??= [...placement];
+      solutions.push([...placement]);
       return;
     }
+    if (allZones & ~zoneMask & ~zonesFrom[row]) return;
 
     for (let col = 0; col < size; col++) {
       const colBit = 1 << col;
@@ -89,21 +93,26 @@ function search(puzzle: Puzzle, limit: number): SearchResult {
       backtrack(row + 1, colMask | colBit, zoneMask | zoneBit, col);
       placement[row] = -1;
 
-      if (count >= limit) return;
+      if (solutions.length >= limit) return;
     }
   }
 
   backtrack(0, 0, 0, -1);
-  return { count, firstSolution };
+  return solutions;
 }
 
 /** Counts solutions, stopping as soon as `limit` is reached. */
 export function countSolutions(puzzle: Puzzle, limit: number): number {
-  return search(puzzle, limit).count;
+  return search(puzzle, limit).length;
+}
+
+/** Returns up to `limit` solutions, each a cell index per row. */
+export function findSolutions(puzzle: Puzzle, limit: number): number[][] {
+  return search(puzzle, limit);
 }
 
 /** Returns the solution (cell index per row), or nothing if there is not exactly one. */
 export function solve(puzzle: Puzzle): number[] | undefined {
-  const { count, firstSolution } = search(puzzle, 2);
-  return count === 1 ? firstSolution : undefined;
+  const solutions = search(puzzle, 2);
+  return solutions.length === 1 ? solutions[0] : undefined;
 }

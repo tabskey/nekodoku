@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { growZones, placeCats, sideNeighbors } from './generator';
+import { generate, growZones, placeCats, sideNeighbors } from './generator';
 import { createRng } from './rng';
-import { isValidPlacement } from './solver';
+import { countSolutions, isValidPlacement } from './solver';
 import type { Puzzle } from './types';
 
 // One zone per cell, so only the row, column and touching rules apply.
@@ -99,5 +99,23 @@ describe('growZones', () => {
       (_, zone) => zones.filter((z) => z === zone).length,
     );
     expect(Math.max(...sizes)).toBeGreaterThan(Math.min(...sizes));
+  });
+});
+
+describe('generate', () => {
+  it('returns contiguous zones with exactly one solution, the attached one', () => {
+    // 12x12 is left out: a few seconds per board is too slow for this loop.
+    for (let size = 4; size <= 11; size++) {
+      for (let seed = 1; seed <= 10; seed++) {
+        const puzzle = generate(size, seed);
+        expect(countSolutions(puzzle, 2)).toBe(1);
+        expect(isValidPlacement(puzzle, puzzle.solution)).toBe(true);
+        expect(zonesAreContiguous(puzzle)).toBe(true);
+      }
+    }
+  });
+
+  it('gives the same puzzle for the same seed', () => {
+    expect(generate(9, 7)).toEqual(generate(9, 7));
   });
 });

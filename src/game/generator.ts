@@ -1,7 +1,9 @@
 // Puzzle generator. Pure TypeScript, deterministic from its RNG. See
 // "Puzzle generation" in docs/ARCHITECTURE.md.
 
-import { shuffle } from './rng';
+import { createRng, shuffle } from './rng';
+import { findSolutions } from './solver';
+import type { SolvedPuzzle } from './types';
 
 /**
  * Picks a random valid cat placement: one cat per row and column, and no
@@ -70,4 +72,83 @@ export function growZones(
     free--;
   }
   return zones;
+}
+
+// True when `zone` stays one connected group once `removed` leaves it.
+function staysContiguous(
+  zones: number[],
+  size: number,
+  zone: number,
+  removed: number,
+): boolean {
+  const cells = zones.flatMap((z, cell) =>
+    z === zone && cell !== removed ? [cell] : [],
+  );
+  if (cells.length === 0) return false;
+  const seen = new Set([cells[0]]);
+  const stack = [cells[0]];
+  while (stack.length > 0) {
+    for (const n of sideNeighbors(stack.pop()!, size)) {
+      if (n !== removed && zones[n] === zone && !seen.has(n)) {
+        seen.add(n);
+        stack.push(n);
+      }
+    }
+  }
+  return seen.size === cells.length;
+}
+
+/**
+ * Kills one unwanted solution: moves a cell where `other` has a cat (and
+ * `cats` does not) into a neighboring zone, so `other` ends up with two cats
+ * in that zone. The intended cats never move, so they stay a solution.
+ * Returns false when no cell can move without splitting its zone.
+ */
+function repair(
+  zones: number[],
+  size: number,
+  cats: number[],
+  other: number[],
+  rng: () => number,
+): boolean {
+  const moves: Array<[cell: number, zone: number]> = [];
+  other.forEach((cell, row) => {
+    if (cell === cats[row]) return;
+    if (!staysContiguous(zones, size, zones[cell], cell)) return;
+    for (const n of sideNeighbors(cell, size)) {
+      if (zones[n] !== zones[cell]) moves.push([cell, zones[n]]);
+    }
+  });
+  if (moves.length === 0) return false;
+  const [cell, zone] = moves[Math.floor(rng() * moves.length)];
+  zones[cell] = zone;
+  return true;
+}
+
+/**
+ * Builds a size x size puzzle with exactly one solution, always the same
+ * one for the same seed. Places cats and grows zones, then, while the
+ * solver finds a second solution, repairs the zones to rule it out. Starts
+ * over when a board cannot be repaired or needs too many repairs.
+ */
+export function generate(size: number, seed: number): SolvedPuzzle {
+  const rng = createRng(seed);
+  for (;;) {
+    const cats = placeCats(size, rng);
+    const zones = growZones(size, cats, rng);
+    // A repair can open a new solution; give up on boards that keep doing it.
+    for (let repairs = 0; repairs <= size * size; repairs++) {
+      const solutions = findSolutions({ size, zones }, 2);
+      if (solutions.length === 1) {
+        return { size, zones, solution: solutions[0] };
+      }
+      const other = solutions.find((s) => s.join() !== cats.join())!;
+      if (repair(zones, size, cats, other, rng)) continue;
+      // Stuck on that one; any other unwanted solution may still be fixable.
+      const fixed = findSolutions({ size, zones }, 8).some(
+        (s) => s.join() !== cats.join() && repair(zones, size, cats, s, rng),
+      );
+      if (!fixed) break;
+    }
+  }
 }
