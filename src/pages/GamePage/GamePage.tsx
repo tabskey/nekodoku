@@ -1,4 +1,4 @@
-import { useCallback, useReducer } from 'react';
+import { useCallback, useReducer, useState } from 'react';
 import { Button } from '../../components/atoms/Button/Button';
 import { CatSprite } from '../../components/atoms/CatSprite/CatSprite';
 import {
@@ -9,6 +9,7 @@ import { HelpButton } from '../../components/molecules/HelpButton/HelpButton';
 import { HudBar } from '../../components/molecules/HudBar/HudBar';
 import { ProgressStrip } from '../../components/molecules/ProgressStrip/ProgressStrip';
 import { Board } from '../../components/organisms/Board/Board';
+import { RulesPopover } from '../../components/organisms/RulesPopover/RulesPopover';
 import { helpCost, type Help } from '../../game/helps';
 import { LIVES_PER_LEVEL } from '../../game/scoring';
 import type { SolvedPuzzle } from '../../game/types';
@@ -38,10 +39,28 @@ const HELP_ACTIONS = { reveal: 'useReveal', eraser: 'useEraser' } as const;
 export function GamePage({ level, ...levelProps }: GamePageProps) {
   const text = useText();
   const puzzle = usePuzzle(level);
+  const [rulesOpen, setRulesOpen] = useState(false);
 
   return (
     <main className="game-page">
-      <h1>{text.levelLabel(level)}</h1>
+      <header className="game-page-header">
+        <h1>{text.levelLabel(level)}</h1>
+        <button
+          type="button"
+          className="game-page-rules"
+          aria-label={text.rulesButton}
+          onClick={() => setRulesOpen(true)}
+        >
+          !
+        </button>
+      </header>
+      <RulesPopover
+        open={rulesOpen}
+        title={text.rulesTitle}
+        rules={text.rules}
+        closeHint={text.closeHint}
+        onClose={() => setRulesOpen(false)}
+      />
       {puzzle ? (
         <Level puzzle={puzzle} {...levelProps} />
       ) : (

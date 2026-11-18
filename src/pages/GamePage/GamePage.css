@@ -6,6 +6,33 @@
   padding: 24px;
 }
 
+.game-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 432px;
+}
+
+.game-page-rules {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 4px 0 var(--gold-shadow);
+  color: var(--text-on-light);
+  font: inherit;
+  font-size: 1.25rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.game-page-rules:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
 .game-page h1 {
   margin: 0;
   font-size: 1.25rem;
