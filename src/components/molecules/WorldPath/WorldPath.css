@@ -1,9 +1,69 @@
+/* The map: ground, a path of dots, and tiles placed along it. Positions
+   come from pathLayout.ts in whole pixels. */
 .world-path {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
   justify-content: center;
-  gap: 8px;
+  background: var(--map-ground);
+}
+
+/* Beach sea along the right edge, outside the 288px field so it never
+   covers a tile: 12px of water behind 6px of foam. */
+.world-path-sea {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 12px;
+  border-left: 6px solid;
+}
+
+.world-path-speck {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+}
+
+/* A 24x12 bush with a 12x6 top, from the mockup. */
+.world-path-bush {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.world-path-bush span:first-child {
+  width: 12px;
+  height: 6px;
+}
+
+.world-path-bush span:last-child {
+  width: 24px;
+  height: 12px;
+}
+
+.world-path-firefly {
+  animation: world-path-glow 2.2s steps(2) infinite;
+}
+
+@keyframes world-path-glow {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-path-firefly {
+    animation: none;
+  }
+}
+
+.world-path-field {
+  position: relative;
+  flex: none;
+}
+
+.world-path ol {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -13,12 +73,26 @@
   opacity: 0.4;
 }
 
+.world-path-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--map-path);
+}
+
+/* Fixed 52px wide (the Boss tile) so centering on the dot stays whole. */
 .world-path-stop {
+  position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  min-width: 44px;
+  width: 52px;
+  transform: translate(-26px, -22px);
+}
+
+.world-path-stop:has(.world-path-boss) {
+  transform: translate(-26px, -26px);
 }
 
 .world-path-tile {
@@ -29,7 +103,6 @@
   height: 44px;
   padding: 0;
   border: none;
-  border-radius: 4px;
   font-family: var(--font-display);
   font-size: var(--display-small);
   cursor: pointer;
@@ -69,4 +142,42 @@
 .world-path-note {
   color: var(--gold-text);
   font-size: 0.75rem;
+}
+
+.world-path-cat {
+  position: absolute;
+  display: flex;
+  pointer-events: none;
+}
+
+/* Beside the tile, away from where the path comes in, standing on the same
+   ground as the tile: its bottom lines up with the 52px Boss tile's. The
+   Boss is alone on its row (see pathLayout.ts), so no dot sits there. */
+.world-path-beside {
+  position: absolute;
+  top: 52px;
+  display: flex;
+  transform: translateY(-100%);
+}
+
+.world-path-beside-left {
+  right: calc(100% + 4px);
+}
+
+.world-path-beside-right {
+  left: calc(100% + 4px);
+}
+
+.world-path-boss.world-path-current {
+  background: var(--gold);
+  box-shadow: 0 4px 0 var(--gold-shadow);
+}
+
+.world-path-boss.world-path-locked {
+  color: var(--gold-text);
+}
+
+/* Mirrors the cat when it walks left. */
+.world-path-cat-left {
+  transform: scaleX(-1);
 }

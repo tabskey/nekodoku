@@ -116,10 +116,11 @@ There are two ways to use the PNG in the app:
 - There are several scenery drawings, and Boss levels rotate through them, so consecutive worlds do not show the same landscape.
 - Which drawing a Boss gets is a pure function of the world number (for example, world number modulo the number of drawings), so a world always shows the same scenery.
 - The drawing and the color are independent: the drawing comes from the rotation, the palette comes from the world.
-- Every scenery palette exists in two versions, one per theme (see Themes in `docs/DESIGN.md`):
-  - **Night**, for the night mode: dark sky, stars, moon.
-  - **Day**, for the day mode: light sky, small clouds, sun.
-- The same pixel map serves both: only the six colors change. A star pixel becomes a cloud pixel and the moon becomes the sun.
+- Every scenery palette exists in one version per time of day. The Boss uses the world's time of day, the same as its map, not the player's night or day mode (see Biomes in `docs/GAME_RULES.md`). Decided by the owner:
+  - **Night:** dark sky, stars, moon.
+  - **Day:** light sky, small clouds, sun.
+  - **Afternoon:** pink sky, low sun. Placeholder colors until the owner picks them.
+- The same pixel map serves every time of day: only the six colors change. A star pixel becomes a cloud pixel and the moon becomes the sun.
 
 Example for the teal world:
 
@@ -132,7 +133,7 @@ Example for the teal world:
 | Near hills | `#3f8a86` | `#58c7b5` |
 | Ground | `#58c7b5` | `#3a9c8b` |
 
-The day sky is kept a medium blue, not a pale one, so the pale ghost still stands out against it. The day palettes for the rose and gold worlds are in `src/assets/scene-rose-day.svg` and `scene-gold-day.svg`.
+The day sky is kept a medium blue, not a pale one, so the pale ghost still stands out against it. All the palettes, and the pixel map itself, are in `src/components/atoms/Scenery/sceneries.ts`; the SVGs in `src/assets/` remain as reference.
 
 ## Map biomes
 

@@ -19,11 +19,27 @@
 :root {
   --bg: #2a1f3d;
   --panel: #3a2d54;
+  /* A darker shade of the panel, for depth on it (never black). */
+  --panel-shadow: #2a1f3d;
   /* Behind the board's cells. Must contrast with every zone color (3:1 at
      least), which the light panel does not, so day mode darkens it. */
   --board: #3a2d54;
   --card: #f6ecd4;
   --card-shadow: #cdbf9f;
+  /* Secondary buttons. At night a raised lilac with cream text, so they sit
+     quietly on the plum like the white buttons do on cream by day; the coral
+     Play stays the one that stands out. Decided by the owner. */
+  --button: #4a3b63;
+  --button-shadow: #352b4d;
+  --button-text: #f6ecd4;
+  /* The chosen option in a choice group: teal at night, like a switch that is
+     on, since the lilac would barely differ from the unchosen panel. */
+  --choice-on: var(--teal);
+  --choice-on-shadow: var(--teal-shadow);
+  /* Behind each cat in the shop and the collection: a mid lilac at night,
+     so dark cats stay visible and the lilac buttons stand out on it. */
+  --cat-tile: #7d6d9f;
+  --cat-tile-text: #17102a;
   --text: #f6ecd4;
   --text-muted: #cbbfe0;
   --text-on-light: #17102a;
@@ -37,6 +53,15 @@
   --gold-shadow: #d99a1c;
   --teal: #58c7b5;
   --teal-shadow: #3a9c8b;
+  /* The card behind the selected cat on the menu, the same in both modes. */
+  --cat-card: #f7a8b8;
+  /* A darker shade of the card's own pink, not black (see Colors in
+     docs/DESIGN.md). */
+  --cat-card-shadow: #c98594;
+  /* Behind the restoration, cream in both modes for the black silhouette. */
+  --restore-bg: #f6ecd4;
+  /* The x of a rejected cat, on a zone color in both modes. */
+  --mistake: #b3261e;
 
   --zone-0: #f7a8b8;
   --zone-1: #ffd66b;
@@ -44,25 +69,54 @@
   --zone-3: #a9dd8a;
   --zone-4: #c9b3f5;
   --zone-5: #ffb37a;
-  --zone-6: #7fded1;
+  --zone-6: #3fb39c;
   --zone-7: #e2cfa6;
   --zone-8: #d5d3df;
+  /* Zones 9 to 11 (10x10 and up) reuse a base color under a pattern, so they
+     differ from zones 0, 2 and 3 by more than color. 3 px steps on whole
+     pixels keep them crisp: a checkerboard, then horizontal, then vertical
+     stripes, as in the "Boss 12x12" artboard (whose 45° stripes would blur). */
+  --zone-stripe: rgba(23, 16, 42, 0.16);
+  --zone-9:
+    repeating-conic-gradient(var(--zone-stripe) 0 25%, transparent 0 50%) 0 0 /
+      6px 6px,
+    #f7a8b8;
+  --zone-10:
+    repeating-linear-gradient(
+      0deg,
+      var(--zone-stripe) 0 3px,
+      transparent 3px 6px
+    ),
+    #8ecdf7;
+  --zone-11:
+    repeating-linear-gradient(
+      90deg,
+      var(--zone-stripe) 0 3px,
+      transparent 3px 6px
+    ),
+    #a9dd8a;
   /* Display: titles, numbers, button labels. Body: rules, descriptions.
      Press Start 2P is drawn on an 8 px grid, so its sizes stay on 4 px steps. */
   --font-display: 'Press Start 2P', monospace;
   --font-body: 'Pixelify Sans', system-ui, sans-serif;
   --display-large: 16px;
   --display-small: 12px;
-
-  /* Zones 9 to 11 (10x10 and up) are still to be chosen by the owner. */
 }
 
 :root[data-theme='light'] {
   --bg: #f6ecd4;
   --panel: #e0cfa8;
+  --panel-shadow: #c9b88f;
   --board: #5a4b70;
   --card: #ffffff;
   --card-shadow: #d9c9a3;
+  --button: #ffffff;
+  --button-shadow: #d9c9a3;
+  --button-text: #17102a;
+  --choice-on: #ffffff;
+  --choice-on-shadow: #d9c9a3;
+  --cat-tile: #e0cfa8;
+  --cat-tile-text: #2a1f3d;
   --text: #2a1f3d;
   --text-muted: #5a4b70;
   --gold-text: #7a4e00;
@@ -77,4 +131,10 @@ body {
   font-size: 18px;
   /* Pixel fonts must never get a fake bold or slant. */
   font-synthesis: none;
+}
+
+/* Keyboard focus, the same everywhere: a 3px gold square, as in the mockup. */
+:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
 }

@@ -1,3 +1,7 @@
+.game-page[hidden] {
+  display: none;
+}
+
 .game-page {
   display: flex;
   flex-direction: column;
@@ -18,7 +22,6 @@
   width: 44px;
   height: 44px;
   border: none;
-  border-radius: 50%;
   background: var(--gold);
   box-shadow: 0 4px 0 var(--gold-shadow);
   color: var(--text-on-light);
@@ -32,8 +35,9 @@
 }
 
 .game-page-menu {
-  background: var(--card);
-  box-shadow: 0 4px 0 var(--card-shadow);
+  background: var(--button);
+  box-shadow: 0 4px 0 var(--button-shadow);
+  color: var(--button-text);
 }
 
 .game-page-icon-button:active {
@@ -49,6 +53,12 @@
 }
 
 .game-page-progress {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  max-width: 100%;
   color: var(--panel);
 }
 
@@ -77,6 +87,8 @@
 
 .game-page-helps {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
 }
 
@@ -85,4 +97,39 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
+}
+
+/* The Boss's 85x18 scenery at 4x, as in the "Boss 12x12" artboard. */
+.game-page-scenery {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.game-page-scenery-ghost {
+  position: absolute;
+  right: 16px;
+  bottom: 8px;
+  display: flex;
+  animation: game-page-float 1.6s steps(2) infinite;
+}
+
+@keyframes game-page-float {
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-page-scenery-ghost {
+    animation: none;
+  }
+}
+
+.game-page-hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
 }

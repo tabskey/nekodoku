@@ -1,0 +1,196 @@
+/* Full screen, on cream in both modes: the black silhouette needs a light
+   backdrop (see Colors in docs/DESIGN.md). Timings are the mockup's. */
+.restoration {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 24px;
+  background: var(--restore-bg);
+  color: var(--text-on-light);
+  text-align: center;
+}
+
+.restoration-stage {
+  position: relative;
+  width: 128px;
+  height: 144px;
+}
+
+.restoration-ghost {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  opacity: 0;
+}
+
+.restoration-silhouette,
+.restoration-show {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+
+.restoration-silhouette {
+  filter: brightness(0);
+  opacity: 0;
+}
+
+.restoration-text,
+.restoration-actions {
+  position: static;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.restoration-actions {
+  align-self: stretch;
+  gap: 12px;
+  max-width: 342px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.restoration h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: normal;
+  text-transform: uppercase;
+}
+
+.restoration p {
+  margin: 0;
+  font-size: 17px;
+}
+
+.restoration .restoration-name {
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.restoration-actions .button {
+  min-height: 56px;
+  text-transform: uppercase;
+}
+
+.restoration-replay {
+  min-height: 48px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-family: var(--font-body);
+  font-size: 17px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* 1. From the corner to the center, growing to twice its size: 8 steps. */
+.restoration-move {
+  animation: restoration-move 0.9s steps(8) forwards;
+}
+
+/* 2-3. The ghost turns black, then flickers with the cat's silhouette. */
+.restoration-ghost {
+  animation: restoration-ghost 3.6s steps(1) forwards;
+}
+
+.restoration-silhouette {
+  animation: restoration-silhouette 3.6s steps(1) forwards;
+}
+
+/* 4-5. The cat in color, its name and the buttons. */
+.restoration-show {
+  animation: restoration-show 3.6s steps(1) forwards;
+}
+
+@keyframes restoration-move {
+  0% {
+    transform: translate(131px, -300px) scale(0.5);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes restoration-ghost {
+  0% {
+    filter: none;
+    opacity: 1;
+  }
+  28% {
+    filter: brightness(0);
+    opacity: 1;
+  }
+  50% {
+    filter: brightness(0);
+    opacity: 0;
+  }
+  56% {
+    filter: brightness(0);
+    opacity: 1;
+  }
+  62% {
+    filter: brightness(0);
+    opacity: 0;
+  }
+  68% {
+    filter: brightness(0);
+    opacity: 1;
+  }
+  74%,
+  100% {
+    filter: brightness(0);
+    opacity: 0;
+  }
+}
+
+@keyframes restoration-silhouette {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  56% {
+    opacity: 0;
+  }
+  62% {
+    opacity: 1;
+  }
+  68% {
+    opacity: 0;
+  }
+  74% {
+    opacity: 1;
+  }
+  86%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes restoration-show {
+  0% {
+    opacity: 0;
+  }
+  86%,
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Reduced motion skips straight to the end: the cat, its name, the buttons. */
+@media (prefers-reduced-motion: reduce) {
+  .restoration-move,
+  .restoration-ghost,
+  .restoration-silhouette,
+  .restoration-show {
+    animation: none;
+  }
+}

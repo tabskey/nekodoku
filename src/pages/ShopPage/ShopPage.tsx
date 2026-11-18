@@ -1,3 +1,4 @@
+import { play } from '../../audio/audio';
 import { Button } from '../../components/atoms/Button/Button';
 import { catPalette } from '../../components/atoms/CatSprite/catSprites';
 import { CurrencyBadge } from '../../components/atoms/CurrencyBadge/CurrencyBadge';
@@ -22,11 +23,11 @@ function today(): string {
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 }
 
-/** Today's shop cats, the player's cats, and the help prices. */
+/** Today's shop cats and the help prices. Cats are chosen in the collection. */
 export function ShopPage({ onBack }: ShopPageProps) {
   const text = useText();
   const { profile, dispatch } = useProfile();
-  const rotation = dailyRotation(today(), profile.ownedCats);
+  const rotation = dailyRotation(today());
   const name = (id: string) => text.catNames[id] ?? id;
 
   return (
@@ -53,44 +54,36 @@ export function ShopPage({ onBack }: ShopPageProps) {
           <p className="shop-page-hint">{text.noShopCats}</p>
         ) : (
           <ul className="shop-page-grid">
-            {rotation.map((cat) => (
-              <ShopCatCard
-                key={cat.id}
-                name={name(cat.id)}
-                palette={catPalette(cat.id)}
-                actionContent={
-                  <CurrencyBadge amount={cat.price} currency="fish" />
-                }
-                actionLabel={text.buyCat(name(cat.id), cat.price)}
-                disabled={profile.fish < cat.price}
-                onAction={() => dispatch({ type: 'buyCat', id: cat.id })}
-              />
-            ))}
+            {rotation.map((cat) => {
+              // A cat already bought stays in the rotation, sold out.
+              const owned = profile.ownedCats.includes(cat.id);
+              return (
+                <ShopCatCard
+                  key={cat.id}
+                  name={name(cat.id)}
+                  palette={catPalette(cat.id)}
+                  actionContent={
+                    owned ? (
+                      <span className="shop-page-sold-out">{text.soldOut}</span>
+                    ) : (
+                      <CurrencyBadge amount={cat.price} currency="fish" />
+                    )
+                  }
+                  actionLabel={
+                    owned
+                      ? text.soldOutLabel(name(cat.id))
+                      : text.buyCat(name(cat.id), cat.price)
+                  }
+                  disabled={owned || profile.fish < cat.price}
+                  onAction={() => {
+                    play('coin');
+                    dispatch({ type: 'buyCat', id: cat.id });
+                  }}
+                />
+              );
+            })}
           </ul>
         )}
-      </section>
-
-      <section>
-        <h2>{text.yourCats}</h2>
-        <ul className="shop-page-grid">
-          {profile.ownedCats.map((id) => {
-            const inUse = id === profile.selectedCat;
-            return (
-              <ShopCatCard
-                key={id}
-                name={name(id)}
-                palette={catPalette(id)}
-                actionContent={inUse ? text.inUse : text.useCat}
-                actionLabel={
-                  inUse ? text.inUseLabel(name(id)) : text.useCatLabel(name(id))
-                }
-                disabled={inUse}
-                selected={inUse}
-                onAction={() => dispatch({ type: 'selectCat', id })}
-              />
-            );
-          })}
-        </ul>
       </section>
 
       <section>

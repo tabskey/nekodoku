@@ -2,7 +2,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 3px;
   /* Holding a cell must never select text or open a system menu. */
   user-select: none;
   -webkit-user-select: none;
@@ -19,4 +18,35 @@
   font-size: 0.5em;
   font-weight: bold;
   line-height: 1;
+}
+
+/* A rejected cat: three hard steps sideways and a red x, as in the mockup. */
+.cell-shake {
+  animation: cell-shake 0.3s steps(3);
+}
+
+.cell-shake .cell-x {
+  color: var(--mistake);
+  opacity: 1;
+}
+
+@keyframes cell-shake {
+  0% {
+    transform: translateX(-4px);
+  }
+  33% {
+    transform: translateX(4px);
+  }
+  66% {
+    transform: translateX(-2px);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cell-shake {
+    animation: none;
+  }
 }

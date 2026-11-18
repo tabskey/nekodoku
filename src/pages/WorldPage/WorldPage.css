@@ -1,0 +1,123 @@
+/* Layout from the "Mapa do mundo" artboard (docs/DESIGN.md). */
+.world-page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 432px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.world-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.world-page-balance {
+  display: flex;
+  gap: 8px;
+}
+
+.world-page-balance .currency-badge {
+  padding: 10px 12px;
+  background: var(--panel);
+}
+
+.world-page-world {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* Vertical scrolling still works; a horizontal swipe changes world. */
+  touch-action: pan-y;
+}
+
+.world-page-world-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.world-page h1 {
+  flex: 1;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: normal;
+  text-transform: uppercase;
+  text-shadow: 3px 3px 0 var(--primary);
+}
+
+.world-page-arrow {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: var(--panel);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: var(--display-small);
+  cursor: pointer;
+}
+
+.world-page-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.world-page-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.world-page-dots span {
+  width: 8px;
+  height: 8px;
+  background: var(--panel);
+}
+
+.world-page-dots .world-page-dot-current {
+  background: var(--gold);
+}
+
+.world-page-hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+.world-page > .button {
+  min-height: 52px;
+  text-transform: uppercase;
+}
+
+/* Same buttons as the menu's links, two to a row. */
+.world-page-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.world-page-links .button {
+  min-height: 52px;
+  padding: 0;
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+/* The ghost bobs beside the Boss, 4px in two steps so it stays crisp. */
+.world-page-ghost {
+  display: flex;
+  animation: world-page-float 1.6s steps(2) infinite;
+}
+
+@keyframes world-page-float {
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-page-ghost {
+    animation: none;
+  }
+}

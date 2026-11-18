@@ -7,7 +7,7 @@ The visual direction is retro pixel art on a dark plum background, with flat col
 The screens were mocked up on a design canvas:
 https://claude.ai/artifact/NfScKNVVf8ygQPLdGeih6o
 
-The canvas is private to the owner. The first two rows are the night mode; the third row repeats the menu, world map, 5x5 level, Boss and shop in day mode. The world map exists in one version only: the walking map. Its scene follows the mode: at night a dark blue ground, lilac path and blinking yellow fireflies; by day a light green ground with a sandy dirt path. The artboards:
+The canvas is private to the owner. The first two rows are the night mode; the third row repeats the menu, world map, 5x5 level, Boss and shop in day mode. The world map exists in one version only: the walking map. Its scene follows the world's time of day, not the mode (see Biomes in `docs/GAME_RULES.md`): at night a dark blue ground, lilac path and blinking yellow fireflies; by day a light green ground with a sandy dirt path. The artboards:
 
 | Artboard | What it shows |
 | --- | --- |
@@ -120,7 +120,7 @@ Day mode neutrals, as used in the light row of the mockup **(proposed)**:
 | Text | `#2a1f3d` |
 | Score and other gold text | `#7a4e00` |
 
-The board background is not the raised panel in day mode: the light panel is almost the same color as the zones (zone 7, `#e2cfa6`, matches it exactly), so cells would merge into the board. Every zone needs at least 3:1 contrast against the board; `#5a4b70` gives 4.2:1 or more. In night mode the board stays on the raised panel color.
+The board background is not the raised panel in day mode: the light panel is almost the same color as the zones (zone 7, `#e2cfa6`, matches it exactly), so cells would merge into the board. Every zone needs at least 3:1 contrast against the board; `#5a4b70` gives 3:1 or more (zone 6, the darkest, is right at 3:1, so do not darken the day board further). In night mode the board stays on the raised panel color.
 
 Gold text is the one accent that changes: the coin yellow is unreadable on a light background, so text that is gold in night mode uses a dark amber in day mode. Gold as a fill (buttons, the Boss step) stays the same.
 
@@ -128,11 +128,21 @@ The black silhouette of the restoration sequence needs a light backdrop in both 
 
 Button depth is a 4 px bottom shadow in a darker shade of the button's own color: `#cdbf9f` under cream, `#c9553a` under coral, `#d99a1c` under gold, `#3a9c8b` under teal.
 
+Secondary buttons (cards, helps, shop actions, the level's round buttons) use their own tokens, `--button`, `--button-shadow` and `--button-text`. By day they are white on the cream page. At night they are a raised lilac, `#4a3b63` with a `#352b4d` shadow and cream text, so they sit quietly on the plum the way the white ones do on cream, and the coral Play stays the one that stands out. The chosen option in a choice group is teal at night (white by day), like a switch that is on. The cards behind each cat in the shop and the collection (`--cat-tile`) are a mid lilac at night, `#7d6d9f` with dark text, so dark cats stay visible without the card glowing; by day they keep the panel color. Decided by the owner.
+
 Zones, in the order they are assigned:
 
-`#f7a8b8` `#ffd66b` `#8ecdf7` `#a9dd8a` `#c9b3f5` `#ffb37a` `#7fded1` `#e2cfa6` `#d5d3df`
+`#f7a8b8` `#ffd66b` `#8ecdf7` `#a9dd8a` `#c9b3f5` `#ffb37a` `#3fb39c` `#e2cfa6` `#d5d3df`
 
-Nine colors cover boards up to 9x9. The largest board is 12x12, so three more colors are still to be chosen, and boards above 8 zones need a texture or pattern per zone in addition to color.
+Nine colors cover boards up to 9x9. Zones 9 to 11, for the 10x10 to 12x12 boards, reuse a color under a pattern of dark squares at 16% (`--zone-stripe`), in 3 px steps so they stay crisp:
+
+| Zone | Base color | Pattern |
+| --- | --- | --- |
+| 9 | `#f7a8b8` (as zone 0) | checkerboard |
+| 10 | `#8ecdf7` (as zone 2) | horizontal stripes |
+| 11 | `#a9dd8a` (as zone 3) | vertical stripes |
+
+This follows the "Boss 12x12" artboard, except that zone 9 is a checkerboard instead of diagonal stripes, which CSS blurs.
 
 ## Type
 
@@ -146,4 +156,7 @@ Both are on Google Fonts. For offline play, bundle the font files with the app i
 - Designed for a 390 px wide phone screen, 24 px side padding.
 - Board cells are separate tiles with a 6 px gap on a raised panel.
 - Touch targets are at least 44 px.
+- Corners are square: no `border-radius`, since curves are drawn with blurred edges and the mockup is square throughout.
+- Depth is always a darker shade of the element's own color (or of the panel, `--panel-shadow`), never translucent black.
+- Keyboard focus is the same everywhere: a 3 px gold outline, 2 px away from the element.
 - The rules popover opens over the screen from the "!" button and closes on the next tap.

@@ -29,16 +29,12 @@ function hashDay(day: string): number {
 }
 
 /**
- * The shop cats on sale on `day` (a date such as "2026-11-18"): up to 4
- * unowned shop cats, picked from the date alone so the same day always
- * gives the same draw. When fewer than 4 are unowned, all of them.
+ * The shop cats in the window on `day` (a date such as "2026-11-18"): up to
+ * 4, picked from the whole pool and the date alone, so every player sees the
+ * same cats on the same day. Cats the player owns stay in, shown sold out.
  */
-export function dailyRotation(
-  day: string,
-  owned: readonly string[],
-): ShopCat[] {
-  const unowned = SHOP_CATS.filter((cat) => !owned.includes(cat.id));
-  return shuffle(unowned, createRng(hashDay(day))).slice(0, ROTATION_SIZE);
+export function dailyRotation(day: string): ShopCat[] {
+  return shuffle(SHOP_CATS, createRng(hashDay(day))).slice(0, ROTATION_SIZE);
 }
 
 /** The shop entry for a cat id, if it is a shop cat. */

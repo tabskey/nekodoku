@@ -103,7 +103,7 @@ Goal: the game remembers the player and gives them something to earn.
 - Starting cats on the levels that the worlds table marks.
 - `MenuPage` with the current world and the path to its Boss.
 - Replaying: world selector on the map, every tile open in cleared worlds, best score per level, reward only when the best score is beaten, restored cat beside a beaten Boss.
-- `ShopPage`: a daily rotation of 4 shop cats bought with fish (see Shop in `docs/GAME_RULES.md`), the player's cats to choose from, helps priced in coins. World cats, unlocked by progress, never appear in the shop.
+- `ShopPage`: a daily rotation of 4 shop cats bought with fish (see Shop in `docs/GAME_RULES.md`), the player's cats to choose from (moved to the collection screen in Phase 7), helps priced in coins. World cats, unlocked by progress, never appear in the shop.
 - Backup code: export as text, import with validation and an in-page confirmation.
 - Extra: SonarQube Cloud analysis as a separate `sonar` job in the workflow (see Build and deploy in `docs/ARCHITECTURE.md`).
 
@@ -120,6 +120,7 @@ Goal: it feels like an installed game.
 - Web app manifest, icons and a service worker that caches the app for offline play.
 - Install check on Android and iPhone, and offline check in airplane mode.
 - World map walk: the selected cat walks along the path between tiles after a level is cleared, with the side-view walk cycle of its body type.
+- World map biomes: each world gets a biome and a time of day (night, day, afternoon), picked from the world number (see Biomes in `docs/GAME_RULES.md`). Starts with meadow and beach in placeholder colors; more biomes, times and decorations come as the owner draws them.
 - Boss scenery, ghost and restoration sequence, with the rotation of scenery drawings and the day and night palettes (see `docs/SPRITES.md`).
 - Zone textures or patterns for boards with more than 8 zones, up to the 12 zones of the largest board.
 - Zoom or an alternative input for 10x10 to 12x12 boards, where cells are smaller than a comfortable touch target.

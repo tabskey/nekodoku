@@ -46,6 +46,11 @@ export function OptionsPage({ onBack }: OptionsPageProps) {
         onChange={(sound) => setOption('sound', sound)}
       />
       <Switch
+        label={text.music}
+        checked={options.music}
+        onChange={(music) => setOption('music', music)}
+      />
+      <Switch
         label={text.autoMark}
         checked={options.autoMark}
         onChange={(autoMark) => setOption('autoMark', autoMark)}

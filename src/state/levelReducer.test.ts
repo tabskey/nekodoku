@@ -108,6 +108,11 @@ describe('levelReducer', () => {
 });
 
 describe('levelReducer mistakes', () => {
+  it('remembers the cell of the last mistake, for the shake', () => {
+    expect(play(place(wrongCell)).lastMistake).toBe(wrongCell);
+    expect(play(place(rightCell)).lastMistake).toBeUndefined();
+  });
+
   it('rejects a wrong cat, keeps an x and costs a life and points', () => {
     const state = play(place(wrongCell));
     expect(state.marks[wrongCell]).toBe('marked');

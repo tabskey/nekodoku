@@ -6,13 +6,25 @@ import {
   catPalette,
   silhouettePalette,
 } from '../../components/atoms/CatSprite/catSprites';
+import { Scenery } from '../../components/atoms/Scenery/Scenery';
+import { bossScenery } from '../../components/atoms/Scenery/sceneries';
+import ghostUrl from '../../assets/ghost-cat.svg';
+import { worldScene } from '../../game/biomes';
 import { HelpButton } from '../../components/molecules/HelpButton/HelpButton';
 import { HudBar } from '../../components/molecules/HudBar/HudBar';
 import { ProgressStrip } from '../../components/molecules/ProgressStrip/ProgressStrip';
 import { Board } from '../../components/organisms/Board/Board';
+import { OptionsPage } from '../OptionsPage/OptionsPage';
+import { play, startMusic, stopMusic } from '../../audio/audio';
+import { levelSound } from './levelSounds';
+import { Restoration } from '../../components/organisms/Restoration/Restoration';
 import { RulesPopover } from '../../components/organisms/RulesPopover/RulesPopover';
 import { helpCost, type Help } from '../../game/helps';
-import { levelConfig, startingCatCells } from '../../game/progression';
+import {
+  levelConfig,
+  startingCatCells,
+  worldCat,
+} from '../../game/progression';
 import type { Reward } from '../../game/rewards';
 import { LIVES_PER_LEVEL } from '../../game/scoring';
 import type { SolvedPuzzle } from '../../game/types';
@@ -36,15 +48,76 @@ interface GamePageProps {
   reward?: Reward;
   onNextLevel: () => void;
   onOpenMenu: () => void;
+  /** Leaves the level for the world map, after a Boss's restoration. */
+  onOpenMap: () => void;
 }
 
 type LevelProps = Omit<GamePageProps, 'level' | 'onOpenMenu'> & {
+  /** Stops the timer, e.g. while Options is open over the level. */
+  paused: boolean;
+  /** Set on a Boss level: the world whose scenery and ghost to show. */
+  bossWorld?: number;
+  /** Plays the restoration on a win: the Boss is beaten for the first time. */
+  restores: boolean;
   puzzle: SolvedPuzzle;
   /** Cells that open with a fixed, correct cat. */
   givens: number[];
 };
 
 const HELP_ACTIONS = { reveal: 'useReveal', eraser: 'useEraser' } as const;
+const ZOOM_FROM_SIZE = 10;
+
+// Placeholder 9x9 pixel icons, drawn at 2x by PixelIcon: the Options gear
+// and the zoom magnifier, whose lens holds a + or a - (v marks the + only).
+const GEAR = [
+  '...ooo...',
+  '.o.ooo.o.',
+  '..ooooo..',
+  'oooo.oooo',
+  'ooo...ooo',
+  'oooo.oooo',
+  '..ooooo..',
+  '.o.ooo.o.',
+  '...ooo...',
+];
+const MAGNIFIER = [
+  '.ooooo...',
+  'o.....o..',
+  'o..v..o..',
+  'o.ooo.o..',
+  'o..v..o..',
+  'o.....o..',
+  '.oooooo..',
+  '......oo.',
+  '.......oo',
+];
+
+function PixelIcon({ rows, drawn = 'o' }: { rows: string[]; drawn?: string }) {
+  return (
+    <svg
+      viewBox={`0 0 ${rows[0].length} ${rows.length}`}
+      width={rows[0].length * 2}
+      height={rows.length * 2}
+      shapeRendering="crispEdges"
+      aria-hidden="true"
+    >
+      {rows.flatMap((row, y) =>
+        [...row].map((char, x) =>
+          drawn.includes(char) ? (
+            <rect
+              key={`${x}-${y}`}
+              x={x}
+              y={y}
+              width={1}
+              height={1}
+              fill="currentColor"
+            />
+          ) : null,
+        ),
+      )}
+    </svg>
+  );
+}
 
 /** One level, from loading to solved. */
 export function GamePage({ level, onOpenMenu, ...levelProps }: GamePageProps) {
@@ -52,48 +125,68 @@ export function GamePage({ level, onOpenMenu, ...levelProps }: GamePageProps) {
   const puzzle = usePuzzle(level);
   const { world, levelInWorld, isBoss, startingCats } = levelConfig(level);
   const [rulesOpen, setRulesOpen] = useState(false);
+  // Options opens over the level, which stays mounted underneath: a level in
+  // progress is never saved, so leaving it would lose it.
+  const [optionsOpen, setOptionsOpen] = useState(false);
+  // Read once: winning updates the profile, but the restoration still plays.
+  const { profile } = useProfile();
+  const [firstClear] = useState(() => level > profile.levelsCleared);
 
   return (
-    <main className="game-page">
-      <header className="game-page-header">
-        <button
-          type="button"
-          className="game-page-icon-button game-page-menu"
-          aria-label={text.menuButton}
-          onClick={onOpenMenu}
-        >
-          &lt;
-        </button>
-        <div>
-          <p className="game-page-world">{text.worldLabel(world)}</p>
-          <h1>{isBoss ? text.boss : text.levelLabel(levelInWorld)}</h1>
-        </div>
-        <button
-          type="button"
-          className="game-page-icon-button game-page-rules"
-          aria-label={text.rulesButton}
-          onClick={() => setRulesOpen(true)}
-        >
-          !
-        </button>
-      </header>
-      <RulesPopover
-        open={rulesOpen}
-        title={text.rulesTitle}
-        rules={text.rules}
-        closeHint={text.closeHint}
-        onClose={() => setRulesOpen(false)}
-      />
-      {puzzle ? (
-        <Level
-          puzzle={puzzle}
-          givens={startingCatCells(puzzle, startingCats, level)}
-          {...levelProps}
+    <>
+      {optionsOpen && <OptionsPage onBack={() => setOptionsOpen(false)} />}
+      <main className="game-page" hidden={optionsOpen}>
+        <header className="game-page-header">
+          <button
+            type="button"
+            className="game-page-icon-button game-page-menu"
+            aria-label={text.menuButton}
+            onClick={onOpenMenu}
+          >
+            &lt;
+          </button>
+          <div>
+            <p className="game-page-world">{text.worldLabel(world)}</p>
+            <h1>{isBoss ? text.boss : text.levelLabel(levelInWorld)}</h1>
+          </div>
+          <button
+            type="button"
+            className="game-page-icon-button game-page-rules"
+            aria-label={text.rulesButton}
+            onClick={() => setRulesOpen(true)}
+          >
+            !
+          </button>
+          <button
+            type="button"
+            className="game-page-icon-button game-page-menu"
+            aria-label={text.optionsButton}
+            onClick={() => setOptionsOpen(true)}
+          >
+            <PixelIcon rows={GEAR} />
+          </button>
+        </header>
+        <RulesPopover
+          open={rulesOpen}
+          title={text.rulesTitle}
+          rules={text.rules}
+          closeHint={text.closeHint}
+          onClose={() => setRulesOpen(false)}
         />
-      ) : (
-        <p className="game-page-status">{text.loading}</p>
-      )}
-    </main>
+        {puzzle ? (
+          <Level
+            puzzle={puzzle}
+            givens={startingCatCells(puzzle, startingCats, level)}
+            paused={optionsOpen}
+            bossWorld={isBoss ? world : undefined}
+            restores={isBoss && firstClear}
+            {...levelProps}
+          />
+        ) : (
+          <p className="game-page-status">{text.loading}</p>
+        )}
+      </main>
+    </>
   );
 }
 
@@ -105,18 +198,25 @@ function Level({
   onCleared,
   onNextLevel,
   reward,
+  paused,
+  bossWorld,
+  restores,
+  onOpenMap,
 }: LevelProps) {
   const text = useText();
   const { options } = useOptions();
   const palette = catPalette(useProfile().profile.selectedCat);
-  // Auto-mark is read once, when the level starts; changing it means leaving
-  // the level, which starts it again.
+  // Auto-mark is read once, when the level starts; a change made in Options
+  // mid-level applies from the next level.
   const [state, dispatch] = useReducer(levelReducer, puzzle, (p) =>
     createLevel(p, options.autoMark, givens),
   );
   const tick = useCallback(() => dispatch({ type: 'tick' }), []);
-  useLevelTimer(state.status === 'playing', tick);
+  useLevelTimer(state.status === 'playing' && !paused, tick);
   const placed = state.marks.filter((mark) => mark === 'cat').length;
+  // 10x10 and up: cells are too small to tap, so the board can zoom in.
+  const canZoom = puzzle.size >= ZOOM_FROM_SIZE;
+  const [zoomed, setZoomed] = useState(false);
   const playing = state.status === 'playing';
 
   // Report the win to the profile exactly once, even if this re-renders.
@@ -131,11 +231,57 @@ function Level({
     const cost = helpCost(help, puzzle, state.marks);
     if (!playing || cost > coins) return;
     onSpendCoins(cost);
-    dispatch({ type: HELP_ACTIONS[help] });
+    play('help');
+    const action = { type: HELP_ACTIONS[help] } as const;
+    // The help's own sparkle replaces the blip its change would make; a help
+    // that changes nothing (Eraser with nothing to erase) must not mute the
+    // next move.
+    quietNext.current = levelReducer(state, action) !== state;
+    dispatch(action);
   }
+
+  // Music plays only while the level is being played: a chill loop, or a
+  // tenser one on a Boss. It stops on the win or loss and when leaving.
+  useEffect(() => {
+    if (!playing || !options.music) return;
+    startMusic(bossWorld === undefined ? 'level' : 'boss');
+    return stopMusic;
+  }, [playing, options.music, bossWorld]);
+
+  // One sound per change of the level, decided by levelSound.
+  const before = useRef(state);
+  const quietNext = useRef(false);
+  useEffect(() => {
+    const effect = levelSound(before.current, state);
+    before.current = state;
+    // A help that wins the level still plays the win jingle.
+    if (effect && (!quietNext.current || effect === 'won')) play(effect);
+    quietNext.current = false;
+  }, [state]);
+
+  // The restoration's sweep during the silhouette and its chime when the cat
+  // appears, at the animation's 50% and 86% of 3.6 s.
+  const restoring = state.status === 'won' && restores;
+  const [restorationRun, setRestorationRun] = useState(0);
+  useEffect(() => {
+    if (!restoring) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      play('chime');
+      return;
+    }
+    const sweep = window.setTimeout(() => play('sweep'), 1800);
+    const chime = window.setTimeout(() => play('chime'), 3100);
+    return () => {
+      window.clearTimeout(sweep);
+      window.clearTimeout(chime);
+    };
+  }, [restoring, restorationRun]);
 
   return (
     <>
+      {bossWorld !== undefined && (
+        <BossStrip world={bossWorld} won={state.status === 'won'} />
+      )}
       <HudBar
         lives={state.lives}
         maxLives={LIVES_PER_LEVEL}
@@ -174,7 +320,16 @@ function Level({
         onStroke={(mode, indices) =>
           dispatch({ type: 'strokeCells', mode, indices })
         }
+        zoomed={canZoom && zoomed}
+        // Lives drop by one per mistake, so they tell mistakes apart.
+        shake={
+          state.lastMistake === undefined
+            ? undefined
+            : { index: state.lastMistake, id: state.lives }
+        }
+        celebrate={state.status === 'won'}
       />
+      {canZoom && zoomed && <p className="game-page-hint">{text.zoomHint}</p>}
       {playing && (
         <div className="game-page-helps">
           {(['reveal', 'eraser'] as const).map((help) => {
@@ -190,7 +345,31 @@ function Level({
               />
             );
           })}
+          {canZoom && (
+            <button
+              type="button"
+              className="help-button"
+              aria-label={zoomed ? text.zoomOut : text.zoomIn}
+              aria-pressed={zoomed}
+              onClick={() => setZoomed((z) => !z)}
+            >
+              <PixelIcon rows={MAGNIFIER} drawn={zoomed ? 'o' : 'ov'} />
+            </button>
+          )}
         </div>
+      )}
+      {state.status === 'won' && restores && bossWorld !== undefined && (
+        <Restoration
+          palette={catPalette(worldCat(bossWorld))}
+          name={text.catNames[worldCat(bossWorld)]}
+          title={text.restoredTitle}
+          message={text.restoredMessage(bossWorld)}
+          catLabel={text.restoredCatLabel(text.catNames[worldCat(bossWorld)])}
+          backLabel={text.backToMap}
+          replayLabel={text.replayRestoration}
+          onBack={onOpenMap}
+          onReplay={() => setRestorationRun((r) => r + 1)}
+        />
       )}
       {state.status === 'won' && (
         <div className="game-page-end">
@@ -228,5 +407,24 @@ function RewardLine({ reward }: { reward: Reward }) {
         <CurrencyBadge amount={reward.fish} currency="fish" prefix="+" />
       )}
     </p>
+  );
+}
+
+/** The Boss's scenery, with the ghost waiting until the level is won. */
+function BossStrip({ world, won }: { world: number; won: boolean }) {
+  const text = useText();
+  const { rows, palette } = bossScenery(world, worldScene(world).time);
+  return (
+    <div className="game-page-scenery" role="img" aria-label={text.bossScene}>
+      <Scenery rows={rows} palette={palette} />
+      <span className="game-page-scenery-ghost">
+        {won ? (
+          <CatSprite palette={catPalette(worldCat(world))} />
+        ) : (
+          // 12x14 sprite at 4x.
+          <img src={ghostUrl} width={48} height={56} alt="" draggable={false} />
+        )}
+      </span>
+    </div>
   );
 }

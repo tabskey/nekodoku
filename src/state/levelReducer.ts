@@ -23,6 +23,8 @@ export interface LevelState {
   givens: number[];
   /** The cat just placed on its solution cell, for the happy frame. */
   lastCorrectCat?: number;
+  /** The cell of the last mistake, so it can shake. */
+  lastMistake?: number;
 }
 
 export type LevelAction =
@@ -136,6 +138,7 @@ export function levelReducer(
         score: scoreAfterMistake(state.score),
         status: lives === 0 ? 'lost' : 'playing',
         lastCorrectCat: undefined,
+        lastMistake: action.index,
       };
     }
 

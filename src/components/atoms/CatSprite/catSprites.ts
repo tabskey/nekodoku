@@ -72,13 +72,51 @@ function withBody(head: string[]): string[] {
   return [...head.slice(0, 10).map((row) => `..${row}..`), ...BODY];
 }
 
-export type CatPose = 'head' | 'full';
+// Side view walking right, on the full-body canvas so the cat keeps its size
+// when it stops. Two frames: legs together, legs apart. Placeholder art.
+const WALK_TOP = [
+  '................',
+  '................',
+  '................',
+  '................',
+  '........o...o...',
+  '.......obo.obo..',
+  '.......obbobbbo.',
+  '.o.....obbbbbbbo',
+  'obo....obbbbehbo',
+  'obo....obbbbbwwn',
+  '.obooooobbbwwwo.',
+  '..obbbbbbbbbbo..',
+  '..obbbbbbbbbbo..',
+  '..obbbbbbbbbbo..',
+  '..obbbbbbbbbbo..',
+];
+const WALK_TOGETHER = [
+  ...WALK_TOP,
+  '...ob.ob..ob.ob.',
+  '...ob.ob..ob.ob.',
+  '...oo.oo..oo.oo.',
+];
+const WALK_APART = [
+  ...WALK_TOP,
+  '...ob..obob..ob.',
+  '..ob..ob..ob..ob',
+  '..oo..oo..oo..oo',
+];
+// The side view has one eye, in row 8.
+function closeSideEye(rows: string[]): string[] {
+  return rows.map((row, y) => (y === 8 ? row.replace('eh', 'cc') : row));
+}
+
+export type CatPose = 'head' | 'full' | 'walk';
 
 interface PoseFrames {
   open: string[];
   closed: string[];
   /** Eyes as "^ ^", shown for a moment after a correct move. */
   happy: string[];
+  /** Second frame of the walk cycle, swapped with `open` while walking. */
+  step?: string[];
   width: number;
   height: number;
 }
@@ -97,6 +135,15 @@ export const CAT_POSES: Record<CatPose, PoseFrames> = {
     open: withBody(OPEN_EYES),
     closed: withBody(CLOSED_EYES),
     happy: withBody(HAPPY_EYES),
+    width: 16,
+    height: 18,
+  },
+  // 'walk' is the cat moving along the world map.
+  walk: {
+    open: WALK_TOGETHER,
+    closed: closeSideEye(WALK_TOGETHER),
+    happy: WALK_TOGETHER,
+    step: WALK_APART,
     width: 16,
     height: 18,
   },

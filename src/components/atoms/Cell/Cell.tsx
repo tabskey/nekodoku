@@ -5,20 +5,30 @@ import './Cell.css';
 interface CellProps {
   index: number;
   mark: CellMark;
-  /** Any CSS color, usually a zone variable. */
+  /** Any CSS background, usually a zone variable (zones 9 to 11 are patterned). */
   color: string;
   /** Size of the square tile in CSS pixels. */
   size: number;
   /** Drawn when the mark is 'cat'. */
   cat: ReactNode;
   label: string;
+  /** Shakes once, with a red x: a rejected cat. */
+  shaking?: boolean;
 }
 
 /** One board tile. Presentational: the Board handles all input. */
-export function Cell({ index, mark, color, size, cat, label }: CellProps) {
+export function Cell({
+  index,
+  mark,
+  color,
+  size,
+  cat,
+  label,
+  shaking = false,
+}: CellProps) {
   return (
     <div
-      className="cell"
+      className={shaking ? 'cell cell-shake' : 'cell'}
       data-index={index}
       role="img"
       aria-label={label}

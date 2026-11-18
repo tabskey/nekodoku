@@ -4,13 +4,20 @@ export const pt = {
   levelLabel: (level: number) => `Fase ${level}`,
   loading: 'Preparando o tabuleiro…',
   won: 'Resolvido!',
-  shopButton: 'Loja',
+  shopButton: 'Lojinha',
   shopTitle: 'Loja',
   todaysCats: 'Gatos de hoje',
   todaysCatsHint:
     'Cada gato só pode ser comprado nos dias em que aparece aqui.',
   noShopCats: 'Nenhum gato novo hoje.',
-  yourCats: 'Seus gatos',
+  collectionTitle: 'Gatinhos',
+  collectionCount: (owned: number, total: number) =>
+    `${owned} de ${total} gatinhos`,
+  unknownCat: '???',
+  toRescue: 'Resgatar',
+  toRescueLabel: 'Um gatinho ainda por resgatar num Boss',
+  inShop: 'Na loja',
+  inShopLabel: 'Um gatinho à venda na lojinha',
   helpsTitle: 'Ajudas',
   helpsHint: 'Compradas com moedas na hora de usar, durante a fase.',
   revealInfo: 'Coloca um gato certo.',
@@ -19,6 +26,8 @@ export const pt = {
   fish: (fish: number) => `${fish} peixes`,
   buyCat: (name: string, price: number) =>
     `Comprar ${name} por ${price} peixes`,
+  soldOut: 'Esgotado',
+  soldOutLabel: (name: string) => `${name}: esgotado, já é seu`,
   useCat: 'Usar',
   inUse: 'Em uso',
   useCatLabel: (name: string) => `Usar ${name}`,
@@ -31,11 +40,25 @@ export const pt = {
     calico: 'Tricolor',
   } as Record<string, string>,
   appName: 'Nekodoku',
+  tagline: 'Um gatinho por linha, coluna e cor.',
   play: 'Jogar',
+  worldLevel: (world: number, level: number) =>
+    `Mundo ${world} · fase ${level}`,
+  worldBoss: (world: number) => `Mundo ${world} · Boss`,
+  towardBoss: 'Rumo ao Boss',
+  bossInfo: (size: number) =>
+    `Boss do mundo: tabuleiro ${size}x${size} e um gatinho pra resgatar.`,
+  catsButton: 'Gatinhos',
+  bestTime: (size: number, time: string) =>
+    `Recorde no ${size}x${size}: ${time}`,
+  mapHint: 'Toque numa fase liberada pra o gatinho andar até ela.',
+  playLevel: (level: number) => `Jogar fase ${level}`,
+  playBoss: 'Enfrentar o chefe',
   menuButton: 'Menu',
   worldPath: (world: number) => `Caminho do mundo ${world}`,
   tileLabel: (level: number, state: 'cleared' | 'current' | 'locked') =>
     `Fase ${level}: ${{ cleared: 'concluída', current: 'atual', locked: 'bloqueada' }[state]}`,
+  bossTile: 'BOSS',
   bossTileLabel: (state: 'cleared' | 'current' | 'locked') =>
     `Chefe: ${{ cleared: 'vencido', current: 'atual', locked: 'bloqueado' }[state]}`,
   selectedCat: 'Seu gato',
@@ -47,6 +70,17 @@ export const pt = {
   bestScoreNote: (score: number) => `recorde ${score}`,
   worldLabel: (world: number) => `Mundo ${world}`,
   boss: 'Chefe',
+  zoomIn: 'Aproximar',
+  zoomOut: 'Ver tudo',
+  zoomHint: 'Arraste com dois dedos pra mover o tabuleiro.',
+  restoredTitle: 'Gatinho restaurado!',
+  restoredMessage: (world: number) =>
+    `O fantasminha do Mundo ${world} voltou a ser gatinho e entrou pra sua coleção.`,
+  restoredCatLabel: (name: string) =>
+    `${name}, o gatinho restaurado, de corpo inteiro`,
+  backToMap: 'Voltar ao mapa',
+  replayRestoration: 'Ver a restauração de novo',
+  bossScene: 'Cenário do mundo, com o fantasminha do gatinho esperando',
   finalScore: (score: number) => `${score} pontos`,
   reward: (coins: number, fish: number) =>
     fish > 0
@@ -64,6 +98,7 @@ export const pt = {
   night: 'Noturno',
   day: 'Diurno',
   sound: 'Efeitos sonoros',
+  music: 'Música',
   autoMark: 'Marcar automaticamente',
   back: 'Voltar',
   backupTitle: 'Código de backup',
