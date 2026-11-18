@@ -28,6 +28,8 @@ One workflow in `.github/workflows/deploy.yml`, triggered on every push to `main
 
 Pull requests run steps 1 and 2 only, so a broken change is caught before it reaches `main`.
 
+A second job, `sonar`, runs in parallel on every push to `main` and on pull requests from this repository: it checks out the full history, runs the tests with coverage (`npm run test:coverage`, lcov in `coverage/`), and runs `SonarSource/sonarqube-scan-action` against SonarQube Cloud, configured by `sonar-project.properties` at the root. It is independent of `build` and `deploy`, so a Sonar outage or a failed quality gate never blocks publishing. It needs the `SONAR_TOKEN` repository secret, and **Automatic Analysis** must be off in the SonarQube Cloud project, since the workflow runs the analysis. Pull requests from forks get no secrets and skip it.
+
 In the repository settings, **Settings → Pages → Source** must be **GitHub Actions**, not "Deploy from a branch". Using both makes them compete for the same site.
 
 The Node version is the same in the workflow and in the container image (see below). Change both together.

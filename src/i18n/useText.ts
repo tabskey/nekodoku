@@ -1,5 +1,5 @@
 import { resolveLanguage } from '../state/options';
-import { useOptions } from '../state/optionsContext';
+import { useOptions } from '../state/profileContext';
 import { en } from './en';
 import { pt, type Text } from './pt';
 

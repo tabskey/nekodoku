@@ -1,4 +1,4 @@
-import { useCallback, useReducer, useState } from 'react';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { Button } from '../../components/atoms/Button/Button';
 import { CatSprite } from '../../components/atoms/CatSprite/CatSprite';
 import {
@@ -16,7 +16,7 @@ import type { SolvedPuzzle } from '../../game/types';
 import { useText } from '../../i18n/useText';
 import { createLevel, levelReducer } from '../../state/levelReducer';
 import { useLevelTimer } from '../../state/useLevelTimer';
-import { useOptions } from '../../state/optionsContext';
+import { useOptions } from '../../state/profileContext';
 import { usePuzzle } from '../../state/usePuzzle';
 import './GamePage.css';
 
@@ -29,6 +29,8 @@ interface GamePageProps {
   level: number;
   coins: number;
   onSpendCoins: (amount: number) => void;
+  /** Called once when the level is won, with the final score and time. */
+  onCleared: (score: number, seconds: number) => void;
   onNextLevel: () => void;
   onOpenOptions: () => void;
 }
@@ -86,7 +88,13 @@ export function GamePage({
   );
 }
 
-function Level({ puzzle, coins, onSpendCoins, onNextLevel }: LevelProps) {
+function Level({
+  puzzle,
+  coins,
+  onSpendCoins,
+  onCleared,
+  onNextLevel,
+}: LevelProps) {
   const text = useText();
   const { options } = useOptions();
   // Auto-mark is read once, when the level starts; changing it means leaving
@@ -98,6 +106,14 @@ function Level({ puzzle, coins, onSpendCoins, onNextLevel }: LevelProps) {
   useLevelTimer(state.status === 'playing', tick);
   const placed = state.marks.filter((mark) => mark === 'cat').length;
   const playing = state.status === 'playing';
+
+  // Report the win to the profile exactly once, even if this re-renders.
+  const reported = useRef(false);
+  useEffect(() => {
+    if (state.status !== 'won' || reported.current) return;
+    reported.current = true;
+    onCleared(state.score, state.elapsedSeconds);
+  }, [state.status, state.score, state.elapsedSeconds, onCleared]);
 
   function buyHelp(help: Help) {
     const cost = helpCost(help, puzzle, state.marks);

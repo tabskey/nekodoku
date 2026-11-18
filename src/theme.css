@@ -19,6 +19,9 @@
 :root {
   --bg: #2a1f3d;
   --panel: #3a2d54;
+  /* Behind the board's cells. Must contrast with every zone color (3:1 at
+     least), which the light panel does not, so day mode darkens it. */
+  --board: #3a2d54;
   --card: #f6ecd4;
   --card-shadow: #cdbf9f;
   --text: #f6ecd4;
@@ -54,6 +57,7 @@
 :root[data-theme='light'] {
   --bg: #f6ecd4;
   --panel: #e0cfa8;
+  --board: #5a4b70;
   --card: #ffffff;
   --card-shadow: #d9c9a3;
   --text: #2a1f3d;
