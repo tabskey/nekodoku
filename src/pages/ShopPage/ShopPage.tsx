@@ -1,3 +1,4 @@
+import { play } from '../../audio/audio';
 import { Button } from '../../components/atoms/Button/Button';
 import { catPalette } from '../../components/atoms/CatSprite/catSprites';
 import { CurrencyBadge } from '../../components/atoms/CurrencyBadge/CurrencyBadge';
@@ -63,7 +64,10 @@ export function ShopPage({ onBack }: ShopPageProps) {
                 }
                 actionLabel={text.buyCat(name(cat.id), cat.price)}
                 disabled={profile.fish < cat.price}
-                onAction={() => dispatch({ type: 'buyCat', id: cat.id })}
+                onAction={() => {
+                  play('coin');
+                  dispatch({ type: 'buyCat', id: cat.id });
+                }}
               />
             ))}
           </ul>

@@ -15,6 +15,8 @@ import { HudBar } from '../../components/molecules/HudBar/HudBar';
 import { ProgressStrip } from '../../components/molecules/ProgressStrip/ProgressStrip';
 import { Board } from '../../components/organisms/Board/Board';
 import { OptionsPage } from '../OptionsPage/OptionsPage';
+import { play } from '../../audio/audio';
+import { levelSound } from './levelSounds';
 import { Restoration } from '../../components/organisms/Restoration/Restoration';
 import { RulesPopover } from '../../components/organisms/RulesPopover/RulesPopover';
 import { helpCost, type Help } from '../../game/helps';
@@ -229,8 +231,43 @@ function Level({
     const cost = helpCost(help, puzzle, state.marks);
     if (!playing || cost > coins) return;
     onSpendCoins(cost);
-    dispatch({ type: HELP_ACTIONS[help] });
+    play('help');
+    const action = { type: HELP_ACTIONS[help] } as const;
+    // The help's own sparkle replaces the blip its change would make; a help
+    // that changes nothing (Eraser with nothing to erase) must not mute the
+    // next move.
+    quietNext.current = levelReducer(state, action) !== state;
+    dispatch(action);
   }
+
+  // One sound per change of the level, decided by levelSound.
+  const before = useRef(state);
+  const quietNext = useRef(false);
+  useEffect(() => {
+    const effect = levelSound(before.current, state);
+    before.current = state;
+    // A help that wins the level still plays the win jingle.
+    if (effect && (!quietNext.current || effect === 'won')) play(effect);
+    quietNext.current = false;
+  }, [state]);
+
+  // The restoration's sweep during the silhouette and its chime when the cat
+  // appears, at the animation's 50% and 86% of 3.6 s.
+  const restoring = state.status === 'won' && restores;
+  const [restorationRun, setRestorationRun] = useState(0);
+  useEffect(() => {
+    if (!restoring) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      play('chime');
+      return;
+    }
+    const sweep = window.setTimeout(() => play('sweep'), 1800);
+    const chime = window.setTimeout(() => play('chime'), 3100);
+    return () => {
+      window.clearTimeout(sweep);
+      window.clearTimeout(chime);
+    };
+  }, [restoring, restorationRun]);
 
   return (
     <>
@@ -323,6 +360,7 @@ function Level({
           backLabel={text.backToMap}
           replayLabel={text.replayRestoration}
           onBack={onOpenMap}
+          onReplay={() => setRestorationRun((r) => r + 1)}
         />
       )}
       {state.status === 'won' && (

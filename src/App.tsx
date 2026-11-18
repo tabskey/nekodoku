@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { setSoundEnabled } from './audio/audio';
 import { clearReward, type Reward } from './game/rewards';
 import { GamePage } from './pages/GamePage/GamePage';
 import { MenuPage } from './pages/MenuPage/MenuPage';
@@ -11,6 +12,10 @@ import { useProfile } from './state/profileContext';
 // in docs/ARCHITECTURE.md).
 export function App() {
   const { profile, dispatch } = useProfile();
+  useEffect(
+    () => setSoundEnabled(profile.options.sound),
+    [profile.options.sound],
+  );
   const [screen, setScreen] = useState<
     'menu' | 'world' | 'game' | 'options' | 'shop'
   >('menu');

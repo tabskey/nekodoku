@@ -16,6 +16,8 @@ interface RestorationProps {
   backLabel: string;
   replayLabel: string;
   onBack: () => void;
+  /** Called when the sequence plays again, e.g. to replay its sounds. */
+  onReplay?: () => void;
 }
 
 /**
@@ -31,6 +33,7 @@ export function Restoration({
   backLabel,
   replayLabel,
   onBack,
+  onReplay,
 }: RestorationProps) {
   // Changing the key remounts the animated parts, which plays them again.
   const [run, setRun] = useState(0);
@@ -80,7 +83,10 @@ export function Restoration({
         <button
           type="button"
           className="restoration-replay"
-          onClick={() => setRun((r) => r + 1)}
+          onClick={() => {
+            setRun((r) => r + 1);
+            onReplay?.();
+          }}
         >
           {replayLabel}
         </button>
