@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
   # Code quality on SonarQube Cloud, with test coverage. Separate from build
   # so a Sonar outage or a failed quality gate never blocks the deploy.
