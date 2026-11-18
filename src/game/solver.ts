@@ -116,3 +116,8 @@ export function solve(puzzle: Puzzle): number[] | undefined {
   const solutions = search(puzzle, 2);
   return solutions.length === 1 ? solutions[0] : undefined;
 }
+
+/** True when `cats` is a full, valid placement: one cat per row and the board is solved. */
+export function isSolved(puzzle: Puzzle, cats: number[]): boolean {
+  return cats.length === puzzle.size && isValidPlacement(puzzle, cats);
+}

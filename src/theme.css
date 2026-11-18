@@ -1,0 +1,45 @@
+/* Every color as a CSS variable. Night is the default; day overrides the
+   neutrals only. See "Themes" and "Colors" in docs/DESIGN.md. */
+:root {
+  --bg: #2a1f3d;
+  --panel: #3a2d54;
+  --card: #f6ecd4;
+  --card-shadow: #cdbf9f;
+  --text: #f6ecd4;
+  --text-muted: #cbbfe0;
+  --text-on-light: #17102a;
+  --gold-text: #ffc94a;
+
+  --primary: #ff7a59;
+  --primary-shadow: #c9553a;
+  --gold: #ffc94a;
+  --teal: #58c7b5;
+
+  --zone-0: #f7a8b8;
+  --zone-1: #ffd66b;
+  --zone-2: #8ecdf7;
+  --zone-3: #a9dd8a;
+  --zone-4: #c9b3f5;
+  --zone-5: #ffb37a;
+  --zone-6: #7fded1;
+  --zone-7: #e2cfa6;
+  --zone-8: #d5d3df;
+  /* Zones 9 to 11 (10x10 and up) are still to be chosen by the owner. */
+}
+
+:root[data-theme='light'] {
+  --bg: #f6ecd4;
+  --panel: #e0cfa8;
+  --card: #ffffff;
+  --card-shadow: #d9c9a3;
+  --text: #2a1f3d;
+  --text-muted: #5a4b70;
+  --gold-text: #7a4e00;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+}
