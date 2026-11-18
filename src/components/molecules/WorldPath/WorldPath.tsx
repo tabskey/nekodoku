@@ -1,10 +1,5 @@
-import {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { pathLayout } from './pathLayout';
 import './WorldPath.css';
 
 export type TileState = 'cleared' | 'current' | 'locked';
@@ -27,22 +22,23 @@ interface WorldPathProps {
   onSelect: (index: number) => void;
   /** Dims the whole path, for a world not yet unlocked. */
   dimmed?: boolean;
-  /** The selected cat standing on a tile. Gets whether it is walking. */
+  /** The selected cat, 16x18 sprite pixels at 3x. Gets whether it is walking. */
   cat?: (walking: boolean) => ReactNode;
-  /** Index of the tile the cat walks to, one tile at a time. */
+  /** Index of the tile the cat walks to, dot by dot along the path. */
   catAt?: number;
   /** Index of the tile the cat starts on, when it differs from `catAt`. */
   catFrom?: number;
-  /** Called while the cat stands still on `catAt`. */
+  /** Called while the cat stands on `catAt`. */
   onArrive?: () => void;
 }
 
-// Time for the cat to walk from one tile to the next.
-const STEP_MS = 250;
-// The cat's feet overlap the top of the tile by this much.
-const FEET_PX = 10;
+// Time for the cat to move from one dot to the next.
+const DOT_MS = 70;
+// The 48x54 cat stands centered on the dot, its feet just below it.
+const CAT_HALF_WIDTH = 24;
+const CAT_FEET = 48;
 
-/** The levels of one world in order, ending at its Boss. Open tiles can be tapped. */
+/** The map of one world: its levels along a winding path, ending at its Boss. */
 export function WorldPath({
   tiles,
   label,
@@ -53,80 +49,80 @@ export function WorldPath({
   catFrom = catAt,
   onArrive,
 }: WorldPathProps) {
-  const [stand, setStand] = useState({ at: catFrom, left: false });
-  const tileRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const catRef = useRef<HTMLLIElement>(null);
-  const placed = useRef<string | undefined>(undefined);
+  const { width, height, points, tilePoints } = useMemo(
+    () => pathLayout(tiles.length),
+    [tiles.length],
+  );
+  const target = tilePoints[catAt];
+  const [stand, setStand] = useState({ at: tilePoints[catFrom], left: false });
 
-  // Every STEP_MS, the cat moves one tile closer to catAt, or reports that it
-  // has arrived.
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      if (stand.at === catAt) onArrive?.();
-      else {
-        const next = stand.at + Math.sign(catAt - stand.at);
-        setStand({ at: next, left: next < stand.at });
-      }
-    }, STEP_MS);
-    return () => window.clearTimeout(timer);
-  }, [stand, catAt, onArrive]);
-
-  // Slides the cat onto its tile. offsetLeft and offsetTop are whole pixels,
-  // so the sprite stays crisp.
-  // shortcut: not re-measured on resize or rotation; it corrects itself on
-  // the next step. Add a ResizeObserver if a rotated phone shows it misplaced.
-  useLayoutEffect(() => {
-    const tile = tileRefs.current[stand.at];
-    const sprite = catRef.current;
-    if (!tile || !sprite) return;
-    const x =
-      tile.offsetLeft + Math.round((tile.offsetWidth - sprite.offsetWidth) / 2);
-    const y = tile.offsetTop - sprite.offsetHeight + FEET_PX;
-    const to = `translate(${x}px, ${y}px)`;
-    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (placed.current && !still) {
-      sprite.animate(
-        [{ transform: placed.current }, { transform: to }],
-        STEP_MS,
-      );
+    if (stand.at === target) {
+      onArrive?.();
+      return;
     }
-    sprite.style.transform = to;
-    placed.current = to;
-  }, [stand.at]);
+    const timer = window.setTimeout(() => {
+      const next = stand.at + Math.sign(target - stand.at);
+      const dx = points[next].x - points[stand.at].x;
+      // Going up or down keeps the way the cat was facing.
+      setStand({ at: next, left: dx === 0 ? stand.left : dx < 0 });
+    }, DOT_MS);
+    return () => window.clearTimeout(timer);
+  }, [stand, target, points, onArrive]);
+
+  const catPoint = points[stand.at];
 
   return (
-    <ol
+    <div
       className={`world-path${dimmed ? ' world-path-dimmed' : ''}`}
-      aria-label={label}
+      style={{ width, height }}
     >
-      {tiles.map((tile, i) => (
-        <li key={i} className="world-path-stop">
-          <button
-            ref={(el) => {
-              tileRefs.current[i] = el;
-            }}
-            type="button"
-            className={`world-path-tile world-path-${tile.state}${tile.isBoss ? ' world-path-boss' : ''}`}
-            aria-label={tile.label}
-            disabled={tile.state === 'locked'}
-            onClick={() => onSelect(i)}
-          >
-            <span aria-hidden="true">{tile.content}</span>
-          </button>
-          {tile.note && (
-            <span className="world-path-note" aria-hidden="true">
-              {tile.note}
-            </span>
-          )}
-        </li>
+      {points.map((point, i) => (
+        <span
+          key={i}
+          className="world-path-dot"
+          style={{ left: point.x - 3, top: point.y - 3 }}
+        />
       ))}
+      <ol aria-label={label}>
+        {tiles.map((tile, i) => (
+          <li
+            key={i}
+            className="world-path-stop"
+            style={{
+              left: points[tilePoints[i]].x,
+              top: points[tilePoints[i]].y,
+            }}
+          >
+            <button
+              type="button"
+              className={`world-path-tile world-path-${tile.state}${tile.isBoss ? ' world-path-boss' : ''}`}
+              aria-label={tile.label}
+              disabled={tile.state === 'locked'}
+              onClick={() => onSelect(i)}
+            >
+              <span aria-hidden="true">{tile.content}</span>
+            </button>
+            {tile.note && (
+              <span className="world-path-note" aria-hidden="true">
+                {tile.note}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
       {cat && (
-        <li ref={catRef} className="world-path-cat" aria-hidden="true">
-          <div className={stand.left ? 'world-path-cat-left' : undefined}>
-            {cat(stand.at !== catAt)}
-          </div>
-        </li>
+        <div
+          className={`world-path-cat${stand.left ? ' world-path-cat-left' : ''}`}
+          style={{
+            left: catPoint.x - CAT_HALF_WIDTH,
+            top: catPoint.y - CAT_FEET,
+          }}
+          aria-hidden="true"
+        >
+          {cat(stand.at !== target)}
+        </div>
       )}
-    </ol>
+    </div>
   );
 }

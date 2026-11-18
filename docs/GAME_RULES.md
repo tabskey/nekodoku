@@ -102,7 +102,7 @@ Bought with coins at the moment of use. No per-level counters.
 - Other cats are exclusive to the shop and cost fish.
 - Each world is shown as a small board-style map: a path of tiles, one per level, ending at the Boss, with the world's cat waiting at the end as a silhouette until it is rescued.
 - The player's selected cat stands on the map tile of the current level. After a level is cleared, the cat walks along the path to the next tile, in the style of the world maps of classic platform games. Decided by the owner.
-- Tapping an unlocked tile makes the cat walk there before the level opens. Locked tiles do nothing.
+- Tapping an unlocked tile makes the cat walk there. Tapping the same tile again opens its level once the cat stands on it, and the Play button opens the level of the tile the cat is on. Locked tiles do nothing. Decided by the owner.
 - **Biomes (proposed by the owner, details to be defined):** each world has a theme that sets the look of its map: ground and path colors, decorations (trees, palm trees, a river with a bridge, tombstones...) and the layout of the path. Biomes rotate across worlds, so a world always has the same biome.
 - A biome ties the world together: its map, its Boss scenery and, ideally, the cat restored there share the same theme (a graveyard world restoring a black cat, a beach world restoring an orange one) **(proposed)**.
 - Starting biomes **(proposed)**: meadow, forest, beach, river, graveyard, snow. The graveyard stays cute, not scary, in both modes.

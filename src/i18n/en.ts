@@ -29,7 +29,8 @@ export const en: Text = {
     calico: 'Calico',
   },
   appName: 'Nekodoku',
-  play: 'Play',
+  playLevel: (level) => `Play level ${level}`,
+  playBoss: 'Face the Boss',
   menuButton: 'Menu',
   worldPath: (world) => `World ${world} path`,
   tileLabel: (level, state) =>

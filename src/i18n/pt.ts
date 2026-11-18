@@ -31,7 +31,8 @@ export const pt = {
     calico: 'Tricolor',
   } as Record<string, string>,
   appName: 'Nekodoku',
-  play: 'Jogar',
+  playLevel: (level: number) => `Jogar fase ${level}`,
+  playBoss: 'Enfrentar o chefe',
   menuButton: 'Menu',
   worldPath: (world: number) => `Caminho do mundo ${world}`,
   tileLabel: (level: number, state: 'cleared' | 'current' | 'locked') =>

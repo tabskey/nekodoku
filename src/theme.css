@@ -38,6 +38,10 @@
   --teal: #58c7b5;
   --teal-shadow: #3a9c8b;
 
+  /* World map: dark blue ground, lilac path. */
+  --map-ground: #1c2c44;
+  --map-path: #cbbfe0;
+
   --zone-0: #f7a8b8;
   --zone-1: #ffd66b;
   --zone-2: #8ecdf7;
@@ -67,6 +71,9 @@
   --text-muted: #5a4b70;
   --gold-text: #7a4e00;
   --danger-text: #a8381f;
+  /* World map: light green ground, sandy dirt path. */
+  --map-ground: #9ad3b0;
+  --map-path: #d9b77a;
 }
 
 body {

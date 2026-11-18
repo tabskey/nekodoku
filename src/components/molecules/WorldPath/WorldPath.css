@@ -1,11 +1,12 @@
+/* The map: ground, a path of dots, and tiles placed along it. Positions
+   come from pathLayout.ts in whole pixels. */
 .world-path {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: center;
-  /* Rows sit far enough apart for the cat standing on a tile. */
-  gap: 32px 8px;
   position: relative;
+  flex: none;
+  background: var(--map-ground);
+}
+
+.world-path ol {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -15,12 +16,26 @@
   opacity: 0.4;
 }
 
+.world-path-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--map-path);
+}
+
+/* Fixed 52px wide (the Boss tile) so centering on the dot stays whole. */
 .world-path-stop {
+  position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  min-width: 44px;
+  width: 52px;
+  transform: translate(-26px, -22px);
+}
+
+.world-path-stop:has(.world-path-boss) {
+  transform: translate(-26px, -26px);
 }
 
 .world-path-tile {
@@ -75,16 +90,11 @@
 
 .world-path-cat {
   position: absolute;
-  top: 0;
-  left: 0;
+  display: flex;
   pointer-events: none;
 }
 
-.world-path-cat > div {
-  display: flex;
-}
-
-/* Mirrors the cat when it walks back along the path. */
+/* Mirrors the cat when it walks left. */
 .world-path-cat-left {
   transform: scaleX(-1);
 }

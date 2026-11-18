@@ -50,12 +50,16 @@ export function MenuPage({
   const locked = world > currentWorld;
   const first = worldStart(world);
   const length = worldLength(world);
-  // The tile tapped: the cat walks there, then the level opens.
+  // The tile tapped: the cat walks there. A second tap on it opens the level
+  // once the cat stands on it.
   const [destination, setDestination] = useState<number>();
+  const [opening, setOpening] = useState(false);
   // The walk after a win plays once, on the world it happened in.
   const [walkStart, setWalkStart] = useState(walkFrom);
   // The cat waits on the current level, or at the Boss of a cleared world.
   const home = world === currentWorld ? nextLevel - first : length - 1;
+  const catTile = destination ?? home;
+  const playLevel = locked ? nextLevel : first + catTile;
   const catFrom =
     walkStart !== undefined && walkStart >= first && walkStart < first + length
       ? walkStart - first
@@ -65,6 +69,7 @@ export function MenuPage({
   function changeWorld(step: number) {
     setWorld((w) => Math.min(lastViewable, Math.max(1, w + step)));
     setDestination(undefined);
+    setOpening(false);
     setWalkStart(undefined);
   }
   function handleUp(event: PointerEvent<HTMLElement>) {
@@ -161,7 +166,13 @@ export function MenuPage({
           tiles={tiles}
           label={text.worldPath(world)}
           dimmed={locked}
-          onSelect={setDestination}
+          onSelect={(i) => {
+            if (i === catTile) setOpening(true);
+            else {
+              setDestination(i);
+              setOpening(false);
+            }
+          }}
           cat={
             locked
               ? undefined
@@ -169,15 +180,15 @@ export function MenuPage({
                   <CatSprite
                     palette={catPalette(profile.selectedCat)}
                     pose="walk"
-                    pixelSize={2}
+                    pixelSize={3}
                     walking={walking}
                   />
                 )
           }
-          catAt={destination ?? home}
+          catAt={catTile}
           catFrom={catFrom}
           onArrive={() => {
-            if (destination !== undefined) onPlay(first + destination);
+            if (opening) onPlay(playLevel);
           }}
         />
         {locked && (
@@ -185,7 +196,13 @@ export function MenuPage({
         )}
       </section>
       <div className="menu-page-actions">
-        <Button onClick={() => onPlay(nextLevel)}>{text.play}</Button>
+        <Button onClick={() => onPlay(playLevel)}>
+          {levelConfig(playLevel).isBoss
+            ? text.playBoss
+            : text.playLevel(
+                playLevel - worldStart(levelConfig(playLevel).world) + 1,
+              )}
+        </Button>
         <Button variant="card" onClick={onOpenShop}>
           {text.shopButton}
         </Button>
