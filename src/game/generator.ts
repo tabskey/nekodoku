@@ -30,3 +30,44 @@ export function placeCats(size: number, rng: () => number): number[] {
   }
   return cols.map((col, row) => row * size + col);
 }
+
+/** Cells sharing a side with `cell`. */
+export function sideNeighbors(cell: number, size: number): number[] {
+  const row = Math.floor(cell / size);
+  const col = cell % size;
+  const result: number[] = [];
+  if (row > 0) result.push(cell - size);
+  if (row < size - 1) result.push(cell + size);
+  if (col > 0) result.push(cell - 1);
+  if (col < size - 1) result.push(cell + 1);
+  return result;
+}
+
+/**
+ * Grows one zone from each cat until the board is full; zone i starts at
+ * cats[i]. Each step claims a random free cell that touches a zone, for a
+ * random one of the zones it touches. Zones with longer borders get picked
+ * more often, so sizes come out uneven. Every cell joins a zone it touches,
+ * so each zone stays contiguous.
+ */
+export function growZones(
+  size: number,
+  cats: number[],
+  rng: () => number,
+): number[] {
+  const zones: number[] = new Array(size * size).fill(-1);
+  cats.forEach((cell, zone) => (zones[cell] = zone));
+  let free = size * size - cats.length;
+
+  while (free > 0) {
+    const cell = Math.floor(rng() * size * size);
+    if (zones[cell] !== -1) continue;
+    const touching = sideNeighbors(cell, size)
+      .map((n) => zones[n])
+      .filter((zone) => zone !== -1);
+    if (touching.length === 0) continue;
+    zones[cell] = touching[Math.floor(rng() * touching.length)];
+    free--;
+  }
+  return zones;
+}
