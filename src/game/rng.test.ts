@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createRng } from './rng';
+import { createRng, shuffle } from './rng';
 
 function draw(seed: number, count: number): number[] {
   const rng = createRng(seed);
@@ -20,5 +20,23 @@ describe('createRng', () => {
       expect(value).toBeGreaterThanOrEqual(0);
       expect(value).toBeLessThan(1);
     }
+  });
+});
+
+describe('shuffle', () => {
+  const items = Array.from({ length: 12 }, (_, i) => i);
+
+  it('keeps every item exactly once', () => {
+    expect(shuffle(items, createRng(5)).sort((a, b) => a - b)).toEqual(items);
+  });
+
+  it('gives the same order for the same seed', () => {
+    expect(shuffle(items, createRng(5))).toEqual(shuffle(items, createRng(5)));
+  });
+
+  it('leaves the input untouched', () => {
+    const copy = [...items];
+    shuffle(items, createRng(5));
+    expect(items).toEqual(copy);
   });
 });
