@@ -1,0 +1,28 @@
+.game-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+}
+
+.game-page h1 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.game-page-progress {
+  color: var(--panel);
+}
+
+.game-page-status {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.game-page-won {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}

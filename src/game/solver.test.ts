@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { countSolutions, isValidPlacement, solve } from './solver';
+import { generate } from './generator';
+import { countSolutions, isSolved, isValidPlacement, solve } from './solver';
 import type { Puzzle } from './types';
 
 // zones where every cell has its own zone id: the zone rule can never fire,
@@ -144,5 +145,17 @@ describe('performance', () => {
     expect(count).toBe(152);
     // ~5 ms cold on a desktop; the margin absorbs slow CI runners.
     expect(elapsed).toBeLessThan(50);
+  });
+});
+
+describe('isSolved', () => {
+  const puzzle = generate(5, 3);
+
+  it('accepts the full solution', () => {
+    expect(isSolved(puzzle, puzzle.solution)).toBe(true);
+  });
+
+  it('rejects a partial placement, even if valid', () => {
+    expect(isSolved(puzzle, puzzle.solution.slice(1))).toBe(false);
   });
 });

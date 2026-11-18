@@ -22,3 +22,9 @@ export interface SolvedPuzzle extends Puzzle {
   /** Cell index of the cat in each row, length size. */
   solution: number[];
 }
+
+/** What the player has put on a cell. */
+export type CellMark = 'empty' | 'marked' | 'cat';
+
+/** A drag marks empty cells or erases x, decided by the cell it starts on. */
+export type StrokeMode = 'mark' | 'erase';
