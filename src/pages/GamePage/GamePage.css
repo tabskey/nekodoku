@@ -20,6 +20,11 @@
   color: var(--text-muted);
 }
 
+.game-page-helps {
+  display: flex;
+  gap: 12px;
+}
+
 .game-page-end {
   display: flex;
   flex-direction: column;

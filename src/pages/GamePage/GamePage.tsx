@@ -1,17 +1,20 @@
-import { useReducer } from 'react';
+import { useCallback, useReducer } from 'react';
 import { Button } from '../../components/atoms/Button/Button';
 import { CatSprite } from '../../components/atoms/CatSprite/CatSprite';
 import {
   CAT_PALETTES,
   silhouettePalette,
 } from '../../components/atoms/CatSprite/catSprites';
+import { HelpButton } from '../../components/molecules/HelpButton/HelpButton';
 import { HudBar } from '../../components/molecules/HudBar/HudBar';
 import { ProgressStrip } from '../../components/molecules/ProgressStrip/ProgressStrip';
 import { Board } from '../../components/organisms/Board/Board';
+import { helpCost, type Help } from '../../game/helps';
 import { LIVES_PER_LEVEL } from '../../game/scoring';
 import type { SolvedPuzzle } from '../../game/types';
 import { useText } from '../../i18n/useText';
 import { createLevel, levelReducer } from '../../state/levelReducer';
+import { useLevelTimer } from '../../state/useLevelTimer';
 import { usePuzzle } from '../../state/usePuzzle';
 import './GamePage.css';
 
@@ -22,11 +25,17 @@ const SILHOUETTE = silhouettePalette('currentColor');
 
 interface GamePageProps {
   level: number;
+  coins: number;
+  onSpendCoins: (amount: number) => void;
   onNextLevel: () => void;
 }
 
+type LevelProps = Omit<GamePageProps, 'level'> & { puzzle: SolvedPuzzle };
+
+const HELP_ACTIONS = { reveal: 'useReveal', eraser: 'useEraser' } as const;
+
 /** One level, from loading to solved. */
-export function GamePage({ level, onNextLevel }: GamePageProps) {
+export function GamePage({ level, ...levelProps }: GamePageProps) {
   const text = useText();
   const puzzle = usePuzzle(level);
 
@@ -34,7 +43,7 @@ export function GamePage({ level, onNextLevel }: GamePageProps) {
     <main className="game-page">
       <h1>{text.levelLabel(level)}</h1>
       {puzzle ? (
-        <Level puzzle={puzzle} onNextLevel={onNextLevel} />
+        <Level puzzle={puzzle} {...levelProps} />
       ) : (
         <p className="game-page-status">{text.loading}</p>
       )}
@@ -42,16 +51,20 @@ export function GamePage({ level, onNextLevel }: GamePageProps) {
   );
 }
 
-function Level({
-  puzzle,
-  onNextLevel,
-}: {
-  puzzle: SolvedPuzzle;
-  onNextLevel: () => void;
-}) {
+function Level({ puzzle, coins, onSpendCoins, onNextLevel }: LevelProps) {
   const text = useText();
   const [state, dispatch] = useReducer(levelReducer, puzzle, createLevel);
+  const tick = useCallback(() => dispatch({ type: 'tick' }), []);
+  useLevelTimer(state.status === 'playing', tick);
   const placed = state.marks.filter((mark) => mark === 'cat').length;
+  const playing = state.status === 'playing';
+
+  function buyHelp(help: Help) {
+    const cost = helpCost(help, puzzle, state.marks);
+    if (!playing || cost > coins) return;
+    onSpendCoins(cost);
+    dispatch({ type: HELP_ACTIONS[help] });
+  }
 
   return (
     <>
@@ -59,8 +72,12 @@ function Level({
         lives={state.lives}
         maxLives={LIVES_PER_LEVEL}
         score={state.score}
+        elapsedSeconds={state.elapsedSeconds}
         livesLabel={text.lives(state.lives)}
         scoreLabel={text.score(state.score)}
+        timeLabel={text.time}
+        coins={coins}
+        coinsLabel={text.coins(coins)}
       />
       <div className="game-page-progress">
         <ProgressStrip
@@ -90,6 +107,23 @@ function Level({
           dispatch({ type: 'strokeCells', mode, indices })
         }
       />
+      {playing && (
+        <div className="game-page-helps">
+          {(['reveal', 'eraser'] as const).map((help) => {
+            const cost = helpCost(help, puzzle, state.marks);
+            return (
+              <HelpButton
+                key={help}
+                name={text[help]}
+                cost={cost}
+                disabled={cost > coins}
+                label={text.helpLabel(text[help], cost)}
+                onUse={() => buyHelp(help)}
+              />
+            );
+          })}
+        </div>
+      )}
       {state.status === 'won' && (
         <div className="game-page-end">
           <p className="game-page-status">{text.won}</p>

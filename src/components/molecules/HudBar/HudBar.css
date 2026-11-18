@@ -16,3 +16,8 @@
   color: var(--gold-text);
   font-weight: bold;
 }
+
+.hud-bar-time {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
