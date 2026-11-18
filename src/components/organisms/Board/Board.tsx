@@ -31,6 +31,7 @@ const PANEL_PADDING_PX = 6;
 const CAT_GRID = 12;
 
 interface Touch {
+  pointerId: number;
   start: number;
   mode: StrokeMode;
   cells: number[];
@@ -98,6 +99,7 @@ export function Board({
     // Keep receiving the pointer even if a mouse leaves the board.
     event.currentTarget.setPointerCapture(event.pointerId);
     const current: Touch = {
+      pointerId: event.pointerId,
       start,
       mode: marks[start] === 'marked' ? 'erase' : 'mark',
       cells: [start],
@@ -112,7 +114,9 @@ export function Board({
 
   function handleMove(event: PointerEvent<HTMLDivElement>) {
     const current = touch.current;
-    if (!current || current.held) return;
+    // Only the finger that started the touch counts; a second one is ignored.
+    if (!current || current.held || event.pointerId !== current.pointerId)
+      return;
     const index = cellAt(event.clientX, event.clientY);
     if (index === undefined || current.cells.includes(index)) return;
     // Leaving the first cell cancels the hold and makes this a stroke.
@@ -121,8 +125,9 @@ export function Board({
     setPreview({ mode: current.mode, cells: [...current.cells] });
   }
 
-  function handleUp() {
+  function handleUp(event: PointerEvent<HTMLDivElement>) {
     const current = touch.current;
+    if (current && event.pointerId !== current.pointerId) return;
     end();
     if (!current || current.held) return;
     if (current.cells.length > 1) {
@@ -153,7 +158,7 @@ export function Board({
   return (
     <div
       className="board"
-      role="grid"
+      role="group"
       aria-label={label}
       style={{
         gridTemplateColumns: `repeat(${size}, ${cellPx}px)`,
@@ -164,7 +169,9 @@ export function Board({
       onPointerDown={handleDown}
       onPointerMove={handleMove}
       onPointerUp={handleUp}
-      onPointerCancel={end}
+      onPointerCancel={(event) => {
+        if (event.pointerId === touch.current?.pointerId) end();
+      }}
       onContextMenu={(event) => event.preventDefault()}
     >
       {zones.map((zone, index) => {

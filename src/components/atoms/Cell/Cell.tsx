@@ -20,7 +20,7 @@ export function Cell({ index, mark, color, size, cat, label }: CellProps) {
     <div
       className="cell"
       data-index={index}
-      role="gridcell"
+      role="img"
       aria-label={label}
       style={{ background: color, width: size, height: size }}
     >
