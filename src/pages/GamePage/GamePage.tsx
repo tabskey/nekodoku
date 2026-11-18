@@ -16,6 +16,7 @@ import type { SolvedPuzzle } from '../../game/types';
 import { useText } from '../../i18n/useText';
 import { createLevel, levelReducer } from '../../state/levelReducer';
 import { useLevelTimer } from '../../state/useLevelTimer';
+import { useOptions } from '../../state/optionsContext';
 import { usePuzzle } from '../../state/usePuzzle';
 import './GamePage.css';
 
@@ -87,7 +88,12 @@ export function GamePage({
 
 function Level({ puzzle, coins, onSpendCoins, onNextLevel }: LevelProps) {
   const text = useText();
-  const [state, dispatch] = useReducer(levelReducer, puzzle, createLevel);
+  const { options } = useOptions();
+  // Auto-mark is read once, when the level starts; changing it means leaving
+  // the level, which starts it again.
+  const [state, dispatch] = useReducer(levelReducer, puzzle, (p) =>
+    createLevel(p, options.autoMark),
+  );
   const tick = useCallback(() => dispatch({ type: 'tick' }), []);
   useLevelTimer(state.status === 'playing', tick);
   const placed = state.marks.filter((mark) => mark === 'cat').length;

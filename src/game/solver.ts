@@ -126,3 +126,22 @@ export function isSolved(puzzle: Puzzle, cats: number[]): boolean {
 export function isSolutionCell(puzzle: SolvedPuzzle, cell: number): boolean {
   return puzzle.solution[Math.floor(cell / puzzle.size)] === cell;
 }
+
+/**
+ * Cells a cat on `cell` rules out: its row, its column, its zone and the
+ * eight cells around it. Used by auto-mark.
+ */
+export function ruledOutCells(puzzle: Puzzle, cell: number): number[] {
+  const { size, zones } = puzzle;
+  const row = rowOf(cell, size);
+  const col = colOf(cell, size);
+  return zones.flatMap((zone, other) => {
+    if (other === cell) return [];
+    const r = rowOf(other, size);
+    const c = colOf(other, size);
+    const touching = Math.abs(r - row) <= 1 && Math.abs(c - col) <= 1;
+    return r === row || c === col || zone === zones[cell] || touching
+      ? [other]
+      : [];
+  });
+}

@@ -42,7 +42,6 @@
   background: var(--card);
   box-shadow: 0 4px 0 var(--card-shadow);
   color: var(--text-on-light);
-  font-weight: bold;
 }
 
 .choice-group-option input:focus-visible + span {

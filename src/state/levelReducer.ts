@@ -7,7 +7,7 @@ import {
   timeBonus,
 } from '../game/scoring';
 import { eraserCells, revealCell } from '../game/helps';
-import { isSolutionCell, isSolved } from '../game/solver';
+import { isSolutionCell, isSolved, ruledOutCells } from '../game/solver';
 import type { CellMark, SolvedPuzzle, StrokeMode } from '../game/types';
 
 export interface LevelState {
@@ -17,6 +17,8 @@ export interface LevelState {
   score: number;
   elapsedSeconds: number;
   status: 'playing' | 'won' | 'lost';
+  /** Option read when the level starts: x the cells a correct cat rules out. */
+  autoMark: boolean;
   /** The cat just placed on its solution cell, for the happy frame. */
   lastCorrectCat?: number;
 }
@@ -30,9 +32,13 @@ export type LevelAction =
   | { type: 'tick' }
   | { type: 'restart' };
 
-export function createLevel(puzzle: SolvedPuzzle): LevelState {
+export function createLevel(
+  puzzle: SolvedPuzzle,
+  autoMark = false,
+): LevelState {
   return {
     puzzle,
+    autoMark,
     marks: new Array(puzzle.size * puzzle.size).fill('empty'),
     lives: LIVES_PER_LEVEL,
     score: BASE_SCORE,
@@ -57,12 +63,28 @@ function withWin(state: LevelState): LevelState {
   return { ...state, status: 'won', score: state.score + bonus };
 }
 
+// Puts a correct cat on `cell`, auto-marking the empty cells it rules out.
+function withCat(
+  state: LevelState,
+  marks: CellMark[],
+  cell: number,
+): LevelState {
+  marks[cell] = 'cat';
+  if (state.autoMark) {
+    for (const other of ruledOutCells(state.puzzle, cell)) {
+      if (marks[other] === 'empty') marks[other] = 'marked';
+    }
+  }
+  return withWin({ ...state, marks, lastCorrectCat: cell });
+}
+
 export function levelReducer(
   state: LevelState,
   action: LevelAction,
 ): LevelState {
   // Retry is always allowed and has no limit.
-  if (action.type === 'restart') return createLevel(state.puzzle);
+  if (action.type === 'restart')
+    return createLevel(state.puzzle, state.autoMark);
   if (state.status !== 'playing') return state;
   const marks = [...state.marks];
 
@@ -71,8 +93,7 @@ export function levelReducer(
     case 'useReveal': {
       const cell = revealCell(state.puzzle, marks);
       if (cell === undefined) return state;
-      marks[cell] = 'cat';
-      return withWin({ ...state, marks, lastCorrectCat: cell });
+      return withCat(state, marks, cell);
     }
 
     case 'useEraser':
@@ -89,8 +110,7 @@ export function levelReducer(
 
     case 'placeCat': {
       if (isSolutionCell(state.puzzle, action.index)) {
-        marks[action.index] = 'cat';
-        return withWin({ ...state, marks, lastCorrectCat: action.index });
+        return withCat(state, marks, action.index);
       }
       // A mistake: the cat is rejected, the cell keeps an x, a life is lost.
       marks[action.index] = 'marked';

@@ -6,6 +6,7 @@ import {
   MISTAKE_PENALTY,
   timeBonus,
 } from '../game/scoring';
+import { ruledOutCells } from '../game/solver';
 import {
   createLevel,
   levelReducer,
@@ -199,5 +200,48 @@ describe('levelReducer helps', () => {
   it('helps do nothing once the level is over', () => {
     const lost = play(...wrongCells.slice(0, 3).map(place));
     expect(levelReducer(lost, reveal)).toBe(lost);
+  });
+});
+
+describe('levelReducer auto-mark', () => {
+  const withAutoMark = (...actions: LevelAction[]) =>
+    actions.reduce(levelReducer, createLevel(puzzle, true));
+
+  it('is off by default: a cat marks nothing else', () => {
+    const state = play(place(rightCell));
+    expect(state.marks.filter((mark) => mark === 'marked')).toEqual([]);
+  });
+
+  it('marks every empty cell the cat rules out, and only those', () => {
+    const state = withAutoMark(place(rightCell));
+    const ruledOut = ruledOutCells(puzzle, rightCell);
+    state.marks.forEach((mark, cell) => {
+      if (cell === rightCell) expect(mark).toBe('cat');
+      else expect(mark).toBe(ruledOut.includes(cell) ? 'marked' : 'empty');
+    });
+  });
+
+  it('leaves cats in place and does not toggle existing x', () => {
+    const [first, second] = puzzle.solution;
+    const xCell = ruledOutCells(puzzle, second)[0];
+    const state = withAutoMark(place(first), tap(xCell), place(second));
+    expect(state.marks[first]).toBe('cat');
+    expect(state.marks[xCell]).toBe('marked');
+  });
+
+  it('also marks after Reveal', () => {
+    const state = withAutoMark({ type: 'useReveal' });
+    expect(
+      state.marks.filter((mark) => mark === 'marked').length,
+    ).toBeGreaterThan(0);
+  });
+
+  it('marks nothing on a mistake beyond the rejected cell', () => {
+    const state = withAutoMark(place(wrongCell));
+    expect(state.marks.filter((mark) => mark === 'marked')).toEqual(['marked']);
+  });
+
+  it('keeps the setting on restart', () => {
+    expect(withAutoMark({ type: 'restart' }).autoMark).toBe(true);
   });
 });
