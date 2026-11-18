@@ -8,6 +8,8 @@ export interface Options {
   theme: 'system' | 'light' | 'dark';
   language: 'system' | 'pt' | 'en';
   sound: boolean;
+  /** Background music in levels, separate from the sound effects. */
+  music: boolean;
 }
 
 export interface SaveData {
@@ -31,6 +33,7 @@ export const DEFAULT_OPTIONS: Options = {
   theme: 'system',
   language: 'system',
   sound: true,
+  music: true,
 };
 
 export function defaultSave(): SaveData {
@@ -87,6 +90,7 @@ export function isSaveData(value: unknown): value is SaveData {
     options !== null &&
     typeof options.autoMark === 'boolean' &&
     typeof options.sound === 'boolean' &&
+    typeof options.music === 'boolean' &&
     ['system', 'light', 'dark'].includes(options.theme as string) &&
     ['system', 'pt', 'en'].includes(options.language as string)
   );

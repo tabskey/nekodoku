@@ -1,7 +1,7 @@
 // Save migrations. Any change to the SaveData shape bumps SCHEMA_VERSION and
 // adds one step here; an old save is never read without migrating it.
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 /** MIGRATIONS[n] turns a version-n save into a version-(n+1) save. */
 export type Migrations = Record<
@@ -10,8 +10,12 @@ export type Migrations = Record<
 >;
 
 const MIGRATIONS: Migrations = {
-  // Example for the first change:
-  // 1: (save) => ({ ...save, newField: 0, schemaVersion: 2 }),
+  // 2 adds the music switch, on, like a fresh profile.
+  1: (save) => ({
+    ...save,
+    options: { ...(save.options as object), music: true },
+    schemaVersion: 2,
+  }),
 };
 
 /**

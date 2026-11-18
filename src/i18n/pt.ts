@@ -19,6 +19,8 @@ export const pt = {
   fish: (fish: number) => `${fish} peixes`,
   buyCat: (name: string, price: number) =>
     `Comprar ${name} por ${price} peixes`,
+  soldOut: 'Esgotado',
+  soldOutLabel: (name: string) => `${name}: esgotado, já é seu`,
   useCat: 'Usar',
   inUse: 'Em uso',
   useCatLabel: (name: string) => `Usar ${name}`,
@@ -89,6 +91,7 @@ export const pt = {
   night: 'Noturno',
   day: 'Diurno',
   sound: 'Efeitos sonoros',
+  music: 'Música',
   autoMark: 'Marcar automaticamente',
   back: 'Voltar',
   backupTitle: 'Código de backup',

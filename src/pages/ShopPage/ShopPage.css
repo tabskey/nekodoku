@@ -61,3 +61,8 @@
   margin: 4px 0 12px;
   color: var(--text-muted);
 }
+
+.shop-page-sold-out {
+  font-size: 10px;
+  text-transform: uppercase;
+}

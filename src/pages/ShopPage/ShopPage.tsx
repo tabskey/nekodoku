@@ -27,7 +27,7 @@ function today(): string {
 export function ShopPage({ onBack }: ShopPageProps) {
   const text = useText();
   const { profile, dispatch } = useProfile();
-  const rotation = dailyRotation(today(), profile.ownedCats);
+  const rotation = dailyRotation(today());
   const name = (id: string) => text.catNames[id] ?? id;
 
   return (
@@ -54,22 +54,34 @@ export function ShopPage({ onBack }: ShopPageProps) {
           <p className="shop-page-hint">{text.noShopCats}</p>
         ) : (
           <ul className="shop-page-grid">
-            {rotation.map((cat) => (
-              <ShopCatCard
-                key={cat.id}
-                name={name(cat.id)}
-                palette={catPalette(cat.id)}
-                actionContent={
-                  <CurrencyBadge amount={cat.price} currency="fish" />
-                }
-                actionLabel={text.buyCat(name(cat.id), cat.price)}
-                disabled={profile.fish < cat.price}
-                onAction={() => {
-                  play('coin');
-                  dispatch({ type: 'buyCat', id: cat.id });
-                }}
-              />
-            ))}
+            {rotation.map((cat) => {
+              // A cat already bought stays in the rotation, sold out.
+              const owned = profile.ownedCats.includes(cat.id);
+              return (
+                <ShopCatCard
+                  key={cat.id}
+                  name={name(cat.id)}
+                  palette={catPalette(cat.id)}
+                  actionContent={
+                    owned ? (
+                      <span className="shop-page-sold-out">{text.soldOut}</span>
+                    ) : (
+                      <CurrencyBadge amount={cat.price} currency="fish" />
+                    )
+                  }
+                  actionLabel={
+                    owned
+                      ? text.soldOutLabel(name(cat.id))
+                      : text.buyCat(name(cat.id), cat.price)
+                  }
+                  disabled={owned || profile.fish < cat.price}
+                  onAction={() => {
+                    play('coin');
+                    dispatch({ type: 'buyCat', id: cat.id });
+                  }}
+                />
+              );
+            })}
           </ul>
         )}
       </section>

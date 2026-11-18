@@ -15,7 +15,7 @@ import { HudBar } from '../../components/molecules/HudBar/HudBar';
 import { ProgressStrip } from '../../components/molecules/ProgressStrip/ProgressStrip';
 import { Board } from '../../components/organisms/Board/Board';
 import { OptionsPage } from '../OptionsPage/OptionsPage';
-import { play } from '../../audio/audio';
+import { play, startMusic, stopMusic } from '../../audio/audio';
 import { levelSound } from './levelSounds';
 import { Restoration } from '../../components/organisms/Restoration/Restoration';
 import { RulesPopover } from '../../components/organisms/RulesPopover/RulesPopover';
@@ -239,6 +239,14 @@ function Level({
     quietNext.current = levelReducer(state, action) !== state;
     dispatch(action);
   }
+
+  // Music plays only while the level is being played: a chill loop, or a
+  // tenser one on a Boss. It stops on the win or loss and when leaving.
+  useEffect(() => {
+    if (!playing || !options.music) return;
+    startMusic(bossWorld === undefined ? 'level' : 'boss');
+    return stopMusic;
+  }, [playing, options.music, bossWorld]);
 
   // One sound per change of the level, decided by levelSound.
   const before = useRef(state);

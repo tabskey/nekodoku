@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { setSoundEnabled } from './audio/audio';
+import { setSoundEnabled, startMusic, stopMusic } from './audio/audio';
 import { clearReward, type Reward } from './game/rewards';
 import { GamePage } from './pages/GamePage/GamePage';
 import { MenuPage } from './pages/MenuPage/MenuPage';
@@ -19,6 +19,14 @@ export function App() {
   const [screen, setScreen] = useState<
     'menu' | 'world' | 'game' | 'options' | 'shop'
   >('menu');
+  // The funky loop plays on every screen outside a level, and keeps going
+  // between them; a level starts its own song.
+  const outsideLevel = screen !== 'game';
+  useEffect(() => {
+    if (!outsideLevel || !profile.options.music) return;
+    startMusic('menu');
+    return stopMusic;
+  }, [outsideLevel, profile.options.music]);
   const [level, setLevel] = useState(1);
   const [lastClear, setLastClear] = useState<{
     level: number;

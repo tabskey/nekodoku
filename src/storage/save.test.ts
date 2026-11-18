@@ -49,6 +49,7 @@ describe('save and load', () => {
         theme: 'light' as const,
         language: 'en' as const,
         sound: false,
+        music: false,
       },
     };
     expect(writeSave(save, store)).toBe(true);
@@ -111,6 +112,16 @@ describe('migrate', () => {
       fish: 0,
       renamed: 5,
     });
+  });
+
+  it('adds the music switch, on, to a version 1 save', () => {
+    const { autoMark, theme, language, sound } = defaultSave().options;
+    const old = {
+      ...defaultSave(),
+      schemaVersion: 1,
+      options: { autoMark, theme, language, sound },
+    };
+    expect(migrate(old)).toEqual(defaultSave());
   });
 
   it('leaves a current save untouched', () => {

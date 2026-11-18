@@ -157,6 +157,7 @@ interface SaveData {
     theme: 'system' | 'light' | 'dark';
     language: 'system' | 'pt' | 'en';
     sound: boolean;
+    music: boolean; // version 2
   };
 }
 ```
@@ -205,7 +206,7 @@ Reducers call into `game/` for decisions and contain no rule logic of their own.
 ## Persistence
 
 - One key, `nekodoku.save`, holding `SaveData` as JSON.
-- `schemaVersion` starts at 1. Any change to the shape adds a migration function in `storage/migrations.ts`; never read an old save without migrating it.
+- `schemaVersion` starts at 1. Any change to the shape adds a migration function in `storage/migrations.ts`; never read an old save without migrating it. Version 2 added `options.music`, on by default.
 - The profile is saved after every profile action. A level in progress is never saved, by design: `LevelState` lives only in memory and is discarded when the level is closed (see `docs/GAME_RULES.md`).
 - Reads and writes are wrapped in `try/catch`. If storage is unavailable the game still runs with an in-memory profile.
 - Data lasts until the browser's site data is cleared. iOS Safari may also clear it for sites not opened for a while unless the app is installed to the home screen, which is why the PWA install and the backup code both matter.
@@ -235,6 +236,7 @@ Sound effects are synthesized at runtime with the Web Audio API: short oscillato
 - `play()` does nothing when `options.sound` is off, when the context is not yet unlocked, or when the browser has no Web Audio. It never throws.
 - Reducers do not play sounds. A small effect in the page layer watches state transitions (a cat was placed, a life was lost, the level was won) and calls `play()`. This keeps `game/` and `state/` free of side effects and their tests silent.
 - Respect the system: no sound plays while the page is hidden.
+- Music is data too, in `src/audio/songs.ts`: each song is voices of `[note, beats]` at a tempo. `startMusic(song)` books notes a fraction of a second ahead on the audio clock and loops; `stopMusic()` ends it. The level page starts it while playing and stops it otherwise; `options.music` (save version 2) switches it off.
 
 ## Testing
 

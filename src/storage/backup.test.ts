@@ -11,7 +11,13 @@ const profile: SaveData = {
   selectedCat: 'calico',
   bestTimes: { 5: 21, 9: 140 },
   bestScores: { 1: 560, 5: 610 },
-  options: { autoMark: true, theme: 'light', language: 'en', sound: false },
+  options: {
+    autoMark: true,
+    theme: 'light',
+    language: 'en',
+    sound: false,
+    music: false,
+  },
 };
 
 describe('backup code', () => {

@@ -1,12 +1,13 @@
-// Plays the effects in sounds.ts with the Web Audio API. One AudioContext,
-// started on the player's first tap, because browsers block audio before any
-// interaction. play() never throws.
-import { EFFECTS, type Effect } from './sounds';
+// Plays the effects in sounds.ts and the songs in songs.ts with the Web
+// Audio API. One AudioContext, started on the player's first tap, because
+// browsers block audio before any interaction. Nothing here ever throws.
+import { noteFrequency, SONGS, type SongId } from './songs';
+import { EFFECTS, type Effect, type Note } from './sounds';
 
 let context: AudioContext | undefined;
 let enabled = true;
 
-/** Follows the sound option; off silences everything at once. */
+/** Follows the sound option; off silences every effect at once. */
 export function setSoundEnabled(on: boolean) {
   enabled = on;
 }
@@ -21,27 +22,104 @@ export function unlockAudio() {
   }
 }
 
+// The context, when it can play right now.
+function ready(): AudioContext | undefined {
+  if (!context || context.state !== 'running') return undefined;
+  if (typeof document !== 'undefined' && document.hidden) return undefined;
+  return context;
+}
+
+function scheduleNote(
+  audio: AudioContext,
+  { freq, to, duration, wave, volume }: Note,
+  start: number,
+) {
+  const oscillator = audio.createOscillator();
+  const gain = audio.createGain();
+  oscillator.type = wave;
+  oscillator.frequency.setValueAtTime(freq, start);
+  if (to) oscillator.frequency.linearRampToValueAtTime(to, start + duration);
+  // A quick fade out, so notes end without a click.
+  gain.gain.setValueAtTime(volume, start);
+  gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
+  oscillator.connect(gain).connect(audio.destination);
+  oscillator.start(start);
+  oscillator.stop(start + duration);
+}
+
 export function play(effect: Effect) {
-  if (!enabled || !context || context.state !== 'running') return;
-  if (typeof document !== 'undefined' && document.hidden) return;
+  const audio = enabled ? ready() : undefined;
+  if (!audio) return;
   try {
-    let start = context.currentTime;
-    for (const { freq, to, duration, wave, volume } of EFFECTS[effect]) {
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      oscillator.type = wave;
-      oscillator.frequency.setValueAtTime(freq, start);
-      if (to)
-        oscillator.frequency.linearRampToValueAtTime(to, start + duration);
-      // A quick fade out, so notes end without a click.
-      gain.gain.setValueAtTime(volume, start);
-      gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
-      oscillator.connect(gain).connect(context.destination);
-      oscillator.start(start);
-      oscillator.stop(start + duration);
-      start += duration;
+    let start = audio.currentTime;
+    for (const note of EFFECTS[effect]) {
+      scheduleNote(audio, note, start);
+      start += note.duration;
     }
   } catch {
     // A failed sound must never break the game.
   }
+}
+
+// Music: notes are booked a little ahead on the audio clock, so the rhythm
+// stays steady even when the page is busy.
+const LOOKAHEAD_S = 0.4;
+const TICK_MS = 150;
+let musicTimer: number | undefined;
+
+/** Loops a song until stopMusic(). Silent while the page is hidden. */
+export function startMusic(id: SongId) {
+  stopMusic();
+  const song = SONGS[id];
+  const beat = 60 / song.bpm;
+  const cursors = song.voices.map(() => ({ index: 0, time: 0 }));
+  let playing = false;
+  const tick = () => {
+    const audio = ready();
+    if (!audio) {
+      playing = false;
+      return;
+    }
+    try {
+      // Starting, or back from a pause: every voice restarts together.
+      if (!playing) {
+        for (const cursor of cursors) {
+          cursor.index = 0;
+          cursor.time = audio.currentTime + 0.05;
+        }
+        playing = true;
+      }
+      song.voices.forEach((voice, v) => {
+        const cursor = cursors[v];
+        while (cursor.time < audio.currentTime + LOOKAHEAD_S) {
+          const [name, beats, glide] = voice.notes[cursor.index];
+          const duration = beats * beat;
+          if (name !== '-') {
+            scheduleNote(
+              audio,
+              {
+                freq: noteFrequency(name),
+                to: glide ? noteFrequency(glide) : undefined,
+                duration,
+                wave: voice.wave,
+                volume: voice.volume,
+              },
+              cursor.time,
+            );
+          }
+          cursor.time += duration;
+          cursor.index = (cursor.index + 1) % voice.notes.length;
+        }
+      });
+    } catch {
+      // A failed note must never break the game.
+    }
+  };
+  tick();
+  musicTimer = window.setInterval(tick, TICK_MS);
+}
+
+export function stopMusic() {
+  if (typeof window !== 'undefined') window.clearInterval(musicTimer);
+  musicTimer = undefined;
 }
