@@ -19,6 +19,8 @@ export interface LevelState {
   status: 'playing' | 'won' | 'lost';
   /** Option read when the level starts: x the cells a correct cat rules out. */
   autoMark: boolean;
+  /** Starting cats: placed when the level opens, and fixed. */
+  givens: number[];
   /** The cat just placed on its solution cell, for the happy frame. */
   lastCorrectCat?: number;
 }
@@ -35,11 +37,18 @@ export type LevelAction =
 export function createLevel(
   puzzle: SolvedPuzzle,
   autoMark = false,
+  givens: number[] = [],
 ): LevelState {
+  const marks: CellMark[] = new Array(puzzle.size * puzzle.size).fill('empty');
+  for (const cell of givens) {
+    marks[cell] = 'cat';
+    if (autoMark) autoMarkAround(puzzle, marks, cell);
+  }
   return {
     puzzle,
     autoMark,
-    marks: new Array(puzzle.size * puzzle.size).fill('empty'),
+    givens,
+    marks,
     lives: LIVES_PER_LEVEL,
     score: BASE_SCORE,
     elapsedSeconds: 0,
@@ -63,6 +72,13 @@ function withWin(state: LevelState): LevelState {
   return { ...state, status: 'won', score: state.score + bonus };
 }
 
+// Marks the empty cells a cat on `cell` rules out; cats and x stay as they are.
+function autoMarkAround(puzzle: SolvedPuzzle, marks: CellMark[], cell: number) {
+  for (const other of ruledOutCells(puzzle, cell)) {
+    if (marks[other] === 'empty') marks[other] = 'marked';
+  }
+}
+
 // Puts a correct cat on `cell`, auto-marking the empty cells it rules out.
 function withCat(
   state: LevelState,
@@ -70,11 +86,7 @@ function withCat(
   cell: number,
 ): LevelState {
   marks[cell] = 'cat';
-  if (state.autoMark) {
-    for (const other of ruledOutCells(state.puzzle, cell)) {
-      if (marks[other] === 'empty') marks[other] = 'marked';
-    }
-  }
+  if (state.autoMark) autoMarkAround(state.puzzle, marks, cell);
   return withWin({ ...state, marks, lastCorrectCat: cell });
 }
 
@@ -84,7 +96,7 @@ export function levelReducer(
 ): LevelState {
   // Retry is always allowed and has no limit.
   if (action.type === 'restart')
-    return createLevel(state.puzzle, state.autoMark);
+    return createLevel(state.puzzle, state.autoMark, state.givens);
   if (state.status !== 'playing') return state;
   const marks = [...state.marks];
 
@@ -105,6 +117,8 @@ export function levelReducer(
       return { ...state, elapsedSeconds: state.elapsedSeconds + 1 };
 
     case 'tapCell':
+      // A starting cat is fixed: tapping it does nothing.
+      if (state.givens.includes(action.index)) return state;
       marks[action.index] = AFTER_TAP[marks[action.index]];
       return withWin({ ...state, marks });
 

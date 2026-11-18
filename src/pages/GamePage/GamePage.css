@@ -27,8 +27,11 @@
   cursor: pointer;
 }
 
-.game-page-options {
+.game-page-rules {
   margin-left: auto;
+}
+
+.game-page-menu {
   background: var(--card);
   box-shadow: 0 4px 0 var(--card-shadow);
 }

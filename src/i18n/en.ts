@@ -4,6 +4,15 @@ export const en: Text = {
   levelLabel: (level) => `Level ${level}`,
   loading: 'Getting the board ready…',
   won: 'Solved!',
+  appName: 'Nekodoku',
+  play: 'Play',
+  menuButton: 'Menu',
+  worldPath: (world) => `World ${world} path`,
+  tileLabel: (level, state) =>
+    `Level ${level}: ${{ cleared: 'cleared', current: 'current', locked: 'locked' }[state]}`,
+  bossTileLabel: (state) =>
+    `Boss: ${{ cleared: 'beaten', current: 'current', locked: 'locked' }[state]}`,
+  selectedCat: 'Your cat',
   worldLabel: (world) => `World ${world}`,
   boss: 'Boss',
   finalScore: (score) => `${score} points`,

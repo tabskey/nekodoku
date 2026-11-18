@@ -151,6 +151,19 @@ export const CAT_PALETTES = {
     muzzle: '#5a4e78',
     lid: '#ffd66b',
   },
+  // Test shop cat, placeholder colors: white fur, orange patches and dark
+  // ears for the third calico color. The owner replaces it with her own.
+  calico: {
+    outline: '#a07a5c',
+    fur: '#fffaf2',
+    patch: '#f39a45',
+    ear: '#3a3052',
+    eye: DARK_EYE,
+    shine: '#ffffff',
+    nose: PINK_NOSE,
+    muzzle: '#fffaf2',
+    lid: DARK_EYE,
+  },
 } satisfies Record<string, CatPalette>;
 
 export type CatId = keyof typeof CAT_PALETTES;
@@ -168,4 +181,9 @@ export function silhouettePalette(color: string): CatPalette {
     muzzle: color,
     lid: color,
   };
+}
+
+/** The palette for a saved cat id, falling back to the default cat. */
+export function catPalette(id: string): CatPalette {
+  return CAT_PALETTES[id as CatId] ?? CAT_PALETTES.white;
 }

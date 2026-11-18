@@ -110,6 +110,18 @@ Bought with coins at the moment of use. No per-level counters.
 - Decorations never sit on the path or touch a level tile, so the tiles and the cat always read clearly.
 - Starting set **(names proposed)**: Mingau (white, default), Caramelo (orange), Fumaça (gray), Meia-noite (black).
 
+## Shop
+
+- **Daily rotation:** each day the shop offers 4 cats, picked at random from the shop pool. Decided by the owner.
+- **The shop pool is the shop-exclusive cats only.** World cats, restored by beating a world's Boss, never appear in the shop: they are earned by exploring. Decided by the owner.
+  - Example: Meia-noite, the black cat, is restored in exploration, so it can never be in the shop. The same holds for every world cat. Decided by the owner.
+  - Until the owner draws shop-exclusive cats, the pool is empty and the shop shows only helps.
+- **Rotation cats are limited:** a shop cat can be bought only on a day it is in the rotation. A cat missed today comes back on a later day. Decided by the owner.
+- Cats the player already owns leave the pool. When fewer than 4 unowned shop cats remain, the shop shows all of them **(proposed)**.
+- The rotation changes at midnight on the device's clock. It is picked from the date alone, with no server, so every player sees the same 4 cats on the same date **(proposed)**.
+- No countdown to the next rotation is shown, so the shop never works as a wait timer **(proposed)**.
+- Helps, priced in coins, are always on sale and are not part of the rotation.
+
 ## Progression
 
 - Levels are numbered from 1 across all worlds. The level number is the seed of its puzzle, so a level is always the same board.
@@ -123,6 +135,7 @@ Bought with coins at the moment of use. No per-level counters.
 | Advanced | 10 to 15 | Slowest | None |
 
 - A starting cat is one correct cat already placed when the level opens. It is the teaching aid of the early worlds.
+- A starting cat is fixed: tapping, holding or dragging over it never removes it, and it is placed again on a retry. It is always the same cell for the same level **(proposed)**.
 - Every world opens with a breather: its first levels are clearly easier than the Boss the player has just beaten, so the game never feels like one long climb. This holds in every tier, the advanced one included.
 - Early worlds step all the way back to 5x5. From the intermediate tier on, a world steps back only a few sizes below the previous Boss, so the breather does not feel like a return to the tutorial **(proposed)**.
 - The largest board is never introduced all at once: each tier raises the ceiling a little.

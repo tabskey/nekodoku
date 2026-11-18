@@ -4,6 +4,15 @@ export const pt = {
   levelLabel: (level: number) => `Fase ${level}`,
   loading: 'Preparando o tabuleiro…',
   won: 'Resolvido!',
+  appName: 'Nekodoku',
+  play: 'Jogar',
+  menuButton: 'Menu',
+  worldPath: (world: number) => `Caminho do mundo ${world}`,
+  tileLabel: (level: number, state: 'cleared' | 'current' | 'locked') =>
+    `Fase ${level}: ${{ cleared: 'concluída', current: 'atual', locked: 'bloqueada' }[state]}`,
+  bossTileLabel: (state: 'cleared' | 'current' | 'locked') =>
+    `Chefe: ${{ cleared: 'vencido', current: 'atual', locked: 'bloqueado' }[state]}`,
+  selectedCat: 'Seu gato',
   worldLabel: (world: number) => `Mundo ${world}`,
   boss: 'Chefe',
   finalScore: (score: number) => `${score} pontos`,

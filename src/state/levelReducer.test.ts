@@ -245,3 +245,42 @@ describe('levelReducer auto-mark', () => {
     expect(withAutoMark({ type: 'restart' }).autoMark).toBe(true);
   });
 });
+
+describe('levelReducer starting cats', () => {
+  const given = puzzle.solution[2];
+  const start = (autoMark = false) => createLevel(puzzle, autoMark, [given]);
+
+  it('opens with the starting cat placed', () => {
+    expect(start().marks[given]).toBe('cat');
+    expect(start().marks.filter((mark) => mark === 'cat')).toHaveLength(1);
+  });
+
+  it('keeps the starting cat fixed: a tap or a stroke does not remove it', () => {
+    expect(levelReducer(start(), tap(given)).marks[given]).toBe('cat');
+    const stroked = levelReducer(start(), {
+      type: 'strokeCells',
+      mode: 'erase',
+      indices: [given],
+    });
+    expect(stroked.marks[given]).toBe('cat');
+  });
+
+  it('counts toward the win', () => {
+    const others = puzzle.solution.filter((cell) => cell !== given);
+    const won = others.map(place).reduce(levelReducer, start());
+    expect(won.status).toBe('won');
+  });
+
+  it('is auto-marked around when auto-mark is on', () => {
+    const marks = start(true).marks;
+    for (const cell of ruledOutCells(puzzle, given))
+      expect(marks[cell]).toBe('marked');
+  });
+
+  it('comes back on restart', () => {
+    const restarted = levelReducer(levelReducer(start(), place(wrongCell)), {
+      type: 'restart',
+    });
+    expect(restarted).toEqual(start());
+  });
+});

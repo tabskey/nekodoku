@@ -103,7 +103,7 @@ Goal: the game remembers the player and gives them something to earn.
 - Starting cats on the levels that the worlds table marks.
 - `MenuPage` with the current world and the path to its Boss.
 - Replaying: world selector on the map, every tile open in cleared worlds, best score per level, reward only when the best score is beaten, restored cat beside a beaten Boss.
-- `ShopPage`: cats bought with fish, cats unlocked by progress, helps priced in coins.
+- `ShopPage`: a daily rotation of 4 shop cats bought with fish (see Shop in `docs/GAME_RULES.md`), cats unlocked by progress, helps priced in coins.
 - Backup code: export as text, import with validation and an in-page confirmation.
 - Extra: SonarQube Cloud analysis as a separate `sonar` job in the workflow (see Build and deploy in `docs/ARCHITECTURE.md`).
 

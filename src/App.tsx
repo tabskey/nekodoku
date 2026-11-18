@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { clearReward, type Reward } from './game/rewards';
 import { GamePage } from './pages/GamePage/GamePage';
+import { MenuPage } from './pages/MenuPage/MenuPage';
 import { OptionsPage } from './pages/OptionsPage/OptionsPage';
 import { useProfile } from './state/profileContext';
 
@@ -8,10 +9,8 @@ import { useProfile } from './state/profileContext';
 // in docs/ARCHITECTURE.md).
 export function App() {
   const { profile, dispatch } = useProfile();
-  const [screen, setScreen] = useState<'game' | 'options'>('game');
-  // Opens on the first level not yet cleared. The menu and map (later in
-  // Phase 6) will let the player pick any open level instead.
-  const [level, setLevel] = useState(() => profile.levelsCleared + 1);
+  const [screen, setScreen] = useState<'menu' | 'game' | 'options'>('menu');
+  const [level, setLevel] = useState(1);
   const [lastClear, setLastClear] = useState<{
     level: number;
     reward: Reward;
@@ -30,10 +29,21 @@ export function App() {
   }
 
   if (screen === 'options') {
-    return <OptionsPage onBack={() => setScreen('game')} />;
+    return <OptionsPage onBack={() => setScreen('menu')} />;
   }
-  // Leaving a level discards it (see Saving in docs/GAME_RULES.md), so coming
-  // back from Options starts the level again.
+  if (screen === 'menu') {
+    return (
+      <MenuPage
+        onPlay={(next) => {
+          setLevel(next);
+          setScreen('game');
+        }}
+        onOpenOptions={() => setScreen('options')}
+      />
+    );
+  }
+  // Leaving a level for the menu discards it (see Saving in
+  // docs/GAME_RULES.md).
   return (
     <GamePage
       key={level}
@@ -43,7 +53,7 @@ export function App() {
       onCleared={handleCleared}
       reward={lastClear?.level === level ? lastClear.reward : undefined}
       onNextLevel={() => setLevel(level + 1)}
-      onOpenOptions={() => setScreen('options')}
+      onOpenMenu={() => setScreen('menu')}
     />
   );
 }
