@@ -2,10 +2,8 @@ import { useRef, useState, type PointerEvent } from 'react';
 import { Button } from '../../components/atoms/Button/Button';
 import { CatSprite } from '../../components/atoms/CatSprite/CatSprite';
 import { CurrencyBadge } from '../../components/atoms/CurrencyBadge/CurrencyBadge';
-import {
-  catPalette,
-  silhouettePalette,
-} from '../../components/atoms/CatSprite/catSprites';
+import { catPalette } from '../../components/atoms/CatSprite/catSprites';
+import ghostUrl from '../../assets/ghost-cat.svg';
 import { MAP_PALETTES } from '../../components/molecules/WorldPath/mapPalettes';
 import {
   WorldPath,
@@ -22,8 +20,6 @@ import { useText } from '../../i18n/useText';
 import { useProfile } from '../../state/profileContext';
 import './WorldPage.css';
 
-// SVG fill cannot read CSS variables, so the Boss ghost takes the text color.
-const GHOST = silhouettePalette('currentColor');
 // A horizontal drag longer than this changes world (see Board input in
 // docs/ARCHITECTURE.md).
 const SWIPE_PX = 50;
@@ -105,7 +101,8 @@ export function WorldPage({
         <CatSprite palette={catPalette(worldCat(world))} pixelSize={3} />
       ) : (
         <span className="world-page-ghost">
-          <CatSprite palette={GHOST} pixelSize={3} blink={false} />
+          {/* The 12x14 ghost sprite at 3x, as on the mockup's map. */}
+          <img src={ghostUrl} width={36} height={42} alt="" draggable={false} />
         </span>
       );
     return {

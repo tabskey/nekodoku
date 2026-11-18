@@ -92,6 +92,10 @@ export function App() {
         setWalkFrom(lastClear?.level === level ? level : undefined);
         setScreen('menu');
       }}
+      onOpenMap={() => {
+        setWalkFrom(undefined);
+        setScreen('world');
+      }}
     />
   );
 }

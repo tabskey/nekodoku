@@ -61,6 +61,13 @@ export const pt = {
   bestScoreNote: (score: number) => `recorde ${score}`,
   worldLabel: (world: number) => `Mundo ${world}`,
   boss: 'Chefe',
+  restoredTitle: 'Gatinho restaurado!',
+  restoredMessage: (world: number) =>
+    `O fantasminha do Mundo ${world} voltou a ser gatinho e entrou pra sua coleção.`,
+  restoredCatLabel: (name: string) =>
+    `${name}, o gatinho restaurado, de corpo inteiro`,
+  backToMap: 'Voltar ao mapa',
+  replayRestoration: 'Ver a restauração de novo',
   bossScene: 'Cenário do mundo, com o fantasminha do gatinho esperando',
   finalScore: (score: number) => `${score} pontos`,
   reward: (coins: number, fish: number) =>

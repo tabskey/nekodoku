@@ -132,7 +132,15 @@ Zones, in the order they are assigned:
 
 `#f7a8b8` `#ffd66b` `#8ecdf7` `#a9dd8a` `#c9b3f5` `#ffb37a` `#7fded1` `#e2cfa6` `#d5d3df`
 
-Nine colors cover boards up to 9x9. The largest board is 12x12, so three more colors are still to be chosen, and boards above 8 zones need a texture or pattern per zone in addition to color.
+Nine colors cover boards up to 9x9. Zones 9 to 11, for the 10x10 to 12x12 boards, reuse a color under a pattern of dark squares at 16% (`--zone-stripe`), in 3 px steps so they stay crisp:
+
+| Zone | Base color | Pattern |
+| --- | --- | --- |
+| 9 | `#f7a8b8` (as zone 0) | checkerboard |
+| 10 | `#8ecdf7` (as zone 2) | horizontal stripes |
+| 11 | `#a9dd8a` (as zone 3) | vertical stripes |
+
+This follows the "Boss 12x12" artboard, except that zone 9 is a checkerboard instead of diagonal stripes, which CSS blurs.
 
 ## Type
 

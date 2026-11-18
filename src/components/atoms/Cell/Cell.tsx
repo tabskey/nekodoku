@@ -5,7 +5,7 @@ import './Cell.css';
 interface CellProps {
   index: number;
   mark: CellMark;
-  /** Any CSS color, usually a zone variable. */
+  /** Any CSS background, usually a zone variable (zones 9 to 11 are patterned). */
   color: string;
   /** Size of the square tile in CSS pixels. */
   size: number;

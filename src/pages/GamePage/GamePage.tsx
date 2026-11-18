@@ -15,6 +15,7 @@ import { HudBar } from '../../components/molecules/HudBar/HudBar';
 import { ProgressStrip } from '../../components/molecules/ProgressStrip/ProgressStrip';
 import { Board } from '../../components/organisms/Board/Board';
 import { OptionsPage } from '../OptionsPage/OptionsPage';
+import { Restoration } from '../../components/organisms/Restoration/Restoration';
 import { RulesPopover } from '../../components/organisms/RulesPopover/RulesPopover';
 import { helpCost, type Help } from '../../game/helps';
 import {
@@ -45,6 +46,8 @@ interface GamePageProps {
   reward?: Reward;
   onNextLevel: () => void;
   onOpenMenu: () => void;
+  /** Leaves the level for the world map, after a Boss's restoration. */
+  onOpenMap: () => void;
 }
 
 type LevelProps = Omit<GamePageProps, 'level' | 'onOpenMenu'> & {
@@ -52,6 +55,8 @@ type LevelProps = Omit<GamePageProps, 'level' | 'onOpenMenu'> & {
   paused: boolean;
   /** Set on a Boss level: the world whose scenery and ghost to show. */
   bossWorld?: number;
+  /** Plays the restoration on a win: the Boss is beaten for the first time. */
+  restores: boolean;
   puzzle: SolvedPuzzle;
   /** Cells that open with a fixed, correct cat. */
   givens: number[];
@@ -81,6 +86,9 @@ export function GamePage({ level, onOpenMenu, ...levelProps }: GamePageProps) {
   // Options opens over the level, which stays mounted underneath: a level in
   // progress is never saved, so leaving it would lose it.
   const [optionsOpen, setOptionsOpen] = useState(false);
+  // Read once: winning updates the profile, but the restoration still plays.
+  const { profile } = useProfile();
+  const [firstClear] = useState(() => level > profile.levelsCleared);
 
   return (
     <>
@@ -150,6 +158,7 @@ export function GamePage({ level, onOpenMenu, ...levelProps }: GamePageProps) {
             givens={startingCatCells(puzzle, startingCats, level)}
             paused={optionsOpen}
             bossWorld={isBoss ? world : undefined}
+            restores={isBoss && firstClear}
             {...levelProps}
           />
         ) : (
@@ -170,6 +179,8 @@ function Level({
   reward,
   paused,
   bossWorld,
+  restores,
+  onOpenMap,
 }: LevelProps) {
   const text = useText();
   const { options } = useOptions();
@@ -259,6 +270,18 @@ function Level({
             );
           })}
         </div>
+      )}
+      {state.status === 'won' && restores && bossWorld !== undefined && (
+        <Restoration
+          palette={catPalette(worldCat(bossWorld))}
+          name={text.catNames[worldCat(bossWorld)]}
+          title={text.restoredTitle}
+          message={text.restoredMessage(bossWorld)}
+          catLabel={text.restoredCatLabel(text.catNames[worldCat(bossWorld)])}
+          backLabel={text.backToMap}
+          replayLabel={text.replayRestoration}
+          onBack={onOpenMap}
+        />
       )}
       {state.status === 'won' && (
         <div className="game-page-end">

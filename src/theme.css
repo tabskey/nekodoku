@@ -40,6 +40,8 @@
   /* The card behind the selected cat on the menu, the same in both modes. */
   --cat-card: #f7a8b8;
   --cat-card-shadow: rgba(0, 0, 0, 0.22);
+  /* Behind the restoration, cream in both modes for the black silhouette. */
+  --restore-bg: #f6ecd4;
 
   --zone-0: #f7a8b8;
   --zone-1: #ffd66b;
@@ -50,14 +52,35 @@
   --zone-6: #7fded1;
   --zone-7: #e2cfa6;
   --zone-8: #d5d3df;
+  /* Zones 9 to 11 (10x10 and up) reuse a base color under a pattern, so they
+     differ from zones 0, 2 and 3 by more than color. 3 px steps on whole
+     pixels keep them crisp: a checkerboard, then horizontal, then vertical
+     stripes, as in the "Boss 12x12" artboard (whose 45° stripes would blur). */
+  --zone-stripe: rgba(23, 16, 42, 0.16);
+  --zone-9:
+    repeating-conic-gradient(var(--zone-stripe) 0 25%, transparent 0 50%) 0 0 /
+      6px 6px,
+    #f7a8b8;
+  --zone-10:
+    repeating-linear-gradient(
+      0deg,
+      var(--zone-stripe) 0 3px,
+      transparent 3px 6px
+    ),
+    #8ecdf7;
+  --zone-11:
+    repeating-linear-gradient(
+      90deg,
+      var(--zone-stripe) 0 3px,
+      transparent 3px 6px
+    ),
+    #a9dd8a;
   /* Display: titles, numbers, button labels. Body: rules, descriptions.
      Press Start 2P is drawn on an 8 px grid, so its sizes stay on 4 px steps. */
   --font-display: 'Press Start 2P', monospace;
   --font-body: 'Pixelify Sans', system-ui, sans-serif;
   --display-large: 16px;
   --display-small: 12px;
-
-  /* Zones 9 to 11 (10x10 and up) are still to be chosen by the owner. */
 }
 
 :root[data-theme='light'] {

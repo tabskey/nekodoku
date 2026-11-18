@@ -56,6 +56,12 @@ export const en: Text = {
   bestScoreNote: (score) => `best ${score}`,
   worldLabel: (world) => `World ${world}`,
   boss: 'Boss',
+  restoredTitle: 'Cat restored!',
+  restoredMessage: (world) =>
+    `World ${world}'s ghost is a cat again and joined your collection.`,
+  restoredCatLabel: (name) => `${name}, the restored cat, full body`,
+  backToMap: 'Back to the map',
+  replayRestoration: 'Watch the restoration again',
   bossScene: "The world's scenery, with the cat's ghost waiting",
   finalScore: (score) => `${score} points`,
   reward: (coins, fish) =>
