@@ -1,13 +1,19 @@
 // The level being played. Lives only in memory: a level in progress is
-// never saved (see Saving in docs/GAME_RULES.md). Lives, score and time
-// arrive in Phase 5.
-import { isSolved } from '../game/solver';
+// never saved (see Saving in docs/GAME_RULES.md).
+import {
+  BASE_SCORE,
+  LIVES_PER_LEVEL,
+  scoreAfterMistake,
+} from '../game/scoring';
+import { isSolutionCell, isSolved } from '../game/solver';
 import type { CellMark, SolvedPuzzle, StrokeMode } from '../game/types';
 
 export interface LevelState {
   puzzle: SolvedPuzzle;
   marks: CellMark[];
-  status: 'playing' | 'won';
+  lives: number;
+  score: number;
+  status: 'playing' | 'won' | 'lost';
   /** The cat just placed on its solution cell, for the happy frame. */
   lastCorrectCat?: number;
 }
@@ -15,12 +21,15 @@ export interface LevelState {
 export type LevelAction =
   | { type: 'tapCell'; index: number }
   | { type: 'placeCat'; index: number }
-  | { type: 'strokeCells'; mode: StrokeMode; indices: number[] };
+  | { type: 'strokeCells'; mode: StrokeMode; indices: number[] }
+  | { type: 'restart' };
 
 export function createLevel(puzzle: SolvedPuzzle): LevelState {
   return {
     puzzle,
     marks: new Array(puzzle.size * puzzle.size).fill('empty'),
+    lives: LIVES_PER_LEVEL,
+    score: BASE_SCORE,
     status: 'playing',
   };
 }
@@ -43,6 +52,8 @@ export function levelReducer(
   state: LevelState,
   action: LevelAction,
 ): LevelState {
+  // Retry is always allowed and has no limit.
+  if (action.type === 'restart') return createLevel(state.puzzle);
   if (state.status !== 'playing') return state;
   const marks = [...state.marks];
 
@@ -52,13 +63,21 @@ export function levelReducer(
       return withWin({ ...state, marks });
 
     case 'placeCat': {
-      marks[action.index] = 'cat';
-      const correct = state.puzzle.solution.includes(action.index);
-      return withWin({
+      if (isSolutionCell(state.puzzle, action.index)) {
+        marks[action.index] = 'cat';
+        return withWin({ ...state, marks, lastCorrectCat: action.index });
+      }
+      // A mistake: the cat is rejected, the cell keeps an x, a life is lost.
+      marks[action.index] = 'marked';
+      const lives = state.lives - 1;
+      return {
         ...state,
         marks,
-        lastCorrectCat: correct ? action.index : undefined,
-      });
+        lives,
+        score: scoreAfterMistake(state.score),
+        status: lives === 0 ? 'lost' : 'playing',
+        lastCorrectCat: undefined,
+      };
     }
 
     case 'strokeCells': {
