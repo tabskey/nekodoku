@@ -29,10 +29,17 @@ interface MenuPageProps {
   onPlay: (level: number) => void;
   onOpenOptions: () => void;
   onOpenShop: () => void;
+  /** The level just cleared: the cat walks from its tile to the next one. */
+  walkFrom?: number;
 }
 
 /** The home screen: the selected cat, the world map with replay, and Play. */
-export function MenuPage({ onPlay, onOpenOptions, onOpenShop }: MenuPageProps) {
+export function MenuPage({
+  onPlay,
+  onOpenOptions,
+  onOpenShop,
+  walkFrom,
+}: MenuPageProps) {
   const text = useText();
   const { profile } = useProfile();
   const nextLevel = profile.levelsCleared + 1;
@@ -42,10 +49,23 @@ export function MenuPage({ onPlay, onOpenOptions, onOpenShop }: MenuPageProps) {
   const [world, setWorld] = useState(currentWorld);
   const locked = world > currentWorld;
   const first = worldStart(world);
+  const length = worldLength(world);
+  // The tile tapped: the cat walks there, then the level opens.
+  const [destination, setDestination] = useState<number>();
+  // The walk after a win plays once, on the world it happened in.
+  const [walkStart, setWalkStart] = useState(walkFrom);
+  // The cat waits on the current level, or at the Boss of a cleared world.
+  const home = world === currentWorld ? nextLevel - first : length - 1;
+  const catFrom =
+    walkStart !== undefined && walkStart >= first && walkStart < first + length
+      ? walkStart - first
+      : undefined;
 
   const swipeStart = useRef<number | undefined>(undefined);
   function changeWorld(step: number) {
     setWorld((w) => Math.min(lastViewable, Math.max(1, w + step)));
+    setDestination(undefined);
+    setWalkStart(undefined);
   }
   function handleUp(event: PointerEvent<HTMLElement>) {
     if (swipeStart.current === undefined) return;
@@ -55,7 +75,7 @@ export function MenuPage({ onPlay, onOpenOptions, onOpenShop }: MenuPageProps) {
     if (Math.abs(dx) > SWIPE_PX) changeWorld(dx < 0 ? 1 : -1);
   }
 
-  const tiles = Array.from({ length: worldLength(world) }, (_, i) => {
+  const tiles = Array.from({ length }, (_, i) => {
     const level = first + i;
     const { isBoss } = levelConfig(level);
     const state: TileState =
@@ -137,10 +157,28 @@ export function MenuPage({ onPlay, onOpenOptions, onOpenShop }: MenuPageProps) {
           ))}
         </div>
         <WorldPath
+          key={world}
           tiles={tiles}
           label={text.worldPath(world)}
           dimmed={locked}
-          onSelect={(i) => onPlay(first + i)}
+          onSelect={setDestination}
+          cat={
+            locked
+              ? undefined
+              : (walking) => (
+                  <CatSprite
+                    palette={catPalette(profile.selectedCat)}
+                    pose="walk"
+                    pixelSize={2}
+                    walking={walking}
+                  />
+                )
+          }
+          catAt={destination ?? home}
+          catFrom={catFrom}
+          onArrive={() => {
+            if (destination !== undefined) onPlay(first + destination);
+          }}
         />
         {locked && (
           <p className="menu-page-locked">{text.lockedWorld(world - 1)}</p>

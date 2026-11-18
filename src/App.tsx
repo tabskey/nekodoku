@@ -18,6 +18,13 @@ export function App() {
     level: number;
     reward: Reward;
   }>();
+  // Set when returning to the menu right after a win, so the cat walks on.
+  const [walkFrom, setWalkFrom] = useState<number>();
+
+  function openMenu(cleared?: number) {
+    setWalkFrom(cleared);
+    setScreen('menu');
+  }
 
   function handleCleared(score: number, seconds: number) {
     // Same rule the profile applies, read before the profile changes.
@@ -32,20 +39,22 @@ export function App() {
   }
 
   if (screen === 'options') {
-    return <OptionsPage onBack={() => setScreen('menu')} />;
+    return <OptionsPage onBack={() => openMenu()} />;
   }
   if (screen === 'shop') {
-    return <ShopPage onBack={() => setScreen('menu')} />;
+    return <ShopPage onBack={() => openMenu()} />;
   }
   if (screen === 'menu') {
     return (
       <MenuPage
         onPlay={(next) => {
+          setLastClear(undefined);
           setLevel(next);
           setScreen('game');
         }}
         onOpenOptions={() => setScreen('options')}
         onOpenShop={() => setScreen('shop')}
+        walkFrom={walkFrom}
       />
     );
   }
@@ -60,7 +69,9 @@ export function App() {
       onCleared={handleCleared}
       reward={lastClear?.level === level ? lastClear.reward : undefined}
       onNextLevel={() => setLevel(level + 1)}
-      onOpenMenu={() => setScreen('menu')}
+      onOpenMenu={() =>
+        openMenu(lastClear?.level === level ? level : undefined)
+      }
     />
   );
 }

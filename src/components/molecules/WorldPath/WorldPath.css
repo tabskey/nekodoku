@@ -3,7 +3,9 @@
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: center;
-  gap: 8px;
+  /* Rows sit far enough apart for the cat standing on a tile. */
+  gap: 32px 8px;
+  position: relative;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -69,4 +71,20 @@
 .world-path-note {
   color: var(--gold-text);
   font-size: 0.75rem;
+}
+
+.world-path-cat {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.world-path-cat > div {
+  display: flex;
+}
+
+/* Mirrors the cat when it walks back along the path. */
+.world-path-cat-left {
+  transform: scaleX(-1);
 }

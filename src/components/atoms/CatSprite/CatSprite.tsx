@@ -9,7 +9,7 @@ import {
 
 interface CatSpriteProps {
   palette: CatPalette;
-  /** 'head' is the icon (default); 'full' is the whole sitting cat. */
+  /** 'head' is the icon (default); 'full' is the whole sitting cat; 'walk' is the side view on the map. */
   pose?: CatPose;
   /** Size of one sprite pixel in CSS pixels. The head is 12x12 sprite pixels, the full cat 16x18. */
   pixelSize?: number;
@@ -19,9 +19,12 @@ interface CatSpriteProps {
   label?: string;
   /** Shows the happy frame for a moment when the sprite appears (a correct move). */
   happy?: boolean;
+  /** Plays the walk cycle. Only the 'walk' pose has a second frame. */
+  walking?: boolean;
 }
 
 const HAPPY_MS = 700;
+const WALK_FRAME_MS = 150;
 
 interface PixelRun {
   x: number;
@@ -84,6 +87,20 @@ function useHappy(happy: boolean): boolean {
   return showing;
 }
 
+// Alternates between the two walk frames while `enabled` is true.
+function useStep(enabled: boolean): boolean {
+  const [step, setStep] = useState(false);
+
+  useEffect(() => {
+    if (!enabled) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const timer = window.setInterval(() => setStep((s) => !s), WALK_FRAME_MS);
+    return () => window.clearInterval(timer);
+  }, [enabled]);
+
+  return enabled && step;
+}
+
 export function CatSprite({
   palette,
   pose = 'head',
@@ -91,11 +108,20 @@ export function CatSprite({
   blink = true,
   label,
   happy = false,
+  walking = false,
 }: CatSpriteProps) {
   const closed = useBlink(blink);
   const showHappy = useHappy(happy);
+  const stepping = useStep(walking);
   const frames = CAT_POSES[pose];
-  const rows = showHappy ? frames.happy : closed ? frames.closed : frames.open;
+  const rows =
+    stepping && frames.step
+      ? frames.step
+      : showHappy
+        ? frames.happy
+        : closed
+          ? frames.closed
+          : frames.open;
   // Heads are drawn in columns 0-10; column 11 is always empty.
   // Shift right by half a sprite pixel, rounded to whole CSS px so it stays crisp.
   const offsetX = Math.round(pixelSize / 2);
