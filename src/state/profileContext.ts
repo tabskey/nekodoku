@@ -29,3 +29,10 @@ export function useOptions(): {
       dispatch({ type: 'setOption', key, value } as ProfileAction),
   };
 }
+
+// The page reaches the backup code through state, keeping the layer rule.
+export {
+  decodeBackup,
+  encodeBackup,
+  type BackupResult,
+} from '../storage/backup';

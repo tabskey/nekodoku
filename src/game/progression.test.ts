@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { generate } from './generator';
+import { SHOP_CATS } from './shop';
 import {
   levelConfig,
   startingCatCells,
   worldLength,
+  worldCat,
   worldStart,
 } from './progression';
 
@@ -82,5 +84,15 @@ describe('worldStart', () => {
         levelInWorld: 1,
       });
     }
+  });
+});
+
+describe('worldCat', () => {
+  it('gives every world a cat that is never a shop cat', () => {
+    const shopIds = SHOP_CATS.map((cat) => cat.id);
+    for (let world = 1; world <= 12; world++) {
+      expect(shopIds).not.toContain(worldCat(world));
+    }
+    expect(worldCat(1)).toBe(worldCat(1));
   });
 });

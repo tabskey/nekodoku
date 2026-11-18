@@ -23,7 +23,7 @@ There is no backend. GitHub Pages serves the app from `/<repo-name>/`, so Vite's
 One workflow in `.github/workflows/deploy.yml`, triggered on every push to `main` and on pull requests:
 
 1. `actions/checkout`, then `actions/setup-node` with npm cache.
-2. `npm ci`, `npm run lint`, `npm test`, `npm run build`.
+2. `npm ci --ignore-scripts` (no dependency needs an install script, and skipping them blocks a compromised package from running code), then `npm run lint`, `npm test`, `npm run build`.
 3. On `main` only: `actions/upload-pages-artifact` with `dist/`, then `actions/deploy-pages`.
 
 Pull requests run steps 1 and 2 only, so a broken change is caught before it reaches `main`.
@@ -45,7 +45,7 @@ If URL routes are ever added, use `HashRouter` (`/#/world/2`) or copy `index.htm
 A `Dockerfile` at the root gives a reproducible dev environment, so the project runs the same on any machine without installing Node on the host. It works unchanged with Podman.
 
 - It is for development only: dev server, tests, lint and build. GitHub Pages ignores it, and the workflow does not use it.
-- Base image `node:22-alpine`, `WORKDIR /app`, `npm ci` at build time.
+- Base image `node:22-alpine`, `WORKDIR /app`, running as the image's unprivileged `node` user. Only `package.json` and `package-lock.json` are copied in, and `npm ci --ignore-scripts` runs at build time; the source arrives through the volume, so nothing else from the host lands in the image.
 - The source is mounted as a volume so edits on the host reach the dev server. `node_modules` stays inside the container (anonymous volume) so host and container never share native binaries.
 - The dev server must listen on all interfaces inside the container: `npm run dev -- --host`.
 - On SELinux hosts (Fedora, Bazzite) the bind mount needs the `:Z` suffix.
@@ -203,7 +203,7 @@ Reducers call into `game/` for decisions and contain no rule logic of their own.
 
 ### Backup code
 
-Export encodes the `SaveData` JSON as a base64url string followed by a short checksum, which the player can copy. Import verifies the checksum (catching a mistyped or truncated code), decodes, validates the shape, runs migrations, shows a summary of what the code contains and replaces the profile after an in-page confirmation. No server is involved.
+Export encodes the `SaveData` JSON as a base64url string followed by a dot and an 8-digit hex checksum (`src/storage/backup.ts`), which the player can copy. Spaces and line breaks added while copying are ignored on import. Import verifies the checksum (catching a mistyped or truncated code), decodes, validates the shape, runs migrations, shows a summary of what the code contains and replaces the profile after an in-page confirmation. No server is involved.
 
 The code is a snapshot of the moment it was generated; it does not update itself. It is deliberately not encrypted: any key shipped to the browser is readable by the player, so encryption would only obscure the content. Tamper-proof progress needs a server; see `docs/FUTURE_BACKEND.md`.
 
@@ -233,3 +233,4 @@ Sound effects are synthesized at runtime with the Web Audio API: short oscillato
 - `state/`: reducer tests for lives, score, win and loss, helps and purchases.
 - `storage/`: migration and backup round-trip tests.
 - Components: light. Their logic is in the layers above.
+- Coverage: SonarQube Cloud's quality gate asks for 80% coverage on new code. It is measured on `src/game/`, `src/storage/` and the reducers in `src/state/`, where the rules live. Components, pages, text files and the browser glue (providers, hooks around timers and workers, `App.tsx`, `main.tsx`) are listed in `sonar.coverage.exclusions` in `sonar-project.properties`: still analyzed for bugs and security, not counted for coverage. New logic goes in the covered layers, never in a component to dodge the rule.

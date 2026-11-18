@@ -99,3 +99,12 @@ export function startingCatCells(
 ): number[] {
   return shuffle(puzzle.solution, createRng(level)).slice(0, count);
 }
+
+// Placeholder world cats (proposed): the world-cat palettes in turn, until
+// each world has its own generated cat. World cats are never sold.
+const WORLD_CATS = ['orange', 'gray', 'black'];
+
+/** The cat restored by beating `world`'s Boss. */
+export function worldCat(world: number): string {
+  return WORLD_CATS[(world - 1) % WORLD_CATS.length];
+}

@@ -1,3 +1,4 @@
+import { useRef, useState, type PointerEvent } from 'react';
 import { Button } from '../../components/atoms/Button/Button';
 import { CatSprite } from '../../components/atoms/CatSprite/CatSprite';
 import {
@@ -8,13 +9,21 @@ import {
   WorldPath,
   type TileState,
 } from '../../components/molecules/WorldPath/WorldPath';
-import { levelConfig, worldLength, worldStart } from '../../game/progression';
+import {
+  levelConfig,
+  worldCat,
+  worldLength,
+  worldStart,
+} from '../../game/progression';
 import { useText } from '../../i18n/useText';
 import { useProfile } from '../../state/profileContext';
 import './MenuPage.css';
 
 // SVG fill cannot read CSS variables, so the Boss ghost takes the text color.
 const GHOST = silhouettePalette('currentColor');
+// A horizontal drag longer than this changes world (see Board input in
+// docs/ARCHITECTURE.md).
+const SWIPE_PX = 50;
 
 interface MenuPageProps {
   onPlay: (level: number) => void;
@@ -22,13 +31,29 @@ interface MenuPageProps {
   onOpenShop: () => void;
 }
 
-/** The home screen: the selected cat, the path to the next Boss, and Play. */
+/** The home screen: the selected cat, the world map with replay, and Play. */
 export function MenuPage({ onPlay, onOpenOptions, onOpenShop }: MenuPageProps) {
   const text = useText();
   const { profile } = useProfile();
   const nextLevel = profile.levelsCleared + 1;
-  const { world } = levelConfig(nextLevel);
+  const currentWorld = levelConfig(nextLevel).world;
+  // Worlds up to the current one are open; the next one shows as locked.
+  const lastViewable = currentWorld + 1;
+  const [world, setWorld] = useState(currentWorld);
+  const locked = world > currentWorld;
   const first = worldStart(world);
+
+  const swipeStart = useRef<number | undefined>(undefined);
+  function changeWorld(step: number) {
+    setWorld((w) => Math.min(lastViewable, Math.max(1, w + step)));
+  }
+  function handleUp(event: PointerEvent<HTMLElement>) {
+    if (swipeStart.current === undefined) return;
+    const dx = event.clientX - swipeStart.current;
+    swipeStart.current = undefined;
+    // Swipe left for the next world, right for the previous one.
+    if (Math.abs(dx) > SWIPE_PX) changeWorld(dx < 0 ? 1 : -1);
+  }
 
   const tiles = Array.from({ length: worldLength(world) }, (_, i) => {
     const level = first + i;
@@ -39,15 +64,27 @@ export function MenuPage({ onPlay, onOpenOptions, onOpenShop }: MenuPageProps) {
         : level === nextLevel
           ? 'current'
           : 'locked';
+    const best = profile.bestScores[level];
+    const tileLabel = isBoss
+      ? text.bossTileLabel(state)
+      : text.tileLabel(i + 1, state);
+    // A beaten Boss shows its restored cat in color; otherwise the ghost waits.
+    const bossSprite = (
+      <CatSprite
+        palette={state === 'cleared' ? catPalette(worldCat(world)) : GHOST}
+        pixelSize={3}
+        blink={state === 'cleared'}
+      />
+    );
     return {
       state,
       isBoss,
-      label: isBoss ? text.bossTileLabel(state) : text.tileLabel(i + 1, state),
-      content: isBoss ? (
-        <CatSprite palette={GHOST} pixelSize={3} blink={false} />
-      ) : (
-        i + 1
-      ),
+      label:
+        best === undefined
+          ? tileLabel
+          : `${tileLabel}, ${text.bestScoreNote(best)}`,
+      content: isBoss ? bossSprite : i + 1,
+      note: best === undefined ? undefined : String(best),
     };
   });
 
@@ -60,9 +97,54 @@ export function MenuPage({ onPlay, onOpenOptions, onOpenShop }: MenuPageProps) {
         pixelSize={6}
         label={text.selectedCat}
       />
-      <section className="menu-page-world">
-        <h2>{text.worldLabel(world)}</h2>
-        <WorldPath tiles={tiles} label={text.worldPath(world)} />
+      <section
+        className="menu-page-world"
+        onPointerDown={(event) => (swipeStart.current = event.clientX)}
+        onPointerUp={handleUp}
+        onPointerCancel={() => (swipeStart.current = undefined)}
+      >
+        <div className="menu-page-world-title">
+          <button
+            type="button"
+            className="menu-page-arrow"
+            aria-label={text.previousWorld}
+            disabled={world === 1}
+            onClick={() => changeWorld(-1)}
+          >
+            &lt;
+          </button>
+          <h2>{text.worldLabel(world)}</h2>
+          <button
+            type="button"
+            className="menu-page-arrow"
+            aria-label={text.nextWorld}
+            disabled={world === lastViewable}
+            onClick={() => changeWorld(1)}
+          >
+            &gt;
+          </button>
+        </div>
+        <div
+          className="menu-page-dots"
+          role="img"
+          aria-label={text.worldDots(world, lastViewable)}
+        >
+          {Array.from({ length: lastViewable }, (_, i) => (
+            <span
+              key={i}
+              className={i + 1 === world ? 'menu-page-dot-current' : undefined}
+            />
+          ))}
+        </div>
+        <WorldPath
+          tiles={tiles}
+          label={text.worldPath(world)}
+          dimmed={locked}
+          onSelect={(i) => onPlay(first + i)}
+        />
+        {locked && (
+          <p className="menu-page-locked">{text.lockedWorld(world - 1)}</p>
+        )}
       </section>
       <div className="menu-page-actions">
         <Button onClick={() => onPlay(nextLevel)}>{text.play}</Button>

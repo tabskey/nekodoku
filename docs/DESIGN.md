@@ -116,6 +116,7 @@ Day mode neutrals, as used in the light row of the mockup **(proposed)**:
 | Shadow under a card button | `#d9c9a3` |
 | Muted text | `#5a4b70` |
 | Board background, behind the cells | `#5a4b70` |
+| Warning and error text | `#a8381f` (coral `#ff7a59` in night mode) |
 | Text | `#2a1f3d` |
 | Score and other gold text | `#7a4e00` |
 

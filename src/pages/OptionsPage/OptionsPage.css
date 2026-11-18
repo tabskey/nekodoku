@@ -13,3 +13,59 @@
   font-size: var(--display-large);
   font-weight: normal;
 }
+
+.backup-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.backup-section h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.backup-section-hint,
+.backup-section-status {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.backup-section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.backup-section-code {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  background: var(--card);
+  color: var(--text-on-light);
+  font-family: monospace;
+  font-size: 0.8rem;
+  word-break: break-all;
+  resize: vertical;
+}
+
+.backup-section-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.backup-section-confirm p {
+  margin: 0;
+}
+
+.backup-section-error {
+  margin: 0;
+  color: var(--danger-text);
+}
