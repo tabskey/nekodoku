@@ -142,6 +142,7 @@ describe('performance', () => {
     const elapsed = performance.now() - start;
 
     expect(count).toBe(152);
-    expect(elapsed).toBeLessThan(500);
+    // ~5 ms cold on a desktop; the margin absorbs slow CI runners.
+    expect(elapsed).toBeLessThan(50);
   });
 });
