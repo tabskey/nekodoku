@@ -1,9 +1,14 @@
 /* The map: ground, a path of dots, and tiles placed along it. Positions
    come from pathLayout.ts in whole pixels. */
 .world-path {
+  display: flex;
+  justify-content: center;
+  background: var(--map-ground);
+}
+
+.world-path-field {
   position: relative;
   flex: none;
-  background: var(--map-ground);
 }
 
 .world-path ol {
@@ -92,6 +97,32 @@
   position: absolute;
   display: flex;
   pointer-events: none;
+}
+
+/* Beside the tile, away from where the path comes in, its bottom 6px above
+   the path line. Sized for the Boss, alone on its row (see pathLayout.ts). */
+.world-path-beside {
+  position: absolute;
+  top: 20px;
+  display: flex;
+  transform: translateY(-100%);
+}
+
+.world-path-beside-left {
+  right: calc(100% + 4px);
+}
+
+.world-path-beside-right {
+  left: calc(100% + 4px);
+}
+
+.world-path-boss.world-path-current {
+  background: var(--gold);
+  box-shadow: 0 4px 0 var(--gold-shadow);
+}
+
+.world-path-boss.world-path-locked {
+  color: var(--gold-text);
 }
 
 /* Mirrors the cat when it walks left. */

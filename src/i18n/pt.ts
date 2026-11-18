@@ -4,7 +4,7 @@ export const pt = {
   levelLabel: (level: number) => `Fase ${level}`,
   loading: 'Preparando o tabuleiro…',
   won: 'Resolvido!',
-  shopButton: 'Loja',
+  shopButton: 'Lojinha',
   shopTitle: 'Loja',
   todaysCats: 'Gatos de hoje',
   todaysCatsHint:
@@ -31,12 +31,25 @@ export const pt = {
     calico: 'Tricolor',
   } as Record<string, string>,
   appName: 'Nekodoku',
+  tagline: 'Um gatinho por linha, coluna e cor.',
+  play: 'Jogar',
+  worldLevel: (world: number, level: number) =>
+    `Mundo ${world} · fase ${level}`,
+  worldBoss: (world: number) => `Mundo ${world} · Boss`,
+  towardBoss: 'Rumo ao Boss',
+  bossInfo: (size: number) =>
+    `Boss do mundo: tabuleiro ${size}x${size} e um gatinho pra resgatar.`,
+  catsButton: 'Gatinhos',
+  bestTime: (size: number, time: string) =>
+    `Recorde no ${size}x${size}: ${time}`,
+  mapHint: 'Toque numa fase liberada pra o gatinho andar até ela.',
   playLevel: (level: number) => `Jogar fase ${level}`,
   playBoss: 'Enfrentar o chefe',
   menuButton: 'Menu',
   worldPath: (world: number) => `Caminho do mundo ${world}`,
   tileLabel: (level: number, state: 'cleared' | 'current' | 'locked') =>
     `Fase ${level}: ${{ cleared: 'concluída', current: 'atual', locked: 'bloqueada' }[state]}`,
+  bossTile: 'BOSS',
   bossTileLabel: (state: 'cleared' | 'current' | 'locked') =>
     `Chefe: ${{ cleared: 'vencido', current: 'atual', locked: 'bloqueado' }[state]}`,
   selectedCat: 'Seu gato',

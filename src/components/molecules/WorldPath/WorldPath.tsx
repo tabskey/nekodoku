@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
+import type { MapPalette } from './mapPalettes';
 import { pathLayout } from './pathLayout';
 import './WorldPath.css';
 
@@ -13,6 +20,8 @@ export interface PathTile {
   content: ReactNode;
   /** Shown under the tile, e.g. the best score. */
   note?: string;
+  /** Drawn beside the tile, above the path line, e.g. the Boss's ghost. */
+  beside?: ReactNode;
 }
 
 interface WorldPathProps {
@@ -22,6 +31,8 @@ interface WorldPathProps {
   onSelect: (index: number) => void;
   /** Dims the whole path, for a world not yet unlocked. */
   dimmed?: boolean;
+  /** Ground and path colors of the world's biome and time of day. */
+  palette: MapPalette;
   /** The selected cat, 16x18 sprite pixels at 3x. Gets whether it is walking. */
   cat?: (walking: boolean) => ReactNode;
   /** Index of the tile the cat walks to, dot by dot along the path. */
@@ -44,6 +55,7 @@ export function WorldPath({
   label,
   onSelect,
   dimmed = false,
+  palette,
   cat,
   catAt = 0,
   catFrom = catAt,
@@ -75,54 +87,69 @@ export function WorldPath({
   return (
     <div
       className={`world-path${dimmed ? ' world-path-dimmed' : ''}`}
-      style={{ width, height }}
+      style={
+        {
+          '--map-ground': palette.ground,
+          '--map-path': palette.path,
+        } as CSSProperties
+      }
     >
-      {points.map((point, i) => (
-        <span
-          key={i}
-          className="world-path-dot"
-          style={{ left: point.x - 3, top: point.y - 3 }}
-        />
-      ))}
-      <ol aria-label={label}>
-        {tiles.map((tile, i) => (
-          <li
+      <div className="world-path-field" style={{ width, height }}>
+        {points.map((point, i) => (
+          <span
             key={i}
-            className="world-path-stop"
-            style={{
-              left: points[tilePoints[i]].x,
-              top: points[tilePoints[i]].y,
-            }}
-          >
-            <button
-              type="button"
-              className={`world-path-tile world-path-${tile.state}${tile.isBoss ? ' world-path-boss' : ''}`}
-              aria-label={tile.label}
-              disabled={tile.state === 'locked'}
-              onClick={() => onSelect(i)}
-            >
-              <span aria-hidden="true">{tile.content}</span>
-            </button>
-            {tile.note && (
-              <span className="world-path-note" aria-hidden="true">
-                {tile.note}
-              </span>
-            )}
-          </li>
+            className="world-path-dot"
+            style={{ left: point.x - 3, top: point.y - 3 }}
+          />
         ))}
-      </ol>
-      {cat && (
-        <div
-          className={`world-path-cat${stand.left ? ' world-path-cat-left' : ''}`}
-          style={{
-            left: catPoint.x - CAT_HALF_WIDTH,
-            top: catPoint.y - CAT_FEET,
-          }}
-          aria-hidden="true"
-        >
-          {cat(stand.at !== target)}
-        </div>
-      )}
+        <ol aria-label={label}>
+          {tiles.map((tile, i) => (
+            <li
+              key={i}
+              className="world-path-stop"
+              style={{
+                left: points[tilePoints[i]].x,
+                top: points[tilePoints[i]].y,
+              }}
+            >
+              <button
+                type="button"
+                className={`world-path-tile world-path-${tile.state}${tile.isBoss ? ' world-path-boss' : ''}`}
+                aria-label={tile.label}
+                disabled={tile.state === 'locked'}
+                onClick={() => onSelect(i)}
+              >
+                <span aria-hidden="true">{tile.content}</span>
+              </button>
+              {tile.beside && (
+                <span
+                  className={`world-path-beside world-path-beside-${points[tilePoints[i] - 1]?.x < points[tilePoints[i]].x ? 'right' : 'left'}`}
+                  aria-hidden="true"
+                >
+                  {tile.beside}
+                </span>
+              )}
+              {tile.note && (
+                <span className="world-path-note" aria-hidden="true">
+                  {tile.note}
+                </span>
+              )}
+            </li>
+          ))}
+        </ol>
+        {cat && (
+          <div
+            className={`world-path-cat${stand.left ? ' world-path-cat-left' : ''}`}
+            style={{
+              left: catPoint.x - CAT_HALF_WIDTH,
+              top: catPoint.y - CAT_FEET,
+            }}
+            aria-hidden="true"
+          >
+            {cat(stand.at !== target)}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

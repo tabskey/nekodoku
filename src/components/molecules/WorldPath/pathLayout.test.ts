@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { DOT_PX, pathLayout } from './pathLayout';
 
 describe('pathLayout', () => {
-  it.each([1, 5, 7, 12, 20])('lays out %i tiles on whole pixels', (count) => {
+  it.each([2, 5, 7, 12, 20])('lays out %i tiles on whole pixels', (count) => {
     const { width, height, points, tilePoints } = pathLayout(count);
     expect(tilePoints).toHaveLength(count);
     expect(tilePoints[0]).toBe(0);
@@ -29,5 +29,16 @@ describe('pathLayout', () => {
     expect(tile(4).y).toBeLessThan(tile(0).y);
     expect(tile(4).x).toBe(tile(3).x);
     expect(tile(5).x).toBeLessThan(tile(4).x);
+  });
+
+  it('puts the Boss alone on the top row, centered', () => {
+    for (const count of [5, 7, 12, 20]) {
+      const { width, points, tilePoints } = pathLayout(count);
+      const boss = points[tilePoints[count - 1]];
+      expect(boss.x).toBe(width / 2);
+      for (const i of tilePoints.slice(0, -1)) {
+        expect(points[i].y).toBeGreaterThan(boss.y);
+      }
+    }
   });
 });

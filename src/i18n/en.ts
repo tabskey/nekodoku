@@ -29,12 +29,23 @@ export const en: Text = {
     calico: 'Calico',
   },
   appName: 'Nekodoku',
+  tagline: 'One cat per row, column and color.',
+  play: 'Play',
+  worldLevel: (world, level) => `World ${world} · level ${level}`,
+  worldBoss: (world) => `World ${world} · Boss`,
+  towardBoss: 'On to the Boss',
+  bossInfo: (size) =>
+    `World Boss: a ${size}x${size} board and a cat to rescue.`,
+  catsButton: 'Cats',
+  bestTime: (size, time) => `Best on ${size}x${size}: ${time}`,
+  mapHint: 'Tap an open level and your cat walks there.',
   playLevel: (level) => `Play level ${level}`,
   playBoss: 'Face the Boss',
   menuButton: 'Menu',
   worldPath: (world) => `World ${world} path`,
   tileLabel: (level, state) =>
     `Level ${level}: ${{ cleared: 'cleared', current: 'current', locked: 'locked' }[state]}`,
+  bossTile: 'BOSS',
   bossTileLabel: (state) =>
     `Boss: ${{ cleared: 'beaten', current: 'current', locked: 'locked' }[state]}`,
   selectedCat: 'Your cat',

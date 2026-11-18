@@ -7,7 +7,7 @@ The visual direction is retro pixel art on a dark plum background, with flat col
 The screens were mocked up on a design canvas:
 https://claude.ai/artifact/NfScKNVVf8ygQPLdGeih6o
 
-The canvas is private to the owner. The first two rows are the night mode; the third row repeats the menu, world map, 5x5 level, Boss and shop in day mode. The world map exists in one version only: the walking map. Its scene follows the mode: at night a dark blue ground, lilac path and blinking yellow fireflies; by day a light green ground with a sandy dirt path. The artboards:
+The canvas is private to the owner. The first two rows are the night mode; the third row repeats the menu, world map, 5x5 level, Boss and shop in day mode. The world map exists in one version only: the walking map. Its scene follows the world's time of day, not the mode (see Biomes in `docs/GAME_RULES.md`): at night a dark blue ground, lilac path and blinking yellow fireflies; by day a light green ground with a sandy dirt path. The artboards:
 
 | Artboard | What it shows |
 | --- | --- |

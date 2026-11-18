@@ -1,10 +1,12 @@
 import { useRef, useState, type PointerEvent } from 'react';
 import { Button } from '../../components/atoms/Button/Button';
 import { CatSprite } from '../../components/atoms/CatSprite/CatSprite';
+import { CurrencyBadge } from '../../components/atoms/CurrencyBadge/CurrencyBadge';
 import {
   catPalette,
   silhouettePalette,
 } from '../../components/atoms/CatSprite/catSprites';
+import { MAP_PALETTES } from '../../components/molecules/WorldPath/mapPalettes';
 import {
   WorldPath,
   type TileState,
@@ -15,9 +17,10 @@ import {
   worldLength,
   worldStart,
 } from '../../game/progression';
+import { worldScene } from '../../game/biomes';
 import { useText } from '../../i18n/useText';
 import { useProfile } from '../../state/profileContext';
-import './MenuPage.css';
+import './WorldPage.css';
 
 // SVG fill cannot read CSS variables, so the Boss ghost takes the text color.
 const GHOST = silhouettePalette('currentColor');
@@ -25,21 +28,15 @@ const GHOST = silhouettePalette('currentColor');
 // docs/ARCHITECTURE.md).
 const SWIPE_PX = 50;
 
-interface MenuPageProps {
+interface WorldPageProps {
   onPlay: (level: number) => void;
-  onOpenOptions: () => void;
-  onOpenShop: () => void;
+  onOpenMenu: () => void;
   /** The level just cleared: the cat walks from its tile to the next one. */
   walkFrom?: number;
 }
 
-/** The home screen: the selected cat, the world map with replay, and Play. */
-export function MenuPage({
-  onPlay,
-  onOpenOptions,
-  onOpenShop,
-  walkFrom,
-}: MenuPageProps) {
+/** The world map: the cat walks the path to a level, with replay of cleared worlds. */
+export function WorldPage({ onPlay, onOpenMenu, walkFrom }: WorldPageProps) {
   const text = useText();
   const { profile } = useProfile();
   const nextLevel = profile.levelsCleared + 1;
@@ -50,6 +47,7 @@ export function MenuPage({
   const locked = world > currentWorld;
   const first = worldStart(world);
   const length = worldLength(world);
+  const scene = worldScene(world);
   // The tile tapped: the cat walks there. A second tap on it opens the level
   // once the cat stands on it.
   const [destination, setDestination] = useState<number>();
@@ -93,14 +91,15 @@ export function MenuPage({
     const tileLabel = isBoss
       ? text.bossTileLabel(state)
       : text.tileLabel(i + 1, state);
-    // A beaten Boss shows its restored cat in color; otherwise the ghost waits.
-    const bossSprite = (
-      <CatSprite
-        palette={state === 'cleared' ? catPalette(worldCat(world)) : GHOST}
-        pixelSize={3}
-        blink={state === 'cleared'}
-      />
-    );
+    // Beside the Boss: its restored cat once beaten, else the floating ghost.
+    const bossSprite =
+      state === 'cleared' ? (
+        <CatSprite palette={catPalette(worldCat(world))} pixelSize={3} />
+      ) : (
+        <span className="world-page-ghost">
+          <CatSprite palette={GHOST} pixelSize={3} blink={false} />
+        </span>
+      );
     return {
       state,
       isBoss,
@@ -108,40 +107,50 @@ export function MenuPage({
         best === undefined
           ? tileLabel
           : `${tileLabel}, ${text.bestScoreNote(best)}`,
-      content: isBoss ? bossSprite : i + 1,
+      content: isBoss ? text.bossTile : i + 1,
+      beside: isBoss ? bossSprite : undefined,
       note: best === undefined ? undefined : String(best),
     };
   });
 
   return (
-    <main className="menu-page">
-      <h1>{text.appName}</h1>
-      <CatSprite
-        palette={catPalette(profile.selectedCat)}
-        pose="full"
-        pixelSize={6}
-        label={text.selectedCat}
-      />
+    <main className="world-page">
+      <header className="world-page-header">
+        <Button variant="card" onClick={onOpenMenu}>
+          {text.menuButton}
+        </Button>
+        <div className="world-page-balance">
+          <CurrencyBadge
+            amount={profile.coins}
+            label={text.coins(profile.coins)}
+          />
+          <CurrencyBadge
+            amount={profile.fish}
+            currency="fish"
+            label={text.fish(profile.fish)}
+          />
+        </div>
+      </header>
       <section
-        className="menu-page-world"
+        className="world-page-world"
         onPointerDown={(event) => (swipeStart.current = event.clientX)}
         onPointerUp={handleUp}
         onPointerCancel={() => (swipeStart.current = undefined)}
       >
-        <div className="menu-page-world-title">
+        <div className="world-page-world-title">
           <button
             type="button"
-            className="menu-page-arrow"
+            className="world-page-arrow"
             aria-label={text.previousWorld}
             disabled={world === 1}
             onClick={() => changeWorld(-1)}
           >
             &lt;
           </button>
-          <h2>{text.worldLabel(world)}</h2>
+          <h1>{text.worldLabel(world)}</h1>
           <button
             type="button"
-            className="menu-page-arrow"
+            className="world-page-arrow"
             aria-label={text.nextWorld}
             disabled={world === lastViewable}
             onClick={() => changeWorld(1)}
@@ -150,22 +159,26 @@ export function MenuPage({
           </button>
         </div>
         <div
-          className="menu-page-dots"
+          className="world-page-dots"
           role="img"
           aria-label={text.worldDots(world, lastViewable)}
         >
           {Array.from({ length: lastViewable }, (_, i) => (
             <span
               key={i}
-              className={i + 1 === world ? 'menu-page-dot-current' : undefined}
+              className={i + 1 === world ? 'world-page-dot-current' : undefined}
             />
           ))}
         </div>
+        <p className="world-page-hint">
+          {locked ? text.lockedWorld(world - 1) : text.mapHint}
+        </p>
         <WorldPath
           key={world}
           tiles={tiles}
           label={text.worldPath(world)}
           dimmed={locked}
+          palette={MAP_PALETTES[scene.biome][scene.time]}
           onSelect={(i) => {
             if (i === catTile) setOpening(true);
             else {
@@ -191,25 +204,14 @@ export function MenuPage({
             if (opening) onPlay(playLevel);
           }}
         />
-        {locked && (
-          <p className="menu-page-locked">{text.lockedWorld(world - 1)}</p>
-        )}
       </section>
-      <div className="menu-page-actions">
-        <Button onClick={() => onPlay(playLevel)}>
-          {levelConfig(playLevel).isBoss
-            ? text.playBoss
-            : text.playLevel(
-                playLevel - worldStart(levelConfig(playLevel).world) + 1,
-              )}
-        </Button>
-        <Button variant="card" onClick={onOpenShop}>
-          {text.shopButton}
-        </Button>
-        <Button variant="card" onClick={onOpenOptions}>
-          {text.optionsButton}
-        </Button>
-      </div>
+      <Button onClick={() => onPlay(playLevel)}>
+        {levelConfig(playLevel).isBoss
+          ? text.playBoss
+          : text.playLevel(
+              playLevel - worldStart(levelConfig(playLevel).world) + 1,
+            )}
+      </Button>
     </main>
   );
 }

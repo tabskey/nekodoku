@@ -103,10 +103,12 @@ Bought with coins at the moment of use. No per-level counters.
 - Each world is shown as a small board-style map: a path of tiles, one per level, ending at the Boss, with the world's cat waiting at the end as a silhouette until it is rescued.
 - The player's selected cat stands on the map tile of the current level. After a level is cleared, the cat walks along the path to the next tile, in the style of the world maps of classic platform games. Decided by the owner.
 - Tapping an unlocked tile makes the cat walk there. Tapping the same tile again opens its level once the cat stands on it, and the Play button opens the level of the tile the cat is on. Locked tiles do nothing. Decided by the owner.
-- **Biomes (proposed by the owner, details to be defined):** each world has a theme that sets the look of its map: ground and path colors, decorations (trees, palm trees, a river with a bridge, tombstones...) and the layout of the path. Biomes rotate across worlds, so a world always has the same biome.
+- **Biomes (proposed by the owner, details to be defined):** each world has a theme that sets the look of its map: ground and path colors, decorations (trees, palm trees, a river with a bridge, tombstones...) and the layout of the path.
+- Each world also has a time of day: night, day or afternoon (pink sky). The biome and the time are picked together at random, seeded by the world number, so a world always looks the same; two worlds in a row never get the same pair. World 1 is the meadow at night. The map follows the world's time of day, not the player's night or day mode. Decided by the owner (`src/game/biomes.ts`).
+- For now the biomes are meadow and beach, with placeholder colors and no decorations. More biomes and times are added as the owner draws them.
 - A biome ties the world together: its map, its Boss scenery and, ideally, the cat restored there share the same theme (a graveyard world restoring a black cat, a beach world restoring an orange one) **(proposed)**.
 - Starting biomes **(proposed)**: meadow, forest, beach, river, graveyard, snow. The graveyard stays cute, not scary, in both modes.
-- Every biome has a night and a day palette, like the Boss sceneries.
+- Every biome has a palette for each time of day.
 - Decorations never sit on the path or touch a level tile, so the tiles and the cat always read clearly.
 - Starting set **(names proposed)**: Mingau (white, default), Caramelo (orange), Fumaça (gray), Meia-noite (black).
 

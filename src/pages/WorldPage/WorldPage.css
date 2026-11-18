@@ -1,37 +1,54 @@
-.menu-page {
+/* Layout from the "Mapa do mundo" artboard (docs/DESIGN.md). */
+.world-page {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 24px;
+  gap: 14px;
   max-width: 432px;
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: 24px;
 }
 
-.menu-page h1 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: var(--display-large);
-  font-weight: normal;
+.world-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.menu-page-world {
+.world-page-balance {
+  display: flex;
+  gap: 8px;
+}
+
+.world-page-balance .currency-badge {
+  padding: 10px 12px;
+  background: var(--panel);
+}
+
+.world-page-world {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
+  gap: 10px;
   /* Vertical scrolling still works; a horizontal swipe changes world. */
   touch-action: pan-y;
 }
 
-.menu-page-world-title {
+.world-page-world-title {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
-.menu-page-arrow {
+.world-page h1 {
+  flex: 1;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: normal;
+  text-transform: uppercase;
+  text-shadow: 3px 3px 0 var(--primary);
+}
+
+.world-page-arrow {
   width: 44px;
   height: 44px;
   border: none;
@@ -43,43 +60,51 @@
   cursor: pointer;
 }
 
-.menu-page-arrow:disabled {
+.world-page-arrow:disabled {
   opacity: 0.3;
   cursor: default;
 }
 
-.menu-page-dots {
+.world-page-dots {
   display: flex;
   gap: 6px;
 }
 
-.menu-page-dots span {
+.world-page-dots span {
   width: 8px;
   height: 8px;
   background: var(--panel);
 }
 
-.menu-page-dots .menu-page-dot-current {
+.world-page-dots .world-page-dot-current {
   background: var(--gold);
 }
 
-.menu-page-locked {
+.world-page-hint {
   margin: 0;
   color: var(--text-muted);
-  text-align: center;
+  font-size: 16px;
 }
 
-.menu-page-world h2 {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 1rem;
-  font-weight: normal;
+.world-page > .button {
+  min-height: 52px;
+  text-transform: uppercase;
 }
 
-.menu-page-actions {
+/* The ghost bobs beside the Boss, 4px in two steps so it stays crisp. */
+.world-page-ghost {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 100%;
-  max-width: 240px;
+  animation: world-page-float 1.6s steps(2) infinite;
+}
+
+@keyframes world-page-float {
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-page-ghost {
+    animation: none;
+  }
 }

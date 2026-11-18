@@ -1,6 +1,8 @@
 // Where the tiles and path dots of one world sit on its map. The path snakes
 // upward from the bottom left, COLUMNS tiles per row, so any world length
-// fits the same width. Every value is a whole pixel so sprites stay crisp.
+// fits the same width. The last tile, the Boss, sits alone in a top row,
+// centered, with room beside it for its ghost. Every value is a whole pixel
+// so sprites stay crisp.
 
 export const COLUMNS = 4;
 export const COLUMN_PX = 72;
@@ -27,9 +29,12 @@ export interface PathLayout {
 }
 
 export function pathLayout(tileCount: number): PathLayout {
-  const rows = Math.ceil(tileCount / COLUMNS);
+  const width = COLUMNS * COLUMN_PX;
+  const levels = tileCount - 1;
+  const rows = Math.ceil(levels / COLUMNS) + 1;
   const height = TOP_PX + (rows - 1) * ROW_PX + BOTTOM_PX;
   const centers = Array.from({ length: tileCount }, (_, i) => {
+    if (i === levels) return { x: width / 2, y: TOP_PX };
     const row = Math.floor(i / COLUMNS);
     const step = i % COLUMNS;
     // Even rows go right, odd rows come back left.
@@ -43,18 +48,24 @@ export function pathLayout(tileCount: number): PathLayout {
   const points: Point[] = [centers[0]];
   const tilePoints = [0];
   for (let i = 1; i < tileCount; i++) {
-    const from = centers[i - 1];
     const to = centers[i];
-    // Consecutive tiles share a row or a column, so this is a straight line.
-    const steps = (Math.abs(to.x - from.x) + Math.abs(to.y - from.y)) / DOT_PX;
-    for (let s = 1; s <= steps; s++) {
-      points.push({
-        x: from.x + ((to.x - from.x) / steps) * s,
-        y: from.y + ((to.y - from.y) / steps) * s,
-      });
-    }
+    // Up first, then across: only the climb to the Boss needs both.
+    walk(points, { x: points[points.length - 1].x, y: to.y });
+    walk(points, to);
     tilePoints.push(points.length - 1);
   }
 
-  return { width: COLUMNS * COLUMN_PX, height, points, tilePoints };
+  return { width, height, points, tilePoints };
+}
+
+// Adds the dots of a straight line from the last point to `to`.
+function walk(points: Point[], to: Point) {
+  const from = points[points.length - 1];
+  const steps = (Math.abs(to.x - from.x) + Math.abs(to.y - from.y)) / DOT_PX;
+  for (let s = 1; s <= steps; s++) {
+    points.push({
+      x: from.x + ((to.x - from.x) / steps) * s,
+      y: from.y + ((to.y - from.y) / steps) * s,
+    });
+  }
 }

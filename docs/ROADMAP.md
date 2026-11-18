@@ -120,6 +120,7 @@ Goal: it feels like an installed game.
 - Web app manifest, icons and a service worker that caches the app for offline play.
 - Install check on Android and iPhone, and offline check in airplane mode.
 - World map walk: the selected cat walks along the path between tiles after a level is cleared, with the side-view walk cycle of its body type.
+- World map biomes: each world gets a biome and a time of day (night, day, afternoon), picked from the world number (see Biomes in `docs/GAME_RULES.md`). Starts with meadow and beach in placeholder colors; more biomes, times and decorations come as the owner draws them.
 - Boss scenery, ghost and restoration sequence, with the rotation of scenery drawings and the day and night palettes (see `docs/SPRITES.md`).
 - Zone textures or patterns for boards with more than 8 zones, up to the 12 zones of the largest board.
 - Zoom or an alternative input for 10x10 to 12x12 boards, where cells are smaller than a comfortable touch target.
