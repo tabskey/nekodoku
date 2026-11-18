@@ -9,12 +9,12 @@
 .game-page-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   width: 100%;
   max-width: 432px;
 }
 
-.game-page-rules {
+.game-page-icon-button {
   width: 44px;
   height: 44px;
   border: none;
@@ -28,7 +28,13 @@
   cursor: pointer;
 }
 
-.game-page-rules:active {
+.game-page-options {
+  margin-left: auto;
+  background: var(--card);
+  box-shadow: 0 4px 0 var(--card-shadow);
+}
+
+.game-page-icon-button:active {
   transform: translateY(4px);
   box-shadow: none;
 }

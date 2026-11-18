@@ -1,0 +1,13 @@
+.options-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 432px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.options-page h1 {
+  margin: 0;
+  font-size: 1.25rem;
+}

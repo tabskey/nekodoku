@@ -1,12 +1,12 @@
+import { resolveLanguage } from '../state/options';
+import { useOptions } from '../state/optionsContext';
 import { en } from './en';
 import { pt, type Text } from './pt';
 
-/**
- * The strings for the current language. Follows the device for now
- * (English if it asks for English, Portuguese otherwise).
- */
-// shortcut: ignores options.language, which arrives with the Options screen
-// in Phase 5; read it from the profile then.
+/** The strings for the language chosen in Options, or the device's. */
 export function useText(): Text {
-  return navigator.language.toLowerCase().startsWith('en') ? en : pt;
+  const { options } = useOptions();
+  return resolveLanguage(options.language, navigator.language) === 'en'
+    ? en
+    : pt;
 }

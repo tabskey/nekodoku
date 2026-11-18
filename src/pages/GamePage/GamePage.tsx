@@ -29,14 +29,21 @@ interface GamePageProps {
   coins: number;
   onSpendCoins: (amount: number) => void;
   onNextLevel: () => void;
+  onOpenOptions: () => void;
 }
 
-type LevelProps = Omit<GamePageProps, 'level'> & { puzzle: SolvedPuzzle };
+type LevelProps = Omit<GamePageProps, 'level' | 'onOpenOptions'> & {
+  puzzle: SolvedPuzzle;
+};
 
 const HELP_ACTIONS = { reveal: 'useReveal', eraser: 'useEraser' } as const;
 
 /** One level, from loading to solved. */
-export function GamePage({ level, ...levelProps }: GamePageProps) {
+export function GamePage({
+  level,
+  onOpenOptions,
+  ...levelProps
+}: GamePageProps) {
   const text = useText();
   const puzzle = usePuzzle(level);
   const [rulesOpen, setRulesOpen] = useState(false);
@@ -47,7 +54,15 @@ export function GamePage({ level, ...levelProps }: GamePageProps) {
         <h1>{text.levelLabel(level)}</h1>
         <button
           type="button"
-          className="game-page-rules"
+          className="game-page-icon-button game-page-options"
+          aria-label={text.optionsButton}
+          onClick={onOpenOptions}
+        >
+          ⚙
+        </button>
+        <button
+          type="button"
+          className="game-page-icon-button game-page-rules"
           aria-label={text.rulesButton}
           onClick={() => setRulesOpen(true)}
         >
