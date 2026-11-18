@@ -96,4 +96,13 @@ describe('levelReducer', () => {
       levelReducer(three, { type: 'placeCat', index: wrongCell }).status,
     ).toBe('playing');
   });
+
+  it('remembers a cat placed on its solution cell, and forgets a wrong one', () => {
+    const right = play({ type: 'placeCat', index: puzzle.solution[0] });
+    expect(right.lastCorrectCat).toBe(puzzle.solution[0]);
+    expect(
+      levelReducer(right, { type: 'placeCat', index: wrongCell })
+        .lastCorrectCat,
+    ).toBeUndefined();
+  });
 });

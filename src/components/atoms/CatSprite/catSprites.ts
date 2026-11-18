@@ -50,6 +50,11 @@ const CLOSED_EYES = [
   ...OPEN_EYES.slice(8),
 ];
 
+// TODO(happy frame): placeholder reusing the closed eyes. Once the happy
+// frame is drawn, replace this with its map: OPEN_EYES with rows 6 and 7 as
+// "^ ^" arcs in the 'eye' role. Both poses pick it up from here.
+const HAPPY_EYES = CLOSED_EYES;
+
 // Sitting body, 16 pixels wide. The head sits on top of it, centered.
 const BODY = [
   '....obbbbbbo....',
@@ -72,6 +77,8 @@ export type CatPose = 'head' | 'full';
 interface PoseFrames {
   open: string[];
   closed: string[];
+  /** Eyes as "^ ^", shown for a moment after a correct move. */
+  happy: string[];
   width: number;
   height: number;
 }
@@ -79,8 +86,20 @@ interface PoseFrames {
 // 'head' is the icon used on the board, HUD and map.
 // 'full' is the whole cat, used in the restoration reveal and the collection.
 export const CAT_POSES: Record<CatPose, PoseFrames> = {
-  head: { open: OPEN_EYES, closed: CLOSED_EYES, width: 12, height: 12 },
-  full: { open: withBody(OPEN_EYES), closed: withBody(CLOSED_EYES), width: 16, height: 18 },
+  head: {
+    open: OPEN_EYES,
+    closed: CLOSED_EYES,
+    happy: HAPPY_EYES,
+    width: 12,
+    height: 12,
+  },
+  full: {
+    open: withBody(OPEN_EYES),
+    closed: withBody(CLOSED_EYES),
+    happy: withBody(HAPPY_EYES),
+    width: 16,
+    height: 18,
+  },
 };
 
 const DARK_EYE = '#2a1f3d';

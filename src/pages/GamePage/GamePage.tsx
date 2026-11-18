@@ -66,8 +66,12 @@ function Level({
         size={puzzle.size}
         zones={puzzle.zones}
         marks={state.marks}
-        renderCat={(_, pixelSize) => (
-          <CatSprite palette={PALETTE} pixelSize={pixelSize} />
+        renderCat={(index, pixelSize) => (
+          <CatSprite
+            palette={PALETTE}
+            pixelSize={pixelSize}
+            happy={index === state.lastCorrectCat}
+          />
         )}
         cellLabel={text.cellLabel}
         label={text.board}

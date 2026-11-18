@@ -17,7 +17,11 @@ interface CatSpriteProps {
   blink?: boolean;
   /** Accessible name. Leave out when the cat is decorative. */
   label?: string;
+  /** Shows the happy frame for a moment when the sprite appears (a correct move). */
+  happy?: boolean;
 }
+
+const HAPPY_MS = 700;
 
 interface PixelRun {
   x: number;
@@ -67,16 +71,34 @@ function useBlink(enabled: boolean): boolean {
   return enabled && closed;
 }
 
+// True for HAPPY_MS after mount when `happy` is set, then false.
+function useHappy(happy: boolean): boolean {
+  const [showing, setShowing] = useState(happy);
+
+  useEffect(() => {
+    if (!showing) return;
+    const timer = window.setTimeout(() => setShowing(false), HAPPY_MS);
+    return () => window.clearTimeout(timer);
+  }, [showing]);
+
+  return showing;
+}
+
 export function CatSprite({
   palette,
   pose = 'head',
   pixelSize = 4,
   blink = true,
   label,
+  happy = false,
 }: CatSpriteProps) {
   const closed = useBlink(blink);
+  const showHappy = useHappy(happy);
   const frames = CAT_POSES[pose];
-  const rows = closed ? frames.closed : frames.open;
+  const rows = showHappy ? frames.happy : closed ? frames.closed : frames.open;
+  // Heads are drawn in columns 0-10; column 11 is always empty.
+  // Shift right by half a sprite pixel, rounded to whole CSS px so it stays crisp.
+  const offsetX = Math.round(pixelSize / 2);
 
   return (
     <svg
@@ -87,6 +109,7 @@ export function CatSprite({
       role={label ? 'img' : undefined}
       aria-label={label}
       aria-hidden={label ? undefined : true}
+      style={{ transform: `translateX(${offsetX}px)` }}
     >
       {rows.flatMap((row, y) =>
         toRuns(row).map((run) => (

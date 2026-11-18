@@ -8,6 +8,8 @@ export interface LevelState {
   puzzle: SolvedPuzzle;
   marks: CellMark[];
   status: 'playing' | 'won';
+  /** The cat just placed on its solution cell, for the happy frame. */
+  lastCorrectCat?: number;
 }
 
 export type LevelAction =
@@ -49,9 +51,15 @@ export function levelReducer(
       marks[action.index] = AFTER_TAP[marks[action.index]];
       return withWin({ ...state, marks });
 
-    case 'placeCat':
+    case 'placeCat': {
       marks[action.index] = 'cat';
-      return withWin({ ...state, marks });
+      const correct = state.puzzle.solution.includes(action.index);
+      return withWin({
+        ...state,
+        marks,
+        lastCorrectCat: correct ? action.index : undefined,
+      });
+    }
 
     case 'strokeCells': {
       // Cats are skipped; marking leaves x alone, erasing leaves empty alone.
