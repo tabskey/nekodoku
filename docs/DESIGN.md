@@ -128,6 +128,8 @@ The black silhouette of the restoration sequence needs a light backdrop in both 
 
 Button depth is a 4 px bottom shadow in a darker shade of the button's own color: `#cdbf9f` under cream, `#c9553a` under coral, `#d99a1c` under gold, `#3a9c8b` under teal.
 
+Secondary buttons (cards, helps, shop actions, the level's round buttons) use their own tokens, `--button`, `--button-shadow` and `--button-text`. By day they are white on the cream page. At night they are a raised lilac, `#4a3b63` with a `#352b4d` shadow and cream text, so they sit quietly on the plum the way the white ones do on cream, and the coral Play stays the one that stands out. The chosen option in a choice group is teal at night (white by day), like a switch that is on. The cards behind each cat in the shop and the collection (`--cat-tile`) are a mid lilac at night, `#7d6d9f` with dark text, so dark cats stay visible without the card glowing; by day they keep the panel color. Decided by the owner.
+
 Zones, in the order they are assigned:
 
 `#f7a8b8` `#ffd66b` `#8ecdf7` `#a9dd8a` `#c9b3f5` `#ffb37a` `#3fb39c` `#e2cfa6` `#d5d3df`

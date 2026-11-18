@@ -38,8 +38,8 @@
 }
 
 .choice-group-option input:checked + span {
-  background: var(--card);
-  box-shadow: 0 4px 0 var(--card-shadow);
+  background: var(--choice-on);
+  box-shadow: 0 4px 0 var(--choice-on-shadow);
   color: var(--text-on-light);
 }
 

@@ -26,6 +26,20 @@
   --board: #3a2d54;
   --card: #f6ecd4;
   --card-shadow: #cdbf9f;
+  /* Secondary buttons. At night a raised lilac with cream text, so they sit
+     quietly on the plum like the white buttons do on cream by day; the coral
+     Play stays the one that stands out. Decided by the owner. */
+  --button: #4a3b63;
+  --button-shadow: #352b4d;
+  --button-text: #f6ecd4;
+  /* The chosen option in a choice group: teal at night, like a switch that is
+     on, since the lilac would barely differ from the unchosen panel. */
+  --choice-on: var(--teal);
+  --choice-on-shadow: var(--teal-shadow);
+  /* Behind each cat in the shop and the collection: a mid lilac at night,
+     so dark cats stay visible and the lilac buttons stand out on it. */
+  --cat-tile: #7d6d9f;
+  --cat-tile-text: #17102a;
   --text: #f6ecd4;
   --text-muted: #cbbfe0;
   --text-on-light: #17102a;
@@ -96,6 +110,13 @@
   --board: #5a4b70;
   --card: #ffffff;
   --card-shadow: #d9c9a3;
+  --button: #ffffff;
+  --button-shadow: #d9c9a3;
+  --button-text: #17102a;
+  --choice-on: #ffffff;
+  --choice-on-shadow: #d9c9a3;
+  --cat-tile: #e0cfa8;
+  --cat-tile-text: #2a1f3d;
   --text: #2a1f3d;
   --text-muted: #5a4b70;
   --gold-text: #7a4e00;

@@ -10,7 +10,14 @@ export const pt = {
   todaysCatsHint:
     'Cada gato só pode ser comprado nos dias em que aparece aqui.',
   noShopCats: 'Nenhum gato novo hoje.',
-  yourCats: 'Seus gatos',
+  collectionTitle: 'Gatinhos',
+  collectionCount: (owned: number, total: number) =>
+    `${owned} de ${total} gatinhos`,
+  unknownCat: '???',
+  toRescue: 'Resgatar',
+  toRescueLabel: 'Um gatinho ainda por resgatar num Boss',
+  inShop: 'Na loja',
+  inShopLabel: 'Um gatinho à venda na lojinha',
   helpsTitle: 'Ajudas',
   helpsHint: 'Compradas com moedas na hora de usar, durante a fase.',
   revealInfo: 'Coloca um gato certo.',

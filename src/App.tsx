@@ -4,6 +4,7 @@ import { clearReward, type Reward } from './game/rewards';
 import { GamePage } from './pages/GamePage/GamePage';
 import { MenuPage } from './pages/MenuPage/MenuPage';
 import { WorldPage } from './pages/WorldPage/WorldPage';
+import { CollectionPage } from './pages/CollectionPage/CollectionPage';
 import { OptionsPage } from './pages/OptionsPage/OptionsPage';
 import { ShopPage } from './pages/ShopPage/ShopPage';
 import { useProfile } from './state/profileContext';
@@ -17,7 +18,7 @@ export function App() {
     [profile.options.sound],
   );
   const [screen, setScreen] = useState<
-    'menu' | 'world' | 'game' | 'options' | 'shop'
+    'menu' | 'world' | 'game' | 'options' | 'shop' | 'collection'
   >('menu');
   // The funky loop plays on every screen outside a level, and keeps going
   // between them; a level starts its own song.
@@ -37,7 +38,10 @@ export function App() {
   const [walkFrom, setWalkFrom] = useState<number>();
   // Shop and Options return to the screen they were opened from.
   const [backTo, setBackTo] = useState<'menu' | 'world'>('menu');
-  function open(next: 'options' | 'shop', from: 'menu' | 'world') {
+  function open(
+    next: 'options' | 'shop' | 'collection',
+    from: 'menu' | 'world',
+  ) {
     // The map has already shown the walk; coming back must not replay it.
     if (from === 'world') setWalkFrom(undefined);
     setBackTo(from);
@@ -59,6 +63,9 @@ export function App() {
   if (screen === 'options') {
     return <OptionsPage onBack={() => setScreen(backTo)} />;
   }
+  if (screen === 'collection') {
+    return <CollectionPage onBack={() => setScreen(backTo)} />;
+  }
   if (screen === 'shop') {
     return <ShopPage onBack={() => setScreen(backTo)} />;
   }
@@ -68,6 +75,7 @@ export function App() {
         onOpenWorld={() => setScreen('world')}
         onOpenOptions={() => open('options', 'menu')}
         onOpenShop={() => open('shop', 'menu')}
+        onOpenCollection={() => open('collection', 'menu')}
       />
     );
   }

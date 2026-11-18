@@ -23,7 +23,7 @@ function today(): string {
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 }
 
-/** Today's shop cats, the player's cats, and the help prices. */
+/** Today's shop cats and the help prices. Cats are chosen in the collection. */
 export function ShopPage({ onBack }: ShopPageProps) {
   const text = useText();
   const { profile, dispatch } = useProfile();
@@ -84,29 +84,6 @@ export function ShopPage({ onBack }: ShopPageProps) {
             })}
           </ul>
         )}
-      </section>
-
-      <section>
-        <h2>{text.yourCats}</h2>
-        <ul className="shop-page-grid">
-          {profile.ownedCats.map((id) => {
-            const inUse = id === profile.selectedCat;
-            return (
-              <ShopCatCard
-                key={id}
-                name={name(id)}
-                palette={catPalette(id)}
-                actionContent={inUse ? text.inUse : text.useCat}
-                actionLabel={
-                  inUse ? text.inUseLabel(name(id)) : text.useCatLabel(name(id))
-                }
-                disabled={inUse}
-                selected={inUse}
-                onAction={() => dispatch({ type: 'selectCat', id })}
-              />
-            );
-          })}
-        </ul>
       </section>
 
       <section>

@@ -15,6 +15,7 @@ interface MenuPageProps {
   onOpenWorld: () => void;
   onOpenOptions: () => void;
   onOpenShop: () => void;
+  onOpenCollection: () => void;
 }
 
 /** The home screen: the selected cat, Play, and the way to the next Boss. */
@@ -22,6 +23,7 @@ export function MenuPage({
   onOpenWorld,
   onOpenOptions,
   onOpenShop,
+  onOpenCollection,
 }: MenuPageProps) {
   const text = useText();
   const { profile } = useProfile();
@@ -104,9 +106,7 @@ export function MenuPage({
         <Button variant="card" onClick={onOpenShop}>
           {text.shopButton}
         </Button>
-        {/* shortcut: there is no collection screen yet; the shop is where
-            the player's cats are chosen. Point it at the collection once it exists. */}
-        <Button variant="card" onClick={onOpenShop}>
+        <Button variant="card" onClick={onOpenCollection}>
           {text.catsButton}
         </Button>
         <Button variant="card" onClick={onOpenOptions}>

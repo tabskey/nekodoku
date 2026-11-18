@@ -36,7 +36,7 @@ The Node version is the same in the workflow and in the container image (see bel
 
 ### Routing on GitHub Pages
 
-GitHub Pages cannot rewrite URLs: a request for a path that is not a real file returns 404. The app therefore has no URL routes. `MenuPage`, `WorldPage`, `GamePage`, `ShopPage` and `OptionsPage` are switched by state, and the URL stays at `/<repo-name>/`.
+GitHub Pages cannot rewrite URLs: a request for a path that is not a real file returns 404. The app therefore has no URL routes. `MenuPage`, `WorldPage`, `GamePage`, `ShopPage`, `CollectionPage` and `OptionsPage` are switched by state, and the URL stays at `/<repo-name>/`.
 
 If URL routes are ever added, use `HashRouter` (`/#/world/2`) or copy `index.html` to `404.html` in the build. Do not rely on server rewrites; see Serving with nginx in `docs/FUTURE_BACKEND.md`.
 
@@ -74,7 +74,7 @@ src/
     atoms/       Cell, CatSprite, Heart, Button, CurrencyBadge
     molecules/   HudBar, ProgressStrip, HelpButton
     organisms/   Board, RulesPopover, ShopGrid
-  pages/         MenuPage, WorldPage, GamePage, ShopPage, OptionsPage
+  pages/         MenuPage, WorldPage, GamePage, ShopPage, CollectionPage, OptionsPage
   i18n/          pt.ts, en.ts and the useText hook
   audio/         sound effects synthesized with the Web Audio API
   assets/        SVG sprites

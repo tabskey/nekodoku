@@ -35,8 +35,9 @@
 }
 
 .game-page-menu {
-  background: var(--card);
-  box-shadow: 0 4px 0 var(--card-shadow);
+  background: var(--button);
+  box-shadow: 0 4px 0 var(--button-shadow);
+  color: var(--button-text);
 }
 
 .game-page-icon-button:active {
