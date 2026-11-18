@@ -27,11 +27,12 @@ Done when:
 
 Goal: the code can tell whether a board is valid and how many solutions it has. No UI.
 
-- Define the `Puzzle` type in `src/game/`.
+- Define the `Puzzle` and `SolvedPuzzle` types in `src/game/` (see Data model in `docs/ARCHITECTURE.md`). The solver works on `Puzzle`, which has no solution field.
 - `isValidPlacement(puzzle, cats)`: one cat per row, column and zone, none touching.
 - `countSolutions(puzzle, limit)`: backtracking search that stops at `limit`.
 - `solve(puzzle)`: returns the solution, or nothing if there is not exactly one.
-- Hand-write a few small fixture puzzles: one with a unique solution, one with several, one with none.
+- Hand-write a few small fixture puzzles: one with a unique solution, one with several, one with none. They can be smaller than the game's boards (4x4 is fine) so they stay checkable by hand.
+- Add one 9x9 fixture for the timing check below.
 
 Done when:
 - Tests cover each rule on its own (row, column, zone, side contact, diagonal contact).
@@ -40,16 +41,16 @@ Done when:
 
 ## Phase 3: Generator
 
-Goal: `generatePuzzle(level)` returns a valid, unique puzzle, always the same one for the same level.
+Goal: `generatePuzzle(level)` returns a valid, unique `SolvedPuzzle`, always the same one for the same level.
 
 - Seeded random number generator in `src/game/rng.ts`.
 - Random valid cat placement.
 - Zone growth from each cat, with uneven sizes.
-- Uniqueness loop: check with the solver, then repair or retry.
+- Uniqueness loop: check with the solver, then repair or retry. Attach the solution the solver confirmed.
 - `levelConfig(level)` in `src/game/progression.ts`: returns the world, board size and number of starting cats for a level, read from a worlds data table, and, past the end of the table, from the rule for later worlds (longer worlds, capped length; see Progression in `docs/GAME_RULES.md`). Test that world lengths never decrease and never pass the cap.
 
 Done when:
-- A test generates levels 1 to 200 and asserts each has exactly one solution and contiguous zones.
+- A test generates levels 1 to 200 and asserts each has exactly one solution, that it matches the attached `solution`, and that zones are contiguous.
 - Calling `generatePuzzle(n)` twice returns identical puzzles.
 - Boards up to 10x10 generate without a visible wait on a phone.
 - 11x11 and 12x12 generate in a Web Worker behind a loading state, and the time is measured on a real phone.
@@ -60,7 +61,7 @@ Goal: one level can be played from start to finish on a phone.
 
 - Text through `useText()` from the first component, with Portuguese and English files (see Languages in `docs/ARCHITECTURE.md`).
 - Theme tokens: every color as a CSS variable, with night and day values switched by `data-theme` (see Themes in `docs/DESIGN.md`).
-- Atoms: `Cell`, `CatSprite` (with blink), `Button`.
+- Atoms: `Cell`, `CatSprite`, `Button`. `CatSprite` plays the idle frames (open eyes with an occasional blink), shows the happy frame on a correct move, and applies the centering shift (see Head frames and Centering the head in `docs/SPRITES.md`).
 - Organism: `Board`, presentational, with tiles separated by a gap.
 - `levelReducer` with `tapCell` (empty -> x, x -> empty, cat -> empty), `placeCat` (from double tap or press and hold), `strokeCells` (drag to mark or erase x) and win detection.
 - Board input with Pointer Events: tap versus stroke, live preview during the stroke (see Board input in `docs/ARCHITECTURE.md`).
@@ -73,6 +74,7 @@ Done when:
 - Reducer tests cover single tap, placing a cat, strokes (cats skipped, each cell once, erase mode) and the win condition.
 - Dragging across a row of a 9x9 board marks it in one stroke on Android and iPhone, without scrolling the page.
 - Double tap and press and hold both place a cat on Android and iPhone, and holding never opens a system menu.
+- The cat's nose sits on the center of its cell at 2x and 3x, and the sprite stays crisp.
 
 ## Phase 5: Lives, score, timer and helps
 

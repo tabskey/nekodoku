@@ -7,10 +7,11 @@ How to draw, export and plug in pixel art for Nekodoku.
 ## Size rules: read before drawing
 
 1. **Cat head: 12x12, always.** Every cat, generated or hand-made, has its head drawn on a 12x12 grid. This is what fits the board cells.
-2. **Full-body cat: one canvas for every cat.** All full-body cats share the same canvas size, so they line up in the menu, the collection and the restoration. Proposed canvas: 16x20, which leaves two empty rows above the head for hats and other accessories; the mockup's body types use it **(waiting for the owner's confirmation; it can change once, for all cats)**.
-3. **The head inside the full body is the same 12x12 head**, placed at the same spot on the canvas for every cat, so the icon and the full cat always match.
-4. **Body types fit the same canvas.** Slim, regular and chubby bodies all fit inside the full-body canvas; a chubby cat is wider inside it, not on a bigger canvas.
-5. **Display only at whole multiples** (2x, 3x, 4x) of the canvas size.
+2. **The head uses columns 0 to 10; column 11 is always empty.** The drawing is 11 columns wide, an odd width, so it has a true center column (column 5) where a one-pixel nose sits. See Centering the head.
+3. **Full-body cat: one canvas for every cat.** All full-body cats share the same canvas size, so they line up in the menu, the collection and the restoration. Proposed canvas: 16x20, which leaves two empty rows above the head for hats and other accessories; the mockup's body types use it **(waiting for the owner's confirmation; it can change once, for all cats)**.
+4. **The head inside the full body is the same 12x12 head**, placed at the same spot on the canvas for every cat (columns 2 to 13 of the 16-wide canvas, so the head's center column lands on body column 7), so the icon and the full cat always match.
+5. **Body types fit the same canvas.** Slim, regular and chubby bodies all fit inside the full-body canvas; a chubby cat is wider inside it, not on a bigger canvas.
+6. **Display only at whole multiples** (2x, 3x, 4x) of the canvas size.
 
 For where each sprite appears and the interface colors, see `docs/DESIGN.md`.
 
@@ -20,7 +21,7 @@ Sizes are in sprite pixels. "Fixed" sizes are tied to the layout; "free" ones ca
 
 | Sprite | Current size | Fixed or free | Why |
 | --- | --- | --- | --- |
-| Cat head (icon) | 12x12 | Fixed | Must fit board cells at whole multiples: 24 px on a 12x12 board, 36 on 9x9, 48 or 60 on 5x5 |
+| Cat head (icon) | 12x12, drawn in columns 0 to 10 | Fixed | Must fit board cells at whole multiples: 24 px on a 12x12 board, 36 on 9x9, 48 or 60 on 5x5. A 13-wide canvas was considered for centering and rejected: it does not fit the 24 px and 36 px cells |
 | Cat, full body | 16x20 (proposed) | Fixed, one size for all cats | Cats must line up in the menu, collection and restoration. Can be changed once, for every cat at once |
 | Cat, walking on the map | Same canvas as the full body | Fixed | Side view, one walk cycle of 2 to 4 frames per body type. It shares the full-body canvas so the cat does not jump in size when it stops |
 | Ghost cat | 12x14 | Free | Shown at the Boss and in the restoration. Keep it close to the full-body size so the transformation reads well |
@@ -30,6 +31,28 @@ Sizes are in sprite pixels. "Fixed" sizes are tied to the layout; "free" ones ca
 | Boss scenery | 85x18 | Height fixed, width free | Drawn at 4 px per sprite pixel: 18 rows give the 72 px strip; 85 columns give 340 px |
 
 The style is closer to 8-bit than 16-bit: very small canvases and few colors per sprite.
+
+## Centering the head
+
+A one-pixel nose can only be centered on an odd width, so the head is drawn 11 columns wide (columns 0 to 10) and column 11 stays empty on every cat. That leaves the drawing half a sprite pixel left of the canvas center.
+
+`CatSprite` corrects it when displaying: it shifts the sprite right by half a sprite pixel, rounded to whole CSS pixels so it stays crisp.
+
+```tsx
+// Heads are drawn in columns 0-10; column 11 is always empty.
+// Shift right by half a sprite pixel, rounded to whole CSS px so it stays crisp.
+const offsetX = Math.round(scale / 2);
+```
+
+| Scale | Shift | Result |
+| --- | --- | --- |
+| 2x | 1 px | Exactly centered |
+| 3x | 2 px | Half a screen pixel off, invisible |
+| 4x | 2 px | Exactly centered |
+
+The same shift applies to the full body and the ghost, since the head sits at the same relative position in them. Never shift by a fraction of a CSS pixel.
+
+Face layout that works at this size: head about 9 columns wide (columns 1 to 9), whiskers in columns 0 and 10, eyes mirrored around column 5, a one-pixel nose in column 5 and a "^" mouth (one pixel diagonally below the nose on each side).
 
 ## Head frames
 
@@ -64,6 +87,7 @@ World cats are generated: a body type plus a palette, chosen from the world numb
 ## Rules that keep sprites sharp
 
 - Always display a sprite at a whole multiple of its size (2x, 3x, 4x). A 12-pixel sprite at 30 px blurs; at 24 or 36 px it stays crisp.
+- Any position offset is a whole number of CSS pixels (see Centering the head).
 - No anti-aliasing, gradients or soft brushes. Every pixel is one flat color.
 - No black outlines. The outline is a darker shade of the sprite's main color.
 - Keep the background transparent.
@@ -73,7 +97,7 @@ World cats are generated: a body type plus a palette, chosen from the world numb
 Cats, the ghost and the scenery are recolored by palette, so one drawing serves many worlds. For that to work:
 
 - Use exactly one color per role, and never reuse a color for two roles. The color is how the code knows which pixel is fur and which is patch.
-- Cat roles (9): outline, fur, patch, ear, eye, shine, nose, muzzle, lid. The lid is the closed-eye line and only appears in the blink frame.
+- Cat roles (9): outline, fur, patch, ear, eye, shine, nose, muzzle, lid. The lid is the closed-eye line and only appears in the blink frame. The "^" mouth uses the muzzle role.
 - Scenery roles (6): sky, speck (stars at night, small clouds by day), disc (moon or sun), far hills, near hills, ground. A scenery may use fewer roles, not more, unless the palette type is extended.
 - Draw the blink and the happy eyes as extra frames of the same file, changing only the eye rows (see Head frames).
 - A hand-drawn shop cat that will never be recolored can ignore these rules and use any colors.
@@ -123,8 +147,9 @@ Each biome is a small kit, reused by every world that rotates onto it:
 ## Checklist for a new sprite
 
 1. Canvas at the size in the table, transparent background.
-2. Flat colors, one per role, no black outline.
-3. Head frames, if it is a cat: open, blink "- -" and happy "^ ^", tagged idle and happy.
-4. Export PNG at 1x.
-5. Decide: fixed colors (use the PNG) or recolorable (convert to a pixel map).
-6. Check it on screen at the multiples it will be shown at.
+2. If it is a cat head: drawn in columns 0 to 10, column 11 empty, nose on column 5.
+3. Flat colors, one per role, no black outline.
+4. Head frames, if it is a cat: open, blink "- -" and happy "^ ^", tagged idle and happy.
+5. Export PNG at 1x.
+6. Decide: fixed colors (use the PNG) or recolorable (convert to a pixel map).
+7. Check it on screen at the multiples it will be shown at.
