@@ -14,5 +14,12 @@
 
 .hud-bar-score {
   color: var(--gold-text);
-  font-weight: bold;
+  font-family: var(--font-display);
+  font-size: var(--display-small);
+}
+
+.hud-bar-time {
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: var(--display-small);
 }

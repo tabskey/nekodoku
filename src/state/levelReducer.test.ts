@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { generate } from '../game/generator';
-import { BASE_SCORE, LIVES_PER_LEVEL, MISTAKE_PENALTY } from '../game/scoring';
+import {
+  BASE_SCORE,
+  LIVES_PER_LEVEL,
+  MISTAKE_PENALTY,
+  timeBonus,
+} from '../game/scoring';
+import { ruledOutCells } from '../game/solver';
 import {
   createLevel,
   levelReducer,
@@ -130,5 +136,112 @@ describe('levelReducer mistakes', () => {
     expect(levelReducer(retried, { type: 'restart' })).toEqual(
       createLevel(puzzle),
     );
+  });
+});
+
+describe('levelReducer timer', () => {
+  const tick: LevelAction = { type: 'tick' };
+  const ticks = (n: number) => Array.from({ length: n }, () => tick);
+
+  it('counts seconds while the level is in play', () => {
+    expect(createLevel(puzzle).elapsedSeconds).toBe(0);
+    expect(play(...ticks(3)).elapsedSeconds).toBe(3);
+  });
+
+  it('stops counting once the level is won or lost', () => {
+    const won = play(tick, ...puzzle.solution.map(place));
+    expect(levelReducer(won, tick)).toBe(won);
+    const lost = play(tick, ...wrongCells.slice(0, 3).map(place));
+    expect(levelReducer(lost, tick)).toBe(lost);
+  });
+
+  it('adds the time bonus to the score on a win', () => {
+    const won = play(
+      ...ticks(10),
+      place(wrongCell),
+      ...puzzle.solution.map(place),
+    );
+    expect(won.score).toBe(
+      BASE_SCORE - MISTAKE_PENALTY + timeBonus(puzzle.size, 10),
+    );
+  });
+
+  it('gives no bonus past par time', () => {
+    const won = play(...ticks(1000), ...puzzle.solution.map(place));
+    expect(won.score).toBe(BASE_SCORE);
+  });
+
+  it('resets the clock on restart', () => {
+    expect(play(...ticks(5), { type: 'restart' }).elapsedSeconds).toBe(0);
+  });
+});
+
+describe('levelReducer helps', () => {
+  const reveal: LevelAction = { type: 'useReveal' };
+  const eraser: LevelAction = { type: 'useEraser' };
+
+  it('Reveal places the next correct cat, over an x if needed', () => {
+    const state = play(tap(rightCell), reveal);
+    expect(state.marks[rightCell]).toBe('cat');
+    expect(state.lastCorrectCat).toBe(rightCell);
+  });
+
+  it('Reveal can finish the level', () => {
+    const state = play(...puzzle.solution.map(() => reveal));
+    expect(state.status).toBe('won');
+  });
+
+  it('Eraser clears x on solution cells and leaves the rest', () => {
+    const state = play(tap(rightCell), tap(wrongCell), eraser);
+    expect(state.marks[rightCell]).toBe('empty');
+    expect(state.marks[wrongCell]).toBe('marked');
+  });
+
+  it('helps do nothing once the level is over', () => {
+    const lost = play(...wrongCells.slice(0, 3).map(place));
+    expect(levelReducer(lost, reveal)).toBe(lost);
+  });
+});
+
+describe('levelReducer auto-mark', () => {
+  const withAutoMark = (...actions: LevelAction[]) =>
+    actions.reduce(levelReducer, createLevel(puzzle, true));
+
+  it('is off by default: a cat marks nothing else', () => {
+    const state = play(place(rightCell));
+    expect(state.marks.filter((mark) => mark === 'marked')).toEqual([]);
+  });
+
+  it('marks every empty cell the cat rules out, and only those', () => {
+    const state = withAutoMark(place(rightCell));
+    const ruledOut = ruledOutCells(puzzle, rightCell);
+    state.marks.forEach((mark, cell) => {
+      if (cell === rightCell) expect(mark).toBe('cat');
+      else expect(mark).toBe(ruledOut.includes(cell) ? 'marked' : 'empty');
+    });
+  });
+
+  it('leaves cats in place and does not toggle existing x', () => {
+    const [first, second] = puzzle.solution;
+    const xCell = ruledOutCells(puzzle, second)[0];
+    const state = withAutoMark(place(first), tap(xCell), place(second));
+    expect(state.marks[first]).toBe('cat');
+    expect(state.marks[xCell]).toBe('marked');
+  });
+
+  it('also marks after Reveal', () => {
+    const state = withAutoMark({ type: 'useReveal' });
+    expect(
+      state.marks.filter((mark) => mark === 'marked').length,
+    ).toBeGreaterThan(0);
+  });
+
+  it('marks nothing on a mistake beyond the rejected cell', () => {
+    const state = withAutoMark(place(wrongCell));
+    expect(state.marks.filter((mark) => mark === 'marked')).toEqual(['marked']);
+  });
+
+  it('keeps the setting on restart', () => {
+    expect(withAutoMark({ type: 'restart' }).autoMark).toBe(true);
   });
 });

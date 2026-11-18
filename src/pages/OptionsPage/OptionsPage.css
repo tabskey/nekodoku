@@ -1,0 +1,15 @@
+.options-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 432px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.options-page h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--display-large);
+  font-weight: normal;
+}

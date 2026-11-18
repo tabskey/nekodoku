@@ -5,6 +5,7 @@ import {
   isSolutionCell,
   isSolved,
   isValidPlacement,
+  ruledOutCells,
   solve,
 } from './solver';
 import type { Puzzle } from './types';
@@ -174,5 +175,26 @@ describe('isSolutionCell', () => {
       isSolutionCell(puzzle, cell),
     );
     expect(cells).toEqual(puzzle.solution);
+  });
+});
+
+describe('ruledOutCells', () => {
+  // 4x4, zones by quadrant, so the zone rule adds cells beyond row and column.
+  const puzzle: Puzzle = {
+    size: 4,
+    zones: [0, 0, 1, 1, 0, 0, 1, 1, 2, 2, 3, 3, 2, 2, 3, 3],
+  };
+
+  it('rules out the row, column, zone and neighbors, but not the cat cell', () => {
+    // Cat at row 0, column 0: zone 0 is cells 0, 1, 4, 5.
+    expect(ruledOutCells(puzzle, 0)).toEqual([1, 2, 3, 4, 5, 8, 12]);
+  });
+
+  it('leaves every other cell free', () => {
+    // Cat at row 2, column 2 (cell 10), zone 3 = cells 10, 11, 14, 15.
+    const out = ruledOutCells(puzzle, 10);
+    expect(out).toEqual([2, 5, 6, 7, 8, 9, 11, 13, 14, 15]);
+    expect(out).not.toContain(0);
+    expect(out).not.toContain(10);
   });
 });

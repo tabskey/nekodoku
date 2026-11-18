@@ -6,8 +6,8 @@
   background: var(--primary);
   box-shadow: 0 4px 0 var(--primary-shadow);
   color: var(--text-on-light);
-  font: inherit;
-  font-weight: bold;
+  font-family: var(--font-display);
+  font-size: var(--display-small);
   cursor: pointer;
 }
 

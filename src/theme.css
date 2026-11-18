@@ -1,3 +1,19 @@
+/* Fonts ship with the app so the game works offline. Latin subset only:
+   it covers Portuguese and English. See "Type" in docs/DESIGN.md. */
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('./assets/fonts/press-start-2p-latin.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pixelify Sans';
+  src: url('./assets/fonts/pixelify-sans-latin.woff2') format('woff2');
+  font-weight: 400 700;
+  font-display: swap;
+}
+
 /* Every color as a CSS variable. Night is the default; day overrides the
    neutrals only. See "Themes" and "Colors" in docs/DESIGN.md. */
 :root {
@@ -13,6 +29,7 @@
   --primary: #ff7a59;
   --primary-shadow: #c9553a;
   --gold: #ffc94a;
+  --gold-shadow: #d99a1c;
   --teal: #58c7b5;
 
   --zone-0: #f7a8b8;
@@ -24,6 +41,13 @@
   --zone-6: #7fded1;
   --zone-7: #e2cfa6;
   --zone-8: #d5d3df;
+  /* Display: titles, numbers, button labels. Body: rules, descriptions.
+     Press Start 2P is drawn on an 8 px grid, so its sizes stay on 4 px steps. */
+  --font-display: 'Press Start 2P', monospace;
+  --font-body: 'Pixelify Sans', system-ui, sans-serif;
+  --display-large: 16px;
+  --display-small: 12px;
+
   /* Zones 9 to 11 (10x10 and up) are still to be chosen by the owner. */
 }
 
@@ -41,5 +65,8 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, sans-serif;
+  font-family: var(--font-body);
+  font-size: 18px;
+  /* Pixel fonts must never get a fake bold or slant. */
+  font-synthesis: none;
 }
