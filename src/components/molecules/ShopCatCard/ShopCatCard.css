@@ -1,0 +1,45 @@
+.shop-cat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.shop-cat-card-selected {
+  box-shadow: inset 0 0 0 3px var(--teal);
+}
+
+.shop-cat-card-name {
+  font-size: 1rem;
+}
+
+.shop-cat-card-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 96px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 4px;
+  background: var(--card);
+  box-shadow: 0 4px 0 var(--card-shadow);
+  color: var(--text-on-light);
+  font-family: var(--font-display);
+  font-size: var(--display-small);
+  cursor: pointer;
+}
+
+.shop-cat-card-action:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+
+.shop-cat-card-action:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

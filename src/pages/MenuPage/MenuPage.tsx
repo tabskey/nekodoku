@@ -19,10 +19,11 @@ const GHOST = silhouettePalette('currentColor');
 interface MenuPageProps {
   onPlay: (level: number) => void;
   onOpenOptions: () => void;
+  onOpenShop: () => void;
 }
 
 /** The home screen: the selected cat, the path to the next Boss, and Play. */
-export function MenuPage({ onPlay, onOpenOptions }: MenuPageProps) {
+export function MenuPage({ onPlay, onOpenOptions, onOpenShop }: MenuPageProps) {
   const text = useText();
   const { profile } = useProfile();
   const nextLevel = profile.levelsCleared + 1;
@@ -65,6 +66,9 @@ export function MenuPage({ onPlay, onOpenOptions }: MenuPageProps) {
       </section>
       <div className="menu-page-actions">
         <Button onClick={() => onPlay(nextLevel)}>{text.play}</Button>
+        <Button variant="card" onClick={onOpenShop}>
+          {text.shopButton}
+        </Button>
         <Button variant="card" onClick={onOpenOptions}>
           {text.optionsButton}
         </Button>

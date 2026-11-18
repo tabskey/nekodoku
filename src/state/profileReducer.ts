@@ -2,11 +2,14 @@
 // ProfileProvider. See "State" in docs/ARCHITECTURE.md.
 import { levelConfig } from '../game/progression';
 import { clearReward } from '../game/rewards';
+import { shopCat } from '../game/shop';
 import type { Options, SaveData } from '../storage/save';
 
 export type ProfileAction =
   | { type: 'levelCleared'; level: number; score: number; seconds: number }
   | { type: 'spendCoins'; amount: number }
+  | { type: 'buyCat'; id: string }
+  | { type: 'selectCat'; id: string }
   | {
       [K in keyof Options]: { type: 'setOption'; key: K; value: Options[K] };
     }[keyof Options];
@@ -42,6 +45,28 @@ export function profileReducer(
     case 'spendCoins':
       if (action.amount > profile.coins) return profile;
       return { ...profile, coins: profile.coins - action.amount };
+
+    case 'buyCat': {
+      // Whether the cat is on today's rotation is checked by the shop screen,
+      // which knows the date; this guards the rest.
+      const cat = shopCat(action.id);
+      if (
+        !cat ||
+        profile.ownedCats.includes(cat.id) ||
+        profile.fish < cat.price
+      ) {
+        return profile;
+      }
+      return {
+        ...profile,
+        fish: profile.fish - cat.price,
+        ownedCats: [...profile.ownedCats, cat.id],
+      };
+    }
+
+    case 'selectCat':
+      if (!profile.ownedCats.includes(action.id)) return profile;
+      return { ...profile, selectedCat: action.id };
 
     case 'setOption':
       return {

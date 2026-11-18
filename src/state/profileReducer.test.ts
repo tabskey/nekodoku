@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { levelConfig } from '../game/progression';
 import { BOSS_REWARD, LEVEL_REWARD } from '../game/rewards';
+import { shopCat } from '../game/shop';
 import { defaultSave } from '../storage/save';
 import { profileReducer, type ProfileAction } from './profileReducer';
 
@@ -77,5 +78,45 @@ describe('profileReducer coins and options', () => {
       ...defaultSave().options,
       language: 'en',
     });
+  });
+});
+
+describe('profileReducer cats', () => {
+  const price = shopCat('calico')!.price;
+  const withFish = (fish: number) => ({ ...defaultSave(), fish });
+
+  it('buys a shop cat with fish', () => {
+    const profile = profileReducer(withFish(price + 1), {
+      type: 'buyCat',
+      id: 'calico',
+    });
+    expect(profile.ownedCats).toContain('calico');
+    expect(profile.fish).toBe(1);
+  });
+
+  it('refuses without enough fish, twice, or for a world cat', () => {
+    const poor = withFish(price - 1);
+    expect(profileReducer(poor, { type: 'buyCat', id: 'calico' })).toBe(poor);
+    const owned = profileReducer(withFish(price * 2), {
+      type: 'buyCat',
+      id: 'calico',
+    });
+    expect(profileReducer(owned, { type: 'buyCat', id: 'calico' })).toBe(owned);
+    const rich = withFish(999);
+    expect(profileReducer(rich, { type: 'buyCat', id: 'black' })).toBe(rich);
+  });
+
+  it('selects owned cats only', () => {
+    const start = defaultSave();
+    expect(profileReducer(start, { type: 'selectCat', id: 'calico' })).toBe(
+      start,
+    );
+    const owned = profileReducer(withFish(price), {
+      type: 'buyCat',
+      id: 'calico',
+    });
+    expect(
+      profileReducer(owned, { type: 'selectCat', id: 'calico' }).selectedCat,
+    ).toBe('calico');
   });
 });

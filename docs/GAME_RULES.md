@@ -118,6 +118,8 @@ Bought with coins at the moment of use. No per-level counters.
   - Until the owner draws shop-exclusive cats, the pool is empty and the shop shows only helps.
 - **Rotation cats are limited:** a shop cat can be bought only on a day it is in the rotation. A cat missed today comes back on a later day. Decided by the owner.
 - Cats the player already owns leave the pool. When fewer than 4 unowned shop cats remain, the shop shows all of them **(proposed)**.
+- Buying a cat frees its slot: the next cat in the day's draw takes it, so the shop keeps showing up to 4 cats the player can still buy **(proposed)**.
+- The shop also lists the player's own cats, so they can choose which one plays **(proposed)**.
 - The rotation changes at midnight on the device's clock. It is picked from the date alone, with no server, so every player sees the same 4 cats on the same date **(proposed)**.
 - No countdown to the next rotation is shown, so the shop never works as a wait timer **(proposed)**.
 - Helps, priced in coins, are always on sale and are not part of the rotation.
