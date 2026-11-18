@@ -28,6 +28,11 @@ export interface SaveData {
 
 export const SAVE_KEY = 'nekodoku.save';
 
+// Far beyond anything a player reaches. Finding a level's world walks the
+// worlds one by one, so a hand-edited code with a huge count would freeze the
+// game on every launch.
+export const MAX_LEVELS_CLEARED = 10_000;
+
 export const DEFAULT_OPTIONS: Options = {
   autoMark: false,
   theme: 'system',
@@ -79,6 +84,7 @@ export function isSaveData(value: unknown): value is SaveData {
   return (
     save.schemaVersion === SCHEMA_VERSION &&
     isCount(save.levelsCleared) &&
+    (save.levelsCleared as number) <= MAX_LEVELS_CLEARED &&
     isCount(save.coins) &&
     isCount(save.fish) &&
     Array.isArray(save.ownedCats) &&

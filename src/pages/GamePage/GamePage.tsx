@@ -6,6 +6,7 @@ import {
   catPalette,
   silhouettePalette,
 } from '../../components/atoms/CatSprite/catSprites';
+import { PixelRects } from '../../components/atoms/PixelRects/PixelRects';
 import { Scenery } from '../../components/atoms/Scenery/Scenery';
 import { bossScenery } from '../../components/atoms/Scenery/sceneries';
 import ghostUrl from '../../assets/ghost-cat.svg';
@@ -15,8 +16,7 @@ import { HudBar } from '../../components/molecules/HudBar/HudBar';
 import { ProgressStrip } from '../../components/molecules/ProgressStrip/ProgressStrip';
 import { Board } from '../../components/organisms/Board/Board';
 import { OptionsPage } from '../OptionsPage/OptionsPage';
-import { play, startMusic, stopMusic } from '../../audio/audio';
-import { levelSound } from './levelSounds';
+import { useLevelAudio } from './useLevelAudio';
 import { Restoration } from '../../components/organisms/Restoration/Restoration';
 import { RulesPopover } from '../../components/organisms/RulesPopover/RulesPopover';
 import { helpCost, type Help } from '../../game/helps';
@@ -28,6 +28,7 @@ import {
 import type { Reward } from '../../game/rewards';
 import { LIVES_PER_LEVEL } from '../../game/scoring';
 import type { SolvedPuzzle } from '../../game/types';
+import { formatTime } from '../../i18n/formatTime';
 import { useText } from '../../i18n/useText';
 import { createLevel, levelReducer } from '../../state/levelReducer';
 import { useLevelTimer } from '../../state/useLevelTimer';
@@ -101,20 +102,10 @@ function PixelIcon({ rows, drawn = 'o' }: { rows: string[]; drawn?: string }) {
       shapeRendering="crispEdges"
       aria-hidden="true"
     >
-      {rows.flatMap((row, y) =>
-        [...row].map((char, x) =>
-          drawn.includes(char) ? (
-            <rect
-              key={`${x}-${y}`}
-              x={x}
-              y={y}
-              width={1}
-              height={1}
-              fill="currentColor"
-            />
-          ) : null,
-        ),
-      )}
+      <PixelRects
+        rows={rows}
+        colorOf={(char) => (drawn.includes(char) ? 'currentColor' : undefined)}
+      />
     </svg>
   );
 }
@@ -218,6 +209,11 @@ function Level({
   const canZoom = puzzle.size >= ZOOM_FROM_SIZE;
   const [zoomed, setZoomed] = useState(false);
   const playing = state.status === 'playing';
+  const audio = useLevelAudio(state, {
+    music: options.music,
+    boss: bossWorld !== undefined,
+    restoring: state.status === 'won' && restores,
+  });
 
   // Report the win to the profile exactly once, even if this re-renders.
   const reported = useRef(false);
@@ -231,51 +227,10 @@ function Level({
     const cost = helpCost(help, puzzle, state.marks);
     if (!playing || cost > coins) return;
     onSpendCoins(cost);
-    play('help');
     const action = { type: HELP_ACTIONS[help] } as const;
-    // The help's own sparkle replaces the blip its change would make; a help
-    // that changes nothing (Eraser with nothing to erase) must not mute the
-    // next move.
-    quietNext.current = levelReducer(state, action) !== state;
+    audio.playHelp(levelReducer(state, action) !== state);
     dispatch(action);
   }
-
-  // Music plays only while the level is being played: a chill loop, or a
-  // tenser one on a Boss. It stops on the win or loss and when leaving.
-  useEffect(() => {
-    if (!playing || !options.music) return;
-    startMusic(bossWorld === undefined ? 'level' : 'boss');
-    return stopMusic;
-  }, [playing, options.music, bossWorld]);
-
-  // One sound per change of the level, decided by levelSound.
-  const before = useRef(state);
-  const quietNext = useRef(false);
-  useEffect(() => {
-    const effect = levelSound(before.current, state);
-    before.current = state;
-    // A help that wins the level still plays the win jingle.
-    if (effect && (!quietNext.current || effect === 'won')) play(effect);
-    quietNext.current = false;
-  }, [state]);
-
-  // The restoration's sweep during the silhouette and its chime when the cat
-  // appears, at the animation's 50% and 86% of 3.6 s.
-  const restoring = state.status === 'won' && restores;
-  const [restorationRun, setRestorationRun] = useState(0);
-  useEffect(() => {
-    if (!restoring) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      play('chime');
-      return;
-    }
-    const sweep = window.setTimeout(() => play('sweep'), 1800);
-    const chime = window.setTimeout(() => play('chime'), 3100);
-    return () => {
-      window.clearTimeout(sweep);
-      window.clearTimeout(chime);
-    };
-  }, [restoring, restorationRun]);
 
   return (
     <>
@@ -286,10 +241,13 @@ function Level({
         lives={state.lives}
         maxLives={LIVES_PER_LEVEL}
         score={state.score}
-        elapsedSeconds={state.elapsedSeconds}
+        time={formatTime(state.elapsedSeconds)}
         livesLabel={text.lives(state.lives)}
         scoreLabel={text.score(state.score)}
-        timeLabel={text.time}
+        timeLabel={text.time(
+          Math.floor(state.elapsedSeconds / 60),
+          state.elapsedSeconds % 60,
+        )}
         coins={coins}
         coinsLabel={text.coins(coins)}
       />
@@ -368,7 +326,7 @@ function Level({
           backLabel={text.backToMap}
           replayLabel={text.replayRestoration}
           onBack={onOpenMap}
-          onReplay={() => setRestorationRun((r) => r + 1)}
+          onReplay={audio.replayRestoration}
         />
       )}
       {state.status === 'won' && (

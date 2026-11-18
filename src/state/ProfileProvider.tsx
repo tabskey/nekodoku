@@ -5,7 +5,7 @@ import {
   useReducer,
   type ReactNode,
 } from 'react';
-import { loadSave, writeSave } from '../storage/save';
+import { loadSave, SAVE_KEY, writeSave } from '../storage/save';
 import { resolveLanguage, resolveTheme } from './options';
 import { ProfileContext, type ProfileValue } from './profileContext';
 import { profileReducer } from './profileReducer';
@@ -27,6 +27,20 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     writeSave(profile);
   }, [profile]);
+
+  // Another copy of the game (the installed app and a browser tab, or two
+  // tabs) saved: take its profile, or this copy's next save would overwrite
+  // the newer progress. The browser fires this only in the other copies, and
+  // writing back the same text fires nothing, so the copies never ping-pong.
+  useEffect(() => {
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === SAVE_KEY) {
+        dispatch({ type: 'importSave', save: loadSave() });
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
 
   // Layout effects run before paint, so the page never flashes the wrong theme.
   useLayoutEffect(() => {

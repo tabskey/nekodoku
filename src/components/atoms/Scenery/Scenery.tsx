@@ -1,3 +1,4 @@
+import { PixelRects } from '../PixelRects/PixelRects';
 import { ROLE_BY_CHAR, type SceneryPalette } from './sceneries';
 
 interface SceneryProps {
@@ -18,26 +19,7 @@ export function Scenery({ rows, palette, pixelSize = 4 }: SceneryProps) {
       shapeRendering="crispEdges"
       aria-hidden="true"
     >
-      {rows.flatMap((row, y) => {
-        // One rectangle per run of the same role, so "ssss" is a single rect.
-        const rects = [];
-        for (let x = 0; x < row.length;) {
-          let end = x + 1;
-          while (end < row.length && row[end] === row[x]) end++;
-          rects.push(
-            <rect
-              key={`${x}-${y}`}
-              x={x}
-              y={y}
-              width={end - x}
-              height={1}
-              fill={palette[ROLE_BY_CHAR[row[x]]]}
-            />,
-          );
-          x = end;
-        }
-        return rects;
-      })}
+      <PixelRects rows={rows} colorOf={(char) => palette[ROLE_BY_CHAR[char]]} />
     </svg>
   );
 }

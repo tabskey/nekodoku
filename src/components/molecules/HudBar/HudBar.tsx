@@ -6,11 +6,12 @@ interface HudBarProps {
   lives: number;
   maxLives: number;
   score: number;
-  elapsedSeconds: number;
+  /** The clock as shown, e.g. "01:05". */
+  time: string;
   livesLabel: string;
   scoreLabel: string;
   /** Spoken form of the time, e.g. "1 min 5 s". */
-  timeLabel: (minutes: number, seconds: number) => string;
+  timeLabel: string;
   coins: number;
   coinsLabel: string;
 }
@@ -20,15 +21,13 @@ export function HudBar({
   lives,
   maxLives,
   score,
-  elapsedSeconds,
+  time,
   livesLabel,
   scoreLabel,
   timeLabel,
   coins,
   coinsLabel,
 }: HudBarProps) {
-  const minutes = Math.floor(elapsedSeconds / 60);
-  const seconds = elapsedSeconds % 60;
   return (
     <div className="hud-bar">
       <div className="hud-bar-lives" role="img" aria-label={livesLabel}>
@@ -36,12 +35,8 @@ export function HudBar({
           <Heart key={i} full={i < lives} />
         ))}
       </div>
-      <span
-        className="hud-bar-time"
-        role="timer"
-        aria-label={timeLabel(minutes, seconds)}
-      >
-        {minutes}:{String(seconds).padStart(2, '0')}
+      <span className="hud-bar-time" role="timer" aria-label={timeLabel}>
+        {time}
       </span>
       <span className="hud-bar-score" aria-label={scoreLabel}>
         {score}

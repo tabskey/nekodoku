@@ -41,6 +41,20 @@ describe('levelSound', () => {
     expect(soundOf(...wrong.map(place))).toBe('lost');
   });
 
+  it('leaves a help to its own sparkle, except when it wins the level', () => {
+    const start = createLevel(puzzle);
+    const revealed = levelReducer(start, { type: 'useReveal' });
+    expect(levelSound(start, revealed)).toBe('placeCat');
+    expect(levelSound(start, revealed, true)).toBeUndefined();
+
+    const almost = puzzle.solution
+      .slice(0, -1)
+      .map(place)
+      .reduce(levelReducer, createLevel(puzzle));
+    const won = levelReducer(almost, { type: 'useReveal' });
+    expect(levelSound(almost, won, true)).toBe('won');
+  });
+
   it('stays quiet on a tick', () => {
     expect(soundOf({ type: 'tick' })).toBeUndefined();
   });

@@ -7,6 +7,7 @@ import {
 } from 'react';
 import type { CellMark, StrokeMode } from '../../../game/types';
 import { Cell } from '../../atoms/Cell/Cell';
+import { HOLD_MS, NO_TAP, release, strokeMode } from './touch';
 import './Board.css';
 
 interface BoardProps {
@@ -31,9 +32,6 @@ interface BoardProps {
   celebrate?: boolean;
 }
 
-// Proposed timings, see "Board input" in docs/ARCHITECTURE.md.
-const DOUBLE_TAP_MS = 300;
-const HOLD_MS = 450;
 const MAX_BOARD_PX = 480;
 const PAGE_PADDING_PX = 24;
 const PANEL_PADDING_PX = 6;
@@ -90,7 +88,7 @@ export function Board({
   const fingers = useRef(new Map<number, { x: number; y: number }>());
   const pan = useRef<{ x: number; y: number } | undefined>(undefined);
   const viewport = useRef<HTMLDivElement>(null);
-  const lastTap = useRef({ index: -1, time: 0 });
+  const lastTap = useRef(NO_TAP);
   const [preview, setPreview] = useState<{
     mode: StrokeMode;
     cells: number[];
@@ -117,25 +115,26 @@ export function Board({
   }
 
   function handleDown(event: PointerEvent<HTMLDivElement>) {
+    // Capture every finger, so its release always reaches the board, even
+    // off it; otherwise a finger lifted outside stays counted and later turns
+    // one-finger strokes into pans.
+    event.currentTarget.setPointerCapture(event.pointerId);
     fingers.current.set(event.pointerId, {
       x: event.clientX,
       y: event.clientY,
     });
     // A second finger turns the touch into a pan and drops the stroke.
     if (zoomed && fingers.current.size === 2) {
-      event.currentTarget.setPointerCapture(event.pointerId);
       end();
       pan.current = midpoint();
       return;
     }
     const start = cellAt(event.clientX, event.clientY);
     if (start === undefined || !event.isPrimary) return;
-    // Keep receiving the pointer even if a mouse leaves the board.
-    event.currentTarget.setPointerCapture(event.pointerId);
     const current: Touch = {
       pointerId: event.pointerId,
       start,
-      mode: marks[start] === 'marked' ? 'erase' : 'mark',
+      mode: strokeMode(marks[start]),
       cells: [start],
       held: false,
       holdTimer: window.setTimeout(() => {
@@ -184,21 +183,16 @@ export function Board({
     const current = touch.current;
     if (current && event.pointerId !== current.pointerId) return;
     end();
-    if (!current || current.held) return;
-    if (current.cells.length > 1) {
-      onStroke(current.mode, current.cells);
-      return;
+    if (!current) return;
+    const result = release(current, lastTap.current, performance.now());
+    lastTap.current = result.last;
+    const outcome = result.release;
+    if (outcome.kind === 'stroke') onStroke(outcome.mode, outcome.cells);
+    if (outcome.kind === 'tap') {
+      // A tap acts at once; a second tap soon after also places a cat.
+      onCellTap(outcome.index);
+      if (outcome.double) onPlaceCat(outcome.index);
     }
-    // A tap acts at once; a second tap on the same cell soon after places a cat.
-    const now = performance.now();
-    const isDouble =
-      lastTap.current.index === current.start &&
-      now - lastTap.current.time < DOUBLE_TAP_MS;
-    onCellTap(current.start);
-    if (isDouble) onPlaceCat(current.start);
-    lastTap.current = isDouble
-      ? { index: -1, time: 0 }
-      : { index: current.start, time: now };
   }
 
   // What a cell shows, including the live preview of a stroke in progress.

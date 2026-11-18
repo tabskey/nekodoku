@@ -4,8 +4,8 @@ import {
   ROLE_BY_CHAR,
   type CatPalette,
   type CatPose,
-  type PixelRole,
 } from './catSprites';
+import { PixelRects } from '../PixelRects/PixelRects';
 
 interface CatSpriteProps {
   palette: CatPalette;
@@ -25,28 +25,6 @@ interface CatSpriteProps {
 
 const HAPPY_MS = 700;
 const WALK_FRAME_MS = 150;
-
-interface PixelRun {
-  x: number;
-  width: number;
-  role: PixelRole;
-}
-
-// Turns one row of the map into horizontal runs of the same role,
-// so "bbbb" becomes a single 4-pixel-wide rectangle.
-function toRuns(row: string): PixelRun[] {
-  const runs: PixelRun[] = [];
-  let x = 0;
-  while (x < row.length) {
-    const char = row[x];
-    let end = x + 1;
-    while (end < row.length && row[end] === char) end++;
-    const role = ROLE_BY_CHAR[char];
-    if (role) runs.push({ x, width: end - x, role });
-    x = end;
-  }
-  return runs;
-}
 
 // Blink timing from docs/DESIGN.md: a 3.4 s cycle, eyes closed for its last
 // 8%. Each cat starts at a random point of the cycle, so cats on the board
@@ -142,18 +120,13 @@ export function CatSprite({
       aria-hidden={label ? undefined : true}
       style={{ transform: `translateX(${offsetX}px)` }}
     >
-      {rows.flatMap((row, y) =>
-        toRuns(row).map((run) => (
-          <rect
-            key={`${run.x}-${y}`}
-            x={run.x}
-            y={y}
-            width={run.width}
-            height={1}
-            fill={palette[run.role]}
-          />
-        )),
-      )}
+      <PixelRects
+        rows={rows}
+        colorOf={(char) => {
+          const role = ROLE_BY_CHAR[char];
+          return role && palette[role];
+        }}
+      />
     </svg>
   );
 }

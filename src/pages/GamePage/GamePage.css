@@ -112,13 +112,7 @@
   right: 16px;
   bottom: 8px;
   display: flex;
-  animation: game-page-float 1.6s steps(2) infinite;
-}
-
-@keyframes game-page-float {
-  50% {
-    transform: translateY(-4px);
-  }
+  animation: float 1.6s steps(2) infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

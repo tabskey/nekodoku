@@ -133,6 +133,14 @@ body {
   font-synthesis: none;
 }
 
+/* The ghost's bob: 4px up in two hard steps, shared by the map and the Boss
+   strip so they stay in step. */
+@keyframes float {
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
 /* Keyboard focus, the same everywhere: a 3px gold square, as in the mockup. */
 :focus-visible {
   outline: 3px solid var(--gold);

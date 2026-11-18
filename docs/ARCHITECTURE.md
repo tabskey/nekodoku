@@ -101,7 +101,7 @@ state -> storage
 
 ### Board input
 
-The board uses Pointer Events, which cover touch, mouse and pen with one code path.
+The board uses Pointer Events, which cover touch, mouse and pen with one code path. What a touch means (tap, double tap, stroke, or nothing after a hold) is decided by plain functions in `components/organisms/Board/touch.ts`, tested without a browser; the board itself only tracks fingers and cells.
 
 - On `pointerdown`, the board captures the pointer and remembers the starting cell. On `pointermove`, it finds the cell under the finger with `document.elementFromPoint` and a `data-index` attribute on each cell, and collects each new index once.
 - If the pointer is released on the starting cell without having entered another one, it is a tap: `onCellTap(index)`, sent immediately.
@@ -209,6 +209,8 @@ Reducers call into `game/` for decisions and contain no rule logic of their own.
 - `schemaVersion` starts at 1. Any change to the shape adds a migration function in `storage/migrations.ts`; never read an old save without migrating it. Version 2 added `options.music`, on by default.
 - The profile is saved after every profile action. A level in progress is never saved, by design: `LevelState` lives only in memory and is discarded when the level is closed (see `docs/GAME_RULES.md`).
 - Reads and writes are wrapped in `try/catch`. If storage is unavailable the game still runs with an in-memory profile.
+- Two copies of the game can be open on one device (the installed app and a browser tab share storage). When one saves, the others get the browser's `storage` event and reload the profile, so a copy left open never overwrites newer progress with its old one.
+- A save, or a backup code, with more than 10,000 levels cleared is rejected as invalid (`MAX_LEVELS_CLEARED`): finding a level's world walks the worlds one by one, and a hand-edited huge count would freeze the game on every launch.
 - Data lasts until the browser's site data is cleared. iOS Safari may also clear it for sites not opened for a while unless the app is installed to the home screen, which is why the PWA install and the backup code both matter.
 
 ### Backup code
@@ -234,7 +236,7 @@ Sound effects are synthesized at runtime with the Web Audio API: short oscillato
 - `src/audio/` holds one `AudioContext`, created lazily on the first user tap, and a `play(effect)` function. Effects are named, not built inline: `play('placeCat')`, `play('mistake')`.
 - Each effect is data: a list of notes (frequency, duration, wave type, volume). Changing a sound means editing numbers, not code.
 - `play()` does nothing when `options.sound` is off, when the context is not yet unlocked, or when the browser has no Web Audio. It never throws.
-- Reducers do not play sounds. A small effect in the page layer watches state transitions (a cat was placed, a life was lost, the level was won) and calls `play()`. This keeps `game/` and `state/` free of side effects and their tests silent.
+- Reducers do not play sounds. A small effect in the page layer watches state transitions (a cat was placed, a life was lost, the level was won) and calls `play()`. For a level this is the `useLevelAudio` hook next to `GamePage`, which also starts the music and times the restoration's sounds; which sound a change makes is the pure, tested `levelSound`. This keeps `game/` and `state/` free of side effects and their tests silent.
 - Respect the system: no sound plays while the page is hidden.
 - Music is data too, in `src/audio/songs.ts`: each song is voices of `[note, beats]` at a tempo. `startMusic(song)` books notes a fraction of a second ahead on the audio clock and loops; `stopMusic()` ends it. The level page starts it while playing and stops it otherwise; `options.music` (save version 2) switches it off.
 

@@ -107,13 +107,7 @@
 /* The ghost bobs beside the Boss, 4px in two steps so it stays crisp. */
 .world-page-ghost {
   display: flex;
-  animation: world-page-float 1.6s steps(2) infinite;
-}
-
-@keyframes world-page-float {
-  50% {
-    transform: translateY(-4px);
-  }
+  animation: float 1.6s steps(2) infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

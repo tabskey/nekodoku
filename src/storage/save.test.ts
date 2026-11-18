@@ -3,6 +3,7 @@ import { migrate } from './migrations';
 import {
   defaultSave,
   isSaveData,
+  MAX_LEVELS_CLEARED,
   loadSave,
   SAVE_KEY,
   writeSave,
@@ -81,6 +82,12 @@ describe('isSaveData', () => {
     expect(isSaveData(null)).toBe(false);
     expect(isSaveData({ ...defaultSave(), schemaVersion: 99 })).toBe(false);
     expect(isSaveData({ ...defaultSave(), levelsCleared: 1.5 })).toBe(false);
+    expect(
+      isSaveData({ ...defaultSave(), levelsCleared: MAX_LEVELS_CLEARED }),
+    ).toBe(true);
+    expect(
+      isSaveData({ ...defaultSave(), levelsCleared: MAX_LEVELS_CLEARED + 1 }),
+    ).toBe(false);
     expect(isSaveData({ ...defaultSave(), bestScores: { 3: -1 } })).toBe(false);
     expect(
       isSaveData({

@@ -3,6 +3,7 @@ import { CatSprite } from '../../components/atoms/CatSprite/CatSprite';
 import { catPalette } from '../../components/atoms/CatSprite/catSprites';
 import { CurrencyBadge } from '../../components/atoms/CurrencyBadge/CurrencyBadge';
 import { levelConfig, worldLength, worldStart } from '../../game/progression';
+import { formatTime } from '../../i18n/formatTime';
 import { useText } from '../../i18n/useText';
 import { useProfile } from '../../state/profileContext';
 import './MenuPage.css';
@@ -33,7 +34,6 @@ export function MenuPage({
   const length = worldLength(world);
   const bossSize = levelConfig(first + length - 1).size;
   const bestTime = profile.bestTimes[size];
-  const pad = (n: number) => String(n).padStart(2, '0');
 
   return (
     <main className="menu-page">
@@ -115,10 +115,7 @@ export function MenuPage({
       </nav>
       {bestTime !== undefined && (
         <p className="menu-page-record">
-          {text.bestTime(
-            size,
-            `${pad(Math.floor(bestTime / 60))}:${pad(bestTime % 60)}`,
-          )}
+          {text.bestTime(size, formatTime(bestTime))}
         </p>
       )}
     </main>
