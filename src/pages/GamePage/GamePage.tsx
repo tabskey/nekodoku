@@ -63,6 +63,7 @@ type LevelProps = Omit<GamePageProps, 'level' | 'onOpenMenu'> & {
 };
 
 const HELP_ACTIONS = { reveal: 'useReveal', eraser: 'useEraser' } as const;
+const ZOOM_FROM_SIZE = 10;
 
 // Placeholder 9x9 pixel gear for the Options button, drawn at 2x.
 const GEAR = [
@@ -193,6 +194,9 @@ function Level({
   const tick = useCallback(() => dispatch({ type: 'tick' }), []);
   useLevelTimer(state.status === 'playing' && !paused, tick);
   const placed = state.marks.filter((mark) => mark === 'cat').length;
+  // 10x10 and up: cells are too small to tap, so the board can zoom in.
+  const canZoom = puzzle.size >= ZOOM_FROM_SIZE;
+  const [zoomed, setZoomed] = useState(false);
   const playing = state.status === 'playing';
 
   // Report the win to the profile exactly once, even if this re-renders.
@@ -234,6 +238,15 @@ function Level({
           silhouette={SILHOUETTE}
           label={text.progress(placed, puzzle.size)}
         />
+        {canZoom && (
+          <Button
+            variant="card"
+            aria-pressed={zoomed}
+            onClick={() => setZoomed((z) => !z)}
+          >
+            {zoomed ? text.zoomOut : text.zoomIn}
+          </Button>
+        )}
       </div>
       <Board
         size={puzzle.size}
@@ -253,7 +266,9 @@ function Level({
         onStroke={(mode, indices) =>
           dispatch({ type: 'strokeCells', mode, indices })
         }
+        zoomed={canZoom && zoomed}
       />
+      {canZoom && zoomed && <p className="game-page-hint">{text.zoomHint}</p>}
       {playing && (
         <div className="game-page-helps">
           {(['reveal', 'eraser'] as const).map((help) => {

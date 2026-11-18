@@ -111,7 +111,8 @@ The board uses Pointer Events, which cover touch, mouse and pen with one code pa
 - Otherwise it is a stroke. The mode comes from the starting cell (empty: `mark`; marked: `erase`), and the board calls `onStroke(mode, indices)` once, on `pointerup`, so the whole stroke is one reducer action and one undo step.
 - The board shows the cells being stroked as a live preview while the finger moves, without touching the reducer.
 - On the world map, a horizontal swipe (more than about 50 px) changes world; the map sets `touch-action: pan-y` so vertical scrolling still works. A tap on a tile is never treated as a swipe.
-- `touch-action: none` on the board stops the page from scrolling or zooming while the player drags. When board zoom arrives for large boards, panning uses two fingers so a one-finger drag stays a stroke.
+- `touch-action: none` on the board stops the page from scrolling or zooming while the player drags.
+- Boards of 10x10 and up have a zoom button. Zoomed, cells are 44 px (the cat at 3x) inside a square window, and two fingers pan it: a second finger cancels the stroke in progress, and the midpoint of the two fingers scrolls the window. A one-finger drag stays a stroke. Zoom has two fixed steps, not a pinch, so sprites keep whole multiples.
 - `storage/` is the only place that touches `localStorage`.
 
 ## Data model

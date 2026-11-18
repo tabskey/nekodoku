@@ -20,6 +20,11 @@ interface BoardProps {
   onCellTap: (index: number) => void;
   onPlaceCat: (index: number) => void;
   onStroke: (mode: StrokeMode, indices: number[]) => void;
+  /**
+   * Shows large boards with comfortable cells inside a window that pans with
+   * two fingers (see "Board input" in docs/ARCHITECTURE.md).
+   */
+  zoomed?: boolean;
 }
 
 // Proposed timings, see "Board input" in docs/ARCHITECTURE.md.
@@ -29,6 +34,8 @@ const MAX_BOARD_PX = 480;
 const PAGE_PADDING_PX = 24;
 const PANEL_PADDING_PX = 6;
 const CAT_GRID = 12;
+// Zoomed cells: a comfortable touch target that holds the cat at 3x.
+const ZOOMED_CELL_PX = 44;
 
 interface Touch {
   pointerId: number;
@@ -70,8 +77,13 @@ export function Board({
   onCellTap,
   onPlaceCat,
   onStroke,
+  zoomed = false,
 }: BoardProps) {
   const touch = useRef<Touch | undefined>(undefined);
+  // Every finger on the board, and the midpoint of the last two while panning.
+  const fingers = useRef(new Map<number, { x: number; y: number }>());
+  const pan = useRef<{ x: number; y: number } | undefined>(undefined);
+  const viewport = useRef<HTMLDivElement>(null);
   const lastTap = useRef({ index: -1, time: 0 });
   const [preview, setPreview] = useState<{
     mode: StrokeMode;
@@ -81,9 +93,9 @@ export function Board({
   const gap = size <= 9 ? 6 : 4;
   const width =
     Math.min(useViewportWidth(), MAX_BOARD_PX) - 2 * PAGE_PADDING_PX;
-  const cellPx = Math.floor(
-    (width - 2 * PANEL_PADDING_PX - gap * (size - 1)) / size,
-  );
+  const cellPx = zoomed
+    ? ZOOMED_CELL_PX
+    : Math.floor((width - 2 * PANEL_PADDING_PX - gap * (size - 1)) / size);
   // Whole multiples only, so pixels stay square and crisp.
   const pixelSize = Math.max(1, Math.floor(cellPx / CAT_GRID));
 
@@ -93,7 +105,23 @@ export function Board({
     setPreview(undefined);
   }
 
+  function midpoint() {
+    const [a, b] = [...fingers.current.values()];
+    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+  }
+
   function handleDown(event: PointerEvent<HTMLDivElement>) {
+    fingers.current.set(event.pointerId, {
+      x: event.clientX,
+      y: event.clientY,
+    });
+    // A second finger turns the touch into a pan and drops the stroke.
+    if (zoomed && fingers.current.size === 2) {
+      event.currentTarget.setPointerCapture(event.pointerId);
+      end();
+      pan.current = midpoint();
+      return;
+    }
     const start = cellAt(event.clientX, event.clientY);
     if (start === undefined || !event.isPrimary) return;
     // Keep receiving the pointer even if a mouse leaves the board.
@@ -113,6 +141,21 @@ export function Board({
   }
 
   function handleMove(event: PointerEvent<HTMLDivElement>) {
+    if (fingers.current.has(event.pointerId)) {
+      fingers.current.set(event.pointerId, {
+        x: event.clientX,
+        y: event.clientY,
+      });
+    }
+    if (pan.current && fingers.current.size >= 2) {
+      const next = midpoint();
+      viewport.current?.scrollBy(
+        pan.current.x - next.x,
+        pan.current.y - next.y,
+      );
+      pan.current = next;
+      return;
+    }
     const current = touch.current;
     // Only the finger that started the touch counts; a second one is ignored.
     if (!current || current.held || event.pointerId !== current.pointerId)
@@ -125,7 +168,13 @@ export function Board({
     setPreview({ mode: current.mode, cells: [...current.cells] });
   }
 
+  function lift(event: PointerEvent<HTMLDivElement>) {
+    fingers.current.delete(event.pointerId);
+    if (fingers.current.size < 2) pan.current = undefined;
+  }
+
   function handleUp(event: PointerEvent<HTMLDivElement>) {
+    lift(event);
     const current = touch.current;
     if (current && event.pointerId !== current.pointerId) return;
     end();
@@ -157,41 +206,50 @@ export function Board({
 
   return (
     <div
-      className="board"
-      role="group"
-      aria-label={label}
-      style={{
-        gridTemplateColumns: `repeat(${size}, ${cellPx}px)`,
-        gap,
-        padding: PANEL_PADDING_PX,
-        fontSize: cellPx,
-      }}
-      onPointerDown={handleDown}
-      onPointerMove={handleMove}
-      onPointerUp={handleUp}
-      onPointerCancel={(event) => {
-        if (event.pointerId === touch.current?.pointerId) end();
-      }}
-      onContextMenu={(event) => event.preventDefault()}
+      ref={viewport}
+      className={
+        zoomed ? 'board-viewport board-viewport-zoomed' : 'board-viewport'
+      }
+      style={zoomed ? { width, height: width } : undefined}
     >
-      {zones.map((zone, index) => {
-        const mark = shownMark(index);
-        return (
-          <Cell
-            key={index}
-            index={index}
-            mark={mark}
-            color={`var(--zone-${zone})`}
-            size={cellPx}
-            cat={renderCat(index, pixelSize)}
-            label={cellLabel(
-              Math.floor(index / size) + 1,
-              (index % size) + 1,
-              mark,
-            )}
-          />
-        );
-      })}
+      <div
+        className="board"
+        role="group"
+        aria-label={label}
+        style={{
+          gridTemplateColumns: `repeat(${size}, ${cellPx}px)`,
+          gap,
+          padding: PANEL_PADDING_PX,
+          fontSize: cellPx,
+        }}
+        onPointerDown={handleDown}
+        onPointerMove={handleMove}
+        onPointerUp={handleUp}
+        onPointerCancel={(event) => {
+          lift(event);
+          if (event.pointerId === touch.current?.pointerId) end();
+        }}
+        onContextMenu={(event) => event.preventDefault()}
+      >
+        {zones.map((zone, index) => {
+          const mark = shownMark(index);
+          return (
+            <Cell
+              key={index}
+              index={index}
+              mark={mark}
+              color={`var(--zone-${zone})`}
+              size={cellPx}
+              cat={renderCat(index, pixelSize)}
+              label={cellLabel(
+                Math.floor(index / size) + 1,
+                (index % size) + 1,
+                mark,
+              )}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }

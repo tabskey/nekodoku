@@ -61,6 +61,9 @@ export const pt = {
   bestScoreNote: (score: number) => `recorde ${score}`,
   worldLabel: (world: number) => `Mundo ${world}`,
   boss: 'Chefe',
+  zoomIn: 'Aproximar',
+  zoomOut: 'Ver tudo',
+  zoomHint: 'Arraste com dois dedos pra mover o tabuleiro.',
   restoredTitle: 'Gatinho restaurado!',
   restoredMessage: (world: number) =>
     `O fantasminha do Mundo ${world} voltou a ser gatinho e entrou pra sua coleção.`,

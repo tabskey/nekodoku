@@ -56,6 +56,9 @@ export const en: Text = {
   bestScoreNote: (score) => `best ${score}`,
   worldLabel: (world) => `World ${world}`,
   boss: 'Boss',
+  zoomIn: 'Zoom in',
+  zoomOut: 'See all',
+  zoomHint: 'Drag with two fingers to move the board.',
   restoredTitle: 'Cat restored!',
   restoredMessage: (world) =>
     `World ${world}'s ghost is a cat again and joined your collection.`,
