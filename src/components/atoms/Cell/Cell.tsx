@@ -12,13 +12,23 @@ interface CellProps {
   /** Drawn when the mark is 'cat'. */
   cat: ReactNode;
   label: string;
+  /** Shakes once, with a red x: a rejected cat. */
+  shaking?: boolean;
 }
 
 /** One board tile. Presentational: the Board handles all input. */
-export function Cell({ index, mark, color, size, cat, label }: CellProps) {
+export function Cell({
+  index,
+  mark,
+  color,
+  size,
+  cat,
+  label,
+  shaking = false,
+}: CellProps) {
   return (
     <div
-      className="cell"
+      className={shaking ? 'cell cell-shake' : 'cell'}
       data-index={index}
       role="img"
       aria-label={label}

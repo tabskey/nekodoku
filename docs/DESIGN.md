@@ -120,7 +120,7 @@ Day mode neutrals, as used in the light row of the mockup **(proposed)**:
 | Text | `#2a1f3d` |
 | Score and other gold text | `#7a4e00` |
 
-The board background is not the raised panel in day mode: the light panel is almost the same color as the zones (zone 7, `#e2cfa6`, matches it exactly), so cells would merge into the board. Every zone needs at least 3:1 contrast against the board; `#5a4b70` gives 4.2:1 or more. In night mode the board stays on the raised panel color.
+The board background is not the raised panel in day mode: the light panel is almost the same color as the zones (zone 7, `#e2cfa6`, matches it exactly), so cells would merge into the board. Every zone needs at least 3:1 contrast against the board; `#5a4b70` gives 3:1 or more (zone 6, the darkest, is right at 3:1, so do not darken the day board further). In night mode the board stays on the raised panel color.
 
 Gold text is the one accent that changes: the coin yellow is unreadable on a light background, so text that is gold in night mode uses a dark amber in day mode. Gold as a fill (buttons, the Boss step) stays the same.
 
@@ -130,7 +130,7 @@ Button depth is a 4 px bottom shadow in a darker shade of the button's own color
 
 Zones, in the order they are assigned:
 
-`#f7a8b8` `#ffd66b` `#8ecdf7` `#a9dd8a` `#c9b3f5` `#ffb37a` `#7fded1` `#e2cfa6` `#d5d3df`
+`#f7a8b8` `#ffd66b` `#8ecdf7` `#a9dd8a` `#c9b3f5` `#ffb37a` `#3fb39c` `#e2cfa6` `#d5d3df`
 
 Nine colors cover boards up to 9x9. Zones 9 to 11, for the 10x10 to 12x12 boards, reuse a color under a pattern of dark squares at 16% (`--zone-stripe`), in 3 px steps so they stay crisp:
 

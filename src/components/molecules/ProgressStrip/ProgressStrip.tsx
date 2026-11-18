@@ -21,7 +21,14 @@ export function ProgressStrip({
     <div
       role="img"
       aria-label={label}
-      style={{ display: 'flex', gap: 4, justifyContent: 'center' }}
+      // 12 cats at 24px need a tighter gap to fit a phone; on the narrowest
+      // screens the strip wraps instead of overflowing.
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: total > 9 ? 2 : 4,
+        justifyContent: 'center',
+      }}
     >
       {Array.from({ length: total }, (_, i) => (
         <CatSprite

@@ -65,7 +65,8 @@ type LevelProps = Omit<GamePageProps, 'level' | 'onOpenMenu'> & {
 const HELP_ACTIONS = { reveal: 'useReveal', eraser: 'useEraser' } as const;
 const ZOOM_FROM_SIZE = 10;
 
-// Placeholder 9x9 pixel gear for the Options button, drawn at 2x.
+// Placeholder 9x9 pixel icons, drawn at 2x by PixelIcon: the Options gear
+// and the zoom magnifier, whose lens holds a + or a - (v marks the + only).
 const GEAR = [
   '...ooo...',
   '.o.ooo.o.',
@@ -77,6 +78,44 @@ const GEAR = [
   '.o.ooo.o.',
   '...ooo...',
 ];
+const MAGNIFIER = [
+  '.ooooo...',
+  'o.....o..',
+  'o..v..o..',
+  'o.ooo.o..',
+  'o..v..o..',
+  'o.....o..',
+  '.oooooo..',
+  '......oo.',
+  '.......oo',
+];
+
+function PixelIcon({ rows, drawn = 'o' }: { rows: string[]; drawn?: string }) {
+  return (
+    <svg
+      viewBox={`0 0 ${rows[0].length} ${rows.length}`}
+      width={rows[0].length * 2}
+      height={rows.length * 2}
+      shapeRendering="crispEdges"
+      aria-hidden="true"
+    >
+      {rows.flatMap((row, y) =>
+        [...row].map((char, x) =>
+          drawn.includes(char) ? (
+            <rect
+              key={`${x}-${y}`}
+              x={x}
+              y={y}
+              width={1}
+              height={1}
+              fill="currentColor"
+            />
+          ) : null,
+        ),
+      )}
+    </svg>
+  );
+}
 
 /** One level, from loading to solved. */
 export function GamePage({ level, onOpenMenu, ...levelProps }: GamePageProps) {
@@ -122,28 +161,7 @@ export function GamePage({ level, onOpenMenu, ...levelProps }: GamePageProps) {
             aria-label={text.optionsButton}
             onClick={() => setOptionsOpen(true)}
           >
-            <svg
-              viewBox="0 0 9 9"
-              width={18}
-              height={18}
-              shapeRendering="crispEdges"
-              aria-hidden="true"
-            >
-              {GEAR.flatMap((row, y) =>
-                [...row].map((char, x) =>
-                  char === 'o' ? (
-                    <rect
-                      key={`${x}-${y}`}
-                      x={x}
-                      y={y}
-                      width={1}
-                      height={1}
-                      fill="currentColor"
-                    />
-                  ) : null,
-                ),
-              )}
-            </svg>
+            <PixelIcon rows={GEAR} />
           </button>
         </header>
         <RulesPopover
@@ -238,15 +256,6 @@ function Level({
           silhouette={SILHOUETTE}
           label={text.progress(placed, puzzle.size)}
         />
-        {canZoom && (
-          <Button
-            variant="card"
-            aria-pressed={zoomed}
-            onClick={() => setZoomed((z) => !z)}
-          >
-            {zoomed ? text.zoomOut : text.zoomIn}
-          </Button>
-        )}
       </div>
       <Board
         size={puzzle.size}
@@ -267,6 +276,13 @@ function Level({
           dispatch({ type: 'strokeCells', mode, indices })
         }
         zoomed={canZoom && zoomed}
+        // Lives drop by one per mistake, so they tell mistakes apart.
+        shake={
+          state.lastMistake === undefined
+            ? undefined
+            : { index: state.lastMistake, id: state.lives }
+        }
+        celebrate={state.status === 'won'}
       />
       {canZoom && zoomed && <p className="game-page-hint">{text.zoomHint}</p>}
       {playing && (
@@ -284,6 +300,17 @@ function Level({
               />
             );
           })}
+          {canZoom && (
+            <button
+              type="button"
+              className="help-button"
+              aria-label={zoomed ? text.zoomOut : text.zoomIn}
+              aria-pressed={zoomed}
+              onClick={() => setZoomed((z) => !z)}
+            >
+              <PixelIcon rows={MAGNIFIER} drawn={zoomed ? 'o' : 'ov'} />
+            </button>
+          )}
         </div>
       )}
       {state.status === 'won' && restores && bossWorld !== undefined && (

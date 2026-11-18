@@ -25,6 +25,10 @@ interface BoardProps {
    * two fingers (see "Board input" in docs/ARCHITECTURE.md).
    */
   zoomed?: boolean;
+  /** The cell of the last mistake; a new `id` shakes it again. */
+  shake?: { index: number; id: number };
+  /** Makes every cat hop: the level is won. */
+  celebrate?: boolean;
 }
 
 // Proposed timings, see "Board input" in docs/ARCHITECTURE.md.
@@ -78,6 +82,8 @@ export function Board({
   onPlaceCat,
   onStroke,
   zoomed = false,
+  shake,
+  celebrate = false,
 }: BoardProps) {
   const touch = useRef<Touch | undefined>(undefined);
   // Every finger on the board, and the midpoint of the last two while panning.
@@ -213,7 +219,7 @@ export function Board({
       style={zoomed ? { width, height: width } : undefined}
     >
       <div
-        className="board"
+        className={celebrate ? 'board board-celebrate' : 'board'}
         role="group"
         aria-label={label}
         style={{
@@ -235,7 +241,9 @@ export function Board({
           const mark = shownMark(index);
           return (
             <Cell
-              key={index}
+              // A new key remounts the cell, which replays the shake.
+              key={shake?.index === index ? `${index}-${shake.id}` : index}
+              shaking={shake?.index === index}
               index={index}
               mark={mark}
               color={`var(--zone-${zone})`}

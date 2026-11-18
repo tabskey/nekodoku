@@ -54,8 +54,11 @@
 
 .game-page-progress {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 12px;
+  max-width: 100%;
   color: var(--panel);
 }
 
@@ -84,6 +87,8 @@
 
 .game-page-helps {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
 }
 

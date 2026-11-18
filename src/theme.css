@@ -42,6 +42,8 @@
   --cat-card-shadow: rgba(0, 0, 0, 0.22);
   /* Behind the restoration, cream in both modes for the black silhouette. */
   --restore-bg: #f6ecd4;
+  /* The x of a rejected cat, on a zone color in both modes. */
+  --mistake: #b3261e;
 
   --zone-0: #f7a8b8;
   --zone-1: #ffd66b;
@@ -49,7 +51,7 @@
   --zone-3: #a9dd8a;
   --zone-4: #c9b3f5;
   --zone-5: #ffb37a;
-  --zone-6: #7fded1;
+  --zone-6: #3fb39c;
   --zone-7: #e2cfa6;
   --zone-8: #d5d3df;
   /* Zones 9 to 11 (10x10 and up) reuse a base color under a pattern, so they
