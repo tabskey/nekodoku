@@ -40,6 +40,12 @@ GitHub Pages cannot rewrite URLs: a request for a path that is not a real file r
 
 If URL routes are ever added, use `HashRouter` (`/#/world/2`) or copy `index.html` to `404.html` in the build. Do not rely on server rewrites; see Serving with nginx in `docs/FUTURE_BACKEND.md`.
 
+### Offline
+
+The app is a PWA. `public/manifest.webmanifest` and the icons in `public/icons/` make it installable; the icons are placeholders scaled from a cat head by whole multiples.
+
+The service worker is hand-written in `src/sw.js`, with no plugin. After each build, a small plugin in `vite.config.ts` lists every file in `dist/`, fills that list and a cache name (a hash of the build) into the worker and writes `dist/sw.js`. On install the worker caches every file, so the game plays offline from the first visit, the puzzle worker chunk included. It answers every request from the cache first, and on activate it deletes caches from older builds. It does not call `skipWaiting`: a new build takes over only once every open copy of the game is closed. The worker is registered in `main.tsx` in production builds only.
+
 ### Local container
 
 A `Dockerfile` at the root gives a reproducible dev environment, so the project runs the same on any machine without installing Node on the host. It works unchanged with Podman.
@@ -72,6 +78,8 @@ src/
   i18n/          pt.ts, en.ts and the useText hook
   audio/         sound effects synthesized with the Web Audio API
   assets/        SVG sprites
+  sw.js          service worker template, filled in at build time
+public/          manifest.webmanifest and icons/
 docs/
 Dockerfile
 .dockerignore    node_modules, dist, .git
