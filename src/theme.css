@@ -28,6 +28,8 @@
   --text-muted: #cbbfe0;
   --text-on-light: #17102a;
   --gold-text: #ffc94a;
+  /* Warnings and errors as text: coral reads on night, not on day. */
+  --danger-text: #ff7a59;
 
   --primary: #ff7a59;
   --primary-shadow: #c9553a;
@@ -64,6 +66,7 @@
   --text: #2a1f3d;
   --text-muted: #5a4b70;
   --gold-text: #7a4e00;
+  --danger-text: #a8381f;
 }
 
 body {

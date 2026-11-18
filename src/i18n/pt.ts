@@ -39,6 +39,12 @@ export const pt = {
   bossTileLabel: (state: 'cleared' | 'current' | 'locked') =>
     `Chefe: ${{ cleared: 'vencido', current: 'atual', locked: 'bloqueado' }[state]}`,
   selectedCat: 'Seu gato',
+  previousWorld: 'Mundo anterior',
+  nextWorld: 'Próximo mundo',
+  worldDots: (world: number, total: number) => `Mundo ${world} de ${total}`,
+  lockedWorld: (previous: number) =>
+    `Vença o Chefe do Mundo ${previous} para abrir.`,
+  bestScoreNote: (score: number) => `recorde ${score}`,
   worldLabel: (world: number) => `Mundo ${world}`,
   boss: 'Chefe',
   finalScore: (score: number) => `${score} pontos`,
@@ -60,6 +66,25 @@ export const pt = {
   sound: 'Efeitos sonoros',
   autoMark: 'Marcar automaticamente',
   back: 'Voltar',
+  backupTitle: 'Código de backup',
+  backupHint:
+    'Leve seu progresso para outro aparelho. O código é uma foto do momento: crie um novo depois de jogar.',
+  createCode: 'Criar código',
+  useCode: 'Usar código',
+  copyCode: 'Copiar',
+  copied: 'Copiado!',
+  copyFailed: 'Não deu para copiar. Selecione o texto e copie à mão.',
+  codeLabel: 'Seu código de backup',
+  pasteLabel: 'Cole o código aqui',
+  checkCode: 'Verificar',
+  codeChecksum: 'Código incompleto ou com erro de digitação.',
+  codeInvalid: 'Este código não é um progresso do Nekodoku.',
+  backupSummary: (levels: number, coins: number, fish: number, cats: number) =>
+    `Este código tem ${levels} fases concluídas, ${coins} moedas, ${fish} peixes e ${cats} gatos.`,
+  backupWarning: 'Seu progresso atual neste aparelho será substituído.',
+  confirmImport: 'Substituir',
+  cancel: 'Cancelar',
+  imported: 'Progresso restaurado.',
   rulesButton: 'Regras',
   rulesTitle: 'Regras',
   rules: [

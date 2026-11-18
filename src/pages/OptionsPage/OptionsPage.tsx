@@ -3,13 +3,14 @@ import { Switch } from '../../components/atoms/Switch/Switch';
 import { ChoiceGroup } from '../../components/molecules/ChoiceGroup/ChoiceGroup';
 import { useText } from '../../i18n/useText';
 import { useOptions } from '../../state/profileContext';
+import { BackupSection } from './BackupSection';
 import './OptionsPage.css';
 
 interface OptionsPageProps {
   onBack: () => void;
 }
 
-/** Language, mode, sound and auto-mark. Every change applies at once. */
+/** Language, mode, sound, auto-mark and the backup code. Changes apply at once. */
 export function OptionsPage({ onBack }: OptionsPageProps) {
   const text = useText();
   const { options, setOption } = useOptions();
@@ -49,6 +50,7 @@ export function OptionsPage({ onBack }: OptionsPageProps) {
         checked={options.autoMark}
         onChange={(autoMark) => setOption('autoMark', autoMark)}
       />
+      <BackupSection />
       <Button onClick={onBack}>{text.back}</Button>
     </main>
   );

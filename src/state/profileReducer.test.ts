@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { levelConfig } from '../game/progression';
+import { levelConfig, worldCat } from '../game/progression';
 import { BOSS_REWARD, LEVEL_REWARD } from '../game/rewards';
 import { shopCat } from '../game/shop';
 import { defaultSave } from '../storage/save';
@@ -118,5 +118,27 @@ describe('profileReducer cats', () => {
     expect(
       profileReducer(owned, { type: 'selectCat', id: 'calico' }).selectedCat,
     ).toBe('calico');
+  });
+});
+
+describe('profileReducer restored cats', () => {
+  it('adds the world cat to the collection when its Boss is beaten, once', () => {
+    const beforeBoss = play(cleared(1), cleared(2), cleared(3), cleared(4));
+    expect(beforeBoss.ownedCats).not.toContain(worldCat(1));
+    const afterBoss = profileReducer(beforeBoss, cleared(5));
+    expect(afterBoss.ownedCats).toContain(worldCat(1));
+    const replayed = profileReducer(afterBoss, cleared(5, 999));
+    expect(replayed.ownedCats.filter((id) => id === worldCat(1))).toHaveLength(
+      1,
+    );
+  });
+});
+
+describe('profileReducer importSave', () => {
+  it('replaces the whole profile', () => {
+    const imported = { ...defaultSave(), levelsCleared: 9, coins: 77 };
+    expect(
+      profileReducer(play(cleared(1)), { type: 'importSave', save: imported }),
+    ).toBe(imported);
   });
 });
