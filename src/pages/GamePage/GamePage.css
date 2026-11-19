@@ -72,3 +72,25 @@
   margin: 0;
   color: var(--text-muted);
 }
+
+/* The Boss's 85x18 scenery at 4x, as in the "Boss 12x12" artboard. */
+.game-page-scenery {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.game-page-scenery-ghost {
+  position: absolute;
+  right: 16px;
+  bottom: 8px;
+  display: flex;
+  animation: float 1.6s steps(2) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-page-scenery-ghost {
+    animation: none;
+  }
+}
