@@ -141,7 +141,7 @@ Each biome is a small kit, reused by every world that rotates onto it:
 
 - **Palette:** ground, ground speckles, path, decoration colors, in a night and a day version.
 - **Decorations:** 3 to 5 small sprites (for example tree, bush, rock for the forest; palm, wave, shell for the beach; tombstone, fence, pumpkin for the graveyard), each on a 12x12 or 16x16 canvas. Drawn with color roles so the night version is a palette swap.
-- **Path layout:** a few hand-made path shapes (positions of the level tiles and the bends between them) rotate across worlds. A river biome may add a bridge where the path crosses the water.
+- **Path layout:** a few path shapes (positions of the level tiles and the bends between them) rotate across worlds; today the snake, the wide snake and the staircase, flipped or not (see Biomes in `docs/GAME_RULES.md`). A river biome may add a bridge where the path crosses the water.
 
 **One pixel scale on the map.** Everything on the map, from ground speckles to decorations to the walking cat, uses the same size of pixel on screen (3 CSS px per sprite pixel in the mockup). The current mockup breaks this: its ground speckles and path dots are 6 px squares while the cat's pixels are 3 px. Fix it when the real map is built.
 

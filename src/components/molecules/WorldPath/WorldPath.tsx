@@ -7,6 +7,7 @@ import {
 } from 'react';
 import { decorations } from './decorations';
 import type { MapPalette } from './mapPalettes';
+import type { WorldRoute } from '../../../game/biomes';
 import { pathLayout } from './pathLayout';
 import './WorldPath.css';
 
@@ -36,6 +37,8 @@ interface WorldPathProps {
   palette: MapPalette;
   /** Places the decorations, so a world always looks the same: the world number. */
   seed: number;
+  /** The shape of the path between the tiles. */
+  route: WorldRoute;
   /** The selected cat, 16x18 sprite pixels at 3x. Gets whether it is walking. */
   cat?: (walking: boolean) => ReactNode;
   /** Index of the tile the cat walks to, dot by dot along the path. */
@@ -60,15 +63,16 @@ export function WorldPath({
   dimmed = false,
   palette,
   seed,
+  route,
   cat,
   catAt = 0,
   catFrom = catAt,
   onArrive,
 }: WorldPathProps) {
   const { width, height, points, tilePoints, decor } = useMemo(() => {
-    const layout = pathLayout(tiles.length);
+    const layout = pathLayout(tiles.length, route);
     return { ...layout, decor: decorations(layout, seed) };
-  }, [tiles.length, seed]);
+  }, [tiles.length, seed, route]);
   const target = tilePoints[catAt];
   const [stand, setStand] = useState({ at: tilePoints[catFrom], left: false });
 

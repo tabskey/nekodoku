@@ -1,4 +1,4 @@
-import { useRef, useState, type PointerEvent } from 'react';
+import { useMemo, useRef, useState, type PointerEvent } from 'react';
 import { Button } from '../../components/atoms/Button/Button';
 import { CatSprite } from '../../components/atoms/CatSprite/CatSprite';
 import { CurrencyBadge } from '../../components/atoms/CurrencyBadge/CurrencyBadge';
@@ -15,7 +15,7 @@ import {
   worldLength,
   worldStart,
 } from '../../game/progression';
-import { worldScene } from '../../game/biomes';
+import { worldRoute, worldScene } from '../../game/biomes';
 import { useText } from '../../i18n/useText';
 import { useProfile } from '../../state/profileContext';
 import './WorldPage.css';
@@ -52,6 +52,7 @@ export function WorldPage({
   const first = worldStart(world);
   const length = worldLength(world);
   const scene = worldScene(world);
+  const route = useMemo(() => worldRoute(world), [world]);
   // The tile tapped: the cat walks there. A second tap on it opens the level
   // once the cat stands on it.
   const [destination, setDestination] = useState<number>();
@@ -190,6 +191,7 @@ export function WorldPage({
           dimmed={locked}
           palette={MAP_PALETTES[scene.biome][scene.time]}
           seed={world}
+          route={route}
           onSelect={(i) => {
             if (i === catTile) setOpening(true);
             else {
