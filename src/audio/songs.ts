@@ -22,15 +22,128 @@ export interface Song {
    * note starting exactly there.
    */
   loopFromBeat?: number;
+  /** Plays through once and stops, instead of looping. */
+  once?: boolean;
 }
 
-export type SongId = 'menu' | 'level' | 'boss' | 'celebration';
+export type SongId = 'menu' | 'level' | 'boss' | 'celebration' | 'sad' | 'won';
 
 // Eight eighth notes, half a beat each, for one bar of arpeggio.
 const bar = (...names: string[]): SongNote[] =>
   names.map((name) => [name, 0.5]);
 
 export const SONGS: Record<SongId, Song> = {
+  // For a won level that has no restoration: a cute little music box in C
+  // major, once. A bouncy plucked bass, a tune that skips about with little
+  // rests, and a tiny "mi-au" before the last note. Four bars of four beats,
+  // C, Am, F, G to C: eight seconds.
+  won: {
+    bpm: 120,
+    once: true,
+    voices: [
+      {
+        wave: 'triangle',
+        volume: 0.06,
+        notes: [
+          // Plucked: a short note, a rest, and again.
+          ...bar('C3', '-', 'G3', '-', 'C3', '-', 'G3', '-'),
+          ...bar('A2', '-', 'E3', '-', 'A2', '-', 'E3', '-'),
+          ...bar('F2', '-', 'C3', '-', 'F2', '-', 'C3', '-'),
+          ...bar('G2', '-', 'D3', '-'),
+          ['C3', 0.5],
+          ['G3', 0.5],
+          ['C3', 1],
+        ],
+      },
+      {
+        wave: 'triangle',
+        volume: 0.06,
+        notes: [
+          ...bar('E5', 'G5', '-', 'G5', 'E5', 'C5', 'D5', 'E5'),
+          ['C5', 0.5],
+          ['E5', 0.5],
+          ['A5', 1],
+          ['G5', 0.5],
+          ['E5', 0.5],
+          ['C5', 1],
+          ['A4', 0.5],
+          ['C5', 0.5],
+          ['F5', 1],
+          ['E5', 0.5],
+          ['D5', 0.5],
+          ['C5', 1],
+          ...bar('G5', 'F5', 'D5', 'B4'),
+          // The cat: a quick rising "mi" and a falling "au".
+          ['E5', 0.5, 'A5'],
+          ['A5', 1, 'E5'],
+          ['C5', 0.5],
+        ],
+      },
+    ],
+  },
+  // For a lost level: slow, in A minor, once. The classic sad descent in the
+  // bass (A, G, F, E), a tune that sighs downward, and a last note that
+  // sinks. Five bars of four beats. The loss jingle (G, E, C) fits its key.
+  sad: {
+    bpm: 66,
+    once: true,
+    voices: [
+      {
+        wave: 'triangle',
+        volume: 0.07,
+        notes: [
+          ['A2', 4],
+          ['G2', 4],
+          ['F2', 4],
+          ['E2', 4],
+          ['A2', 4],
+        ],
+      },
+      {
+        wave: 'triangle',
+        volume: 0.035,
+        notes: [
+          // Slow broken chords: Am, G, F, E, then Am held.
+          ['A3', 1],
+          ['C4', 1],
+          ['E4', 1],
+          ['C4', 1],
+          ['G3', 1],
+          ['B3', 1],
+          ['D4', 1],
+          ['B3', 1],
+          ['F3', 1],
+          ['A3', 1],
+          ['C4', 1],
+          ['A3', 1],
+          ['E3', 1],
+          ['G#3', 1],
+          ['B3', 1],
+          ['G#3', 1],
+          ['A3', 4],
+        ],
+      },
+      {
+        wave: 'triangle',
+        volume: 0.05,
+        notes: [
+          ['E5', 2],
+          ['D5', 1],
+          ['C5', 1],
+          ['B4', 2],
+          ['C5', 1],
+          ['D5', 1],
+          ['C5', 2],
+          ['B4', 1],
+          ['A4', 1],
+          ['G#4', 3],
+          ['B4', 1],
+          // The last note sinks.
+          ['A4', 4, 'E4'],
+        ],
+      },
+    ],
+  },
   // The Boss restoration (see Restoration sequence in docs/DESIGN.md), timed
   // to its 3.6 s: at 116 bpm beat 6 falls at 3.1 s, when the cat appears.
   // Beats 0-6 build up (the ghost flies in, turns black, flickers three

@@ -17,6 +17,7 @@ import { ProgressStrip } from '../../components/molecules/ProgressStrip/Progress
 import { Board } from '../../components/organisms/Board/Board';
 import { OptionsPage } from '../OptionsPage/OptionsPage';
 import { useLevelAudio } from './useLevelAudio';
+import { LostGhost } from '../../components/organisms/LostGhost/LostGhost';
 import { Restoration } from '../../components/organisms/Restoration/Restoration';
 import { RulesPopover } from '../../components/organisms/RulesPopover/RulesPopover';
 import { helpCost, type Help } from '../../game/helps';
@@ -197,12 +198,16 @@ function Level({
   const text = useText();
   const { options } = useOptions();
   const palette = catPalette(useProfile().profile.selectedCat);
-  // Auto-mark is read once, when the level starts; a change made in Options
-  // mid-level applies from the next level.
+  // Auto-mark starts as the option says, and follows it if it changes in
+  // Options mid-level (see the effect below).
   const [state, dispatch] = useReducer(levelReducer, puzzle, (p) =>
     createLevel(p, options.autoMark, givens),
   );
   const tick = useCallback(() => dispatch({ type: 'tick' }), []);
+  // Nothing happens on the first run: the reducer sees an unchanged setting.
+  useEffect(() => {
+    dispatch({ type: 'setAutoMark', autoMark: options.autoMark });
+  }, [options.autoMark]);
   useLevelTimer(state.status === 'playing' && !paused, tick);
   const placed = state.marks.filter((mark) => mark === 'cat').length;
   // 10x10 and up: cells are too small to tap, so the board can zoom in.
@@ -337,6 +342,7 @@ function Level({
           <Button onClick={onNextLevel}>{text.nextLevel}</Button>
         </div>
       )}
+      {state.status === 'lost' && <LostGhost />}
       {state.status === 'lost' && (
         <div className="game-page-end">
           <p className="game-page-status">{text.lost}</p>

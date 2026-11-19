@@ -34,7 +34,9 @@ export type LevelAction =
   | { type: 'useReveal' }
   | { type: 'useEraser' }
   | { type: 'tick' }
-  | { type: 'restart' };
+  | { type: 'restart' }
+  /** The auto-mark option changed (in Options, even mid-level). */
+  | { type: 'setAutoMark'; autoMark: boolean };
 
 export function createLevel(
   puzzle: SolvedPuzzle,
@@ -92,6 +94,19 @@ function withCat(
   return withWin({ ...state, marks, lastCorrectCat: cell });
 }
 
+// Switches auto-mark. Turning it on while playing also marks around the cats
+// already on the board, so the board matches the option.
+function withAutoMark(state: LevelState, autoMark: boolean): LevelState {
+  if (autoMark === state.autoMark) return state;
+  const marks = [...state.marks];
+  if (autoMark && state.status === 'playing') {
+    marks.forEach((mark, cell) => {
+      if (mark === 'cat') autoMarkAround(state.puzzle, marks, cell);
+    });
+  }
+  return { ...state, autoMark, marks };
+}
+
 export function levelReducer(
   state: LevelState,
   action: LevelAction,
@@ -99,6 +114,9 @@ export function levelReducer(
   // Retry is always allowed and has no limit.
   if (action.type === 'restart')
     return createLevel(state.puzzle, state.autoMark, state.givens);
+  // Also applies once the level is over, so a retry uses the new setting.
+  if (action.type === 'setAutoMark')
+    return withAutoMark(state, action.autoMark);
   if (state.status !== 'playing') return state;
   const marks = [...state.marks];
 

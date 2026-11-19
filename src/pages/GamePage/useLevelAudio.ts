@@ -30,6 +30,24 @@ export function useLevelAudio(
     return stopMusic;
   }, [playing, music, boss]);
 
+  // A won level without the restoration plays a cute little song, once. The
+  // next level's music stops it.
+  const won = state.status === 'won' && !restoring;
+  useEffect(() => {
+    if (!won || !music) return;
+    startMusic('won');
+    return stopMusic;
+  }, [won, music]);
+
+  // A lost level plays the sad song, once. Retrying stops it, and the level
+  // music starts again.
+  const lost = state.status === 'lost';
+  useEffect(() => {
+    if (!lost || !music) return;
+    startMusic('sad');
+    return stopMusic;
+  }, [lost, music]);
+
   // One sound per change of the level, decided by levelSound.
   const before = useRef(state);
   const afterHelp = useRef(false);

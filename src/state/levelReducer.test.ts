@@ -249,6 +249,64 @@ describe('levelReducer auto-mark', () => {
   it('keeps the setting on restart', () => {
     expect(withAutoMark({ type: 'restart' }).autoMark).toBe(true);
   });
+
+  describe('when the option changes during the level', () => {
+    const on: LevelAction = { type: 'setAutoMark', autoMark: true };
+    const off: LevelAction = { type: 'setAutoMark', autoMark: false };
+
+    it('marks around the cats already placed when turned on', () => {
+      const state = play(place(rightCell), on);
+      const ruledOut = ruledOutCells(puzzle, rightCell);
+      expect(state.autoMark).toBe(true);
+      for (const cell of ruledOut) expect(state.marks[cell]).toBe('marked');
+    });
+
+    it('marks around the next cats too', () => {
+      const [first, second] = puzzle.solution;
+      const state = play(on, place(first), place(second));
+      for (const cat of [first, second]) {
+        for (const cell of ruledOutCells(puzzle, cat)) {
+          if (!puzzle.solution.includes(cell)) {
+            expect(state.marks[cell]).toBe('marked');
+          }
+        }
+      }
+    });
+
+    it('stops marking when turned off, leaving the x already there', () => {
+      const [first, second] = puzzle.solution;
+      const state = play(on, place(first), off, place(second));
+      expect(state.autoMark).toBe(false);
+      expect(state.marks[ruledOutCells(puzzle, first)[0]]).toBe('marked');
+      const onlyBySecond = ruledOutCells(puzzle, second).find(
+        (cell) =>
+          !ruledOutCells(puzzle, first).includes(cell) &&
+          !puzzle.solution.includes(cell),
+      );
+      if (onlyBySecond !== undefined) {
+        expect(state.marks[onlyBySecond]).toBe('empty');
+      }
+    });
+
+    it('is used by Try again after a lost level, with no need to reopen it', () => {
+      const lost = play(...wrongCells.slice(0, 3).map(place));
+      expect(lost.status).toBe('lost');
+      const retried = [
+        on,
+        { type: 'restart' } as LevelAction,
+        place(rightCell),
+      ].reduce(levelReducer, lost);
+      expect(retried.autoMark).toBe(true);
+      for (const cell of ruledOutCells(puzzle, rightCell)) {
+        expect(retried.marks[cell]).toBe('marked');
+      }
+    });
+
+    it('changes nothing when the setting is already that', () => {
+      const state = createLevel(puzzle, true);
+      expect(levelReducer(state, on)).toBe(state);
+    });
+  });
 });
 
 describe('levelReducer starting cats', () => {

@@ -70,6 +70,10 @@ Cats come in two poses. The head is the icon: it is what appears on the board, i
 - The scenery is an 85x18 pixel strip (sky, stars, moon, two layers of hills, ground) built from a pixel map with six roles. Each world supplies a six-color palette, the same way cats do. The mockup shows three: teal, rose and gold.
 - Draw both from data in the app (pixel map plus palette), like `CatSprite`, so a new world needs only a new palette.
 
+### Lost level
+
+When the last life is lost, the ghost appears in the middle of the screen over a flat pixel shadow, floats up 143 px in 13 hard steps (whole pixels) with a slow 8 px sway, and fades out in five opacity steps, about 2.6 s after a 0.4 s pause. A plum veil at 50% fades in and out with it, so the pale ghost shows on any zone color. It never blocks a tap, and with reduced motion it is not shown. The fade is stepped, not smooth, to stay pixel art. Decided by the owner.
+
 ### Restoration sequence
 
 Played when a Boss is beaten, over a full-screen neutral background (the cream card color). About 3.6 seconds, all in hard steps with no easing or fades, to stay pixel-art:

@@ -79,7 +79,7 @@ export function startMusic(id: SongId, skipIntro = false) {
   const loopAt = song.voices.map((voice) =>
     song.loopFromBeat ? loopIndex(voice, song.loopFromBeat) : 0,
   );
-  const cursors = song.voices.map(() => ({ index: 0, time: 0 }));
+  const cursors = song.voices.map(() => ({ index: 0, time: 0, done: false }));
   let playing = false;
   const tick = () => {
     const audio = ready();
@@ -93,12 +93,13 @@ export function startMusic(id: SongId, skipIntro = false) {
         cursors.forEach((cursor, v) => {
           cursor.index = skipIntro ? loopAt[v] : 0;
           cursor.time = audio.currentTime + 0.05;
+          cursor.done = false;
         });
         playing = true;
       }
       song.voices.forEach((voice, v) => {
         const cursor = cursors[v];
-        while (cursor.time < audio.currentTime + LOOKAHEAD_S) {
+        while (!cursor.done && cursor.time < audio.currentTime + LOOKAHEAD_S) {
           const [name, beats, glide] = voice.notes[cursor.index];
           const duration = beats * beat;
           if (name !== '-') {
@@ -116,9 +117,14 @@ export function startMusic(id: SongId, skipIntro = false) {
           }
           cursor.time += duration;
           const next = cursor.index + 1;
-          cursor.index = next === voice.notes.length ? loopAt[v] : next;
+          if (next < voice.notes.length) cursor.index = next;
+          else if (song.once) cursor.done = true;
+          else cursor.index = loopAt[v];
         }
       });
+      // Everything is booked: nothing more to schedule (the notes still
+      // sound out on the audio clock).
+      if (cursors.every((cursor) => cursor.done)) stopMusic();
     } catch {
       // A failed note must never break the game.
     }
