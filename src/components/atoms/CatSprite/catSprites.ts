@@ -67,9 +67,49 @@ const BODY = [
   '...oo.oooo.oo...',
 ];
 
+// Slim body: narrow, long legs, thin tail up. Placeholder art.
+const SLIM_BODY = [
+  '.....obbbbo..o..',
+  '.....obwwbo.obo.',
+  '....obbwwbboobo.',
+  '....obbbbbbbbo..',
+  '....obbbbbbo....',
+  '....obo..obo....',
+  '....obo..obo....',
+  '....owo..owo....',
+];
+
+// Chubby body: wide and round, short legs, tail curled in front of the paws.
+// One row shorter, so the head sits one row lower into it. Placeholder art.
+const CHUBBY_BODY = [
+  '..obbbbbbbbbbo..',
+  '.obbbwwwwwwbbbo.',
+  'obbbbwwwwwwbbbbo',
+  'obbbbbbbbbbbbbbo',
+  'obowwobbbbowwobo',
+  '.obbbbbbbbbbbbo.',
+  '..oooooooooooo..',
+];
+
+export type CatBody = 'slim' | 'regular' | 'chubby';
+
+const BODIES: Record<CatBody, string[]> = {
+  slim: SLIM_BODY,
+  regular: BODY,
+  chubby: CHUBBY_BODY,
+};
+
+const FULL_HEIGHT = 18;
+
 // Full body = first 10 rows of the head, padded to 16 wide, then the body.
-function withBody(head: string[]): string[] {
-  return [...head.slice(0, 10).map((row) => `..${row}..`), ...BODY];
+// A shorter body leaves empty rows on top, so every cat stands on the bottom.
+function withBody(head: string[], body: string[]): string[] {
+  const empty = FULL_HEIGHT - 10 - body.length;
+  return [
+    ...Array<string>(empty).fill('.'.repeat(16)),
+    ...head.slice(0, 10).map((row) => `..${row}..`),
+    ...body,
+  ];
 }
 
 // Side view walking right, on the full-body canvas so the cat keeps its size
@@ -121,6 +161,23 @@ interface PoseFrames {
   height: number;
 }
 
+function fullBody(body: CatBody): PoseFrames {
+  return {
+    open: withBody(OPEN_EYES, BODIES[body]),
+    closed: withBody(CLOSED_EYES, BODIES[body]),
+    happy: withBody(HAPPY_EYES, BODIES[body]),
+    width: 16,
+    height: FULL_HEIGHT,
+  };
+}
+
+/** The 'full' pose frames for each body type. */
+export const FULL_BODIES: Record<CatBody, PoseFrames> = {
+  slim: fullBody('slim'),
+  regular: fullBody('regular'),
+  chubby: fullBody('chubby'),
+};
+
 // 'head' is the icon used on the board, HUD and map.
 // 'full' is the whole cat, used in the restoration reveal and the collection.
 export const CAT_POSES: Record<CatPose, PoseFrames> = {
@@ -131,13 +188,7 @@ export const CAT_POSES: Record<CatPose, PoseFrames> = {
     width: 12,
     height: 12,
   },
-  full: {
-    open: withBody(OPEN_EYES),
-    closed: withBody(CLOSED_EYES),
-    happy: withBody(HAPPY_EYES),
-    width: 16,
-    height: 18,
-  },
+  full: FULL_BODIES.regular,
   // 'walk' is the cat moving along the world map.
   walk: {
     open: WALK_TOGETHER,
