@@ -163,6 +163,9 @@ export const pt = {
   resetBackup: 'Copiar backup antes',
   resetConfirm: 'Sim, apagar tudo',
   resetDone: 'Pronto! Tudo zerado. Bora começar de novo?',
+  updateTitle: 'Tem novidade!',
+  updateHint: 'Uma versão nova do jogo está pronta. Seu progresso fica salvo.',
+  updateButton: 'Atualizar o jogo',
   rulesButton: 'Regras',
   rulesTitle: 'Regras',
   rules: [

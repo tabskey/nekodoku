@@ -10,11 +10,16 @@ import {
 
 type Mode = 'idle' | 'export' | 'import';
 
+interface BackupSectionProps {
+  /** False inside a level: replacing the profile then would change it under a game in progress. */
+  canImport?: boolean;
+}
+
 /**
  * Export the profile as a code to copy, or import one: check it, show what
  * it contains, and replace the profile only after an in-page confirmation.
  */
-export function BackupSection() {
+export function BackupSection({ canImport = true }: BackupSectionProps) {
   const text = useText();
   const { profile, dispatch } = useProfile();
   const [mode, setMode] = useState<Mode>('idle');
@@ -59,9 +64,11 @@ export function BackupSection() {
         <Button variant="card" onClick={() => open('export')}>
           {text.createCode}
         </Button>
-        <Button variant="card" onClick={() => open('import')}>
-          {text.useCode}
-        </Button>
+        {canImport && (
+          <Button variant="card" onClick={() => open('import')}>
+            {text.useCode}
+          </Button>
+        )}
       </div>
 
       {mode === 'export' && (

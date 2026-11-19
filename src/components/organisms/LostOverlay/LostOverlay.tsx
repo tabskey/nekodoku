@@ -1,6 +1,6 @@
 import ghostUrl from '../../../assets/ghost-cat.svg';
+import { PixelIcon } from '../../atoms/PixelIcon/PixelIcon';
 import { Button } from '../../atoms/Button/Button';
-import { PixelRects } from '../../atoms/PixelRects/PixelRects';
 import './LostOverlay.css';
 
 // The shadow on the ground: a flat ellipse, 12x3 sprite pixels.
@@ -43,18 +43,11 @@ export function LostOverlay({
                 />
               </div>
             </div>
-            <svg
+            <PixelIcon
               className="lost-overlay-shadow"
-              viewBox="0 0 12 3"
-              width={96}
-              height={24}
-              shapeRendering="crispEdges"
-            >
-              <PixelRects
-                rows={SHADOW}
-                colorOf={(char) => (char === 'o' ? 'currentColor' : undefined)}
-              />
-            </svg>
+              rows={SHADOW}
+              pixelSize={8}
+            />
           </div>
         </div>
         <div className="lost-overlay-actions">

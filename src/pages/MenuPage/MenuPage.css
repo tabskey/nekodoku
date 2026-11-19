@@ -182,3 +182,13 @@
   font-size: 16px;
   text-align: center;
 }
+
+/* A coral square beside "Opções" while a new version waits. */
+.menu-page-update-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 6px;
+  background: var(--primary);
+  vertical-align: middle;
+}

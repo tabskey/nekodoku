@@ -25,11 +25,22 @@ export function usePuzzle(level: number): SolvedPuzzle | undefined {
 
   useEffect(() => {
     if (!inWorker) return;
-    const worker = new Worker(new URL('./puzzle.worker.ts', import.meta.url), {
-      type: 'module',
-    });
+    // If the worker cannot start or fails (older browsers cannot run a module
+    // worker), make the board here instead: a short freeze is better than a
+    // level stuck on its loading message.
+    const makeHere = () => setLoaded({ level, puzzle: generatePuzzle(level) });
+    let worker: Worker;
+    try {
+      worker = new Worker(new URL('./puzzle.worker.ts', import.meta.url), {
+        type: 'module',
+      });
+    } catch {
+      queueMicrotask(makeHere);
+      return;
+    }
     worker.onmessage = (event: MessageEvent<SolvedPuzzle>) =>
       setLoaded({ level, puzzle: event.data });
+    worker.onerror = makeHere;
     worker.postMessage(level);
     return () => worker.terminate();
   }, [level, inWorker]);

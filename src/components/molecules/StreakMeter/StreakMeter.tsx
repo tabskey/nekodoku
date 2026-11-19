@@ -1,4 +1,4 @@
-import { PixelRects } from '../../atoms/PixelRects/PixelRects';
+import { PixelIcon } from '../../atoms/PixelIcon/PixelIcon';
 import './StreakMeter.css';
 
 /** The bonus steps of the streak: the wins that reach each, and its label. */
@@ -66,23 +66,7 @@ export function StreakMeter({ count, steps, label }: StreakMeterProps) {
             ].join(' ')}
             aria-hidden="true"
           >
-            {filled ? (
-              <svg
-                viewBox="0 0 5 4"
-                width={20}
-                height={16}
-                shapeRendering="crispEdges"
-              >
-                <PixelRects
-                  rows={CHECK}
-                  colorOf={(char) =>
-                    char === 'o' ? 'currentColor' : undefined
-                  }
-                />
-              </svg>
-            ) : (
-              step.wins
-            )}
+            {filled ? <PixelIcon rows={CHECK} pixelSize={4} /> : step.wins}
             <span className="streak-meter-label">{step.label}</span>
           </span>
         );

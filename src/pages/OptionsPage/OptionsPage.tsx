@@ -4,23 +4,29 @@ import { ChoiceGroup } from '../../components/molecules/ChoiceGroup/ChoiceGroup'
 import { useText } from '../../i18n/useText';
 import { useOptions } from '../../state/profileContext';
 import { ResetSection } from './ResetSection';
+import { UpdateSection } from './UpdateSection';
 import { BackupSection } from './BackupSection';
 import './OptionsPage.css';
 
 interface OptionsPageProps {
   onBack: () => void;
-  /** False inside a level: erasing the progress then would leave it half done. */
-  canReset?: boolean;
+  /**
+   * True when opened from inside a level: erasing the progress, importing a
+   * backup or reloading for an update would change the profile or lose the game
+   * in progress, so those are not shown.
+   */
+  inLevel?: boolean;
 }
 
 /** Language, mode, sound, auto-mark and the backup code. Changes apply at once. */
-export function OptionsPage({ onBack, canReset = true }: OptionsPageProps) {
+export function OptionsPage({ onBack, inLevel = false }: OptionsPageProps) {
   const text = useText();
   const { options, setOption } = useOptions();
 
   return (
     <main className="options-page">
       <h1>{text.optionsTitle}</h1>
+      {!inLevel && <UpdateSection />}
       <ChoiceGroup
         name="language"
         legend={text.languageLegend}
@@ -58,8 +64,8 @@ export function OptionsPage({ onBack, canReset = true }: OptionsPageProps) {
         checked={options.autoMark}
         onChange={(autoMark) => setOption('autoMark', autoMark)}
       />
-      <BackupSection />
-      {canReset && <ResetSection />}
+      <BackupSection canImport={!inLevel} />
+      {!inLevel && <ResetSection />}
       <Button onClick={onBack}>{text.back}</Button>
     </main>
   );

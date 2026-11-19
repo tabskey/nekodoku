@@ -105,6 +105,11 @@ export function WorldPath({
   }, [stand, target, points, onArrive]);
 
   const catPoint = points[stand.at];
+  // The bubble's middle: over the cat, but within the map.
+  const bubbleX = Math.min(
+    Math.max(catPoint.x, BUBBLE_HALF),
+    width - BUBBLE_HALF,
+  );
 
   return (
     <div
@@ -243,20 +248,11 @@ export function WorldPath({
             className="world-path-say"
             style={
               {
-                left: Math.min(
-                  Math.max(catPoint.x, BUBBLE_HALF),
-                  width - BUBBLE_HALF,
-                ),
+                left: bubbleX,
                 top: catPoint.y - BUBBLE_GAP,
                 // How far the tail moves back under the cat when the bubble
                 // had to stay inside the map.
-                '--shift': `${
-                  catPoint.x -
-                  Math.min(
-                    Math.max(catPoint.x, BUBBLE_HALF),
-                    width - BUBBLE_HALF,
-                  )
-                }px`,
+                '--shift': `${catPoint.x - bubbleX}px`,
               } as CSSProperties
             }
           >

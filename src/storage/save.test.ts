@@ -5,7 +5,9 @@ import {
   isSaveData,
   MAX_LEVELS_CLEARED,
   loadSave,
+  parseSave,
   SAVE_KEY,
+  UNREADABLE_KEY,
   writeSave,
   type KeyValueStore,
 } from './save';
@@ -73,6 +75,48 @@ describe('save and load', () => {
     expect(writeSave(defaultSave(), failingStore)).toBe(false);
     expect(loadSave(undefined)).toEqual(defaultSave());
     expect(writeSave(defaultSave(), undefined)).toBe(false);
+  });
+});
+
+describe('parseSave', () => {
+  it('reads a current save, and migrates an older one', () => {
+    expect(parseSave(JSON.stringify(defaultSave()))).toEqual(defaultSave());
+    const old: Record<string, unknown> = { ...defaultSave(), schemaVersion: 2 };
+    delete old.winStreak;
+    expect(parseSave(JSON.stringify(old))).toEqual(defaultSave());
+  });
+
+  it('gives nothing for a save from a newer version, damaged text or the wrong shape', () => {
+    const newer = {
+      ...defaultSave(),
+      schemaVersion: defaultSave().schemaVersion + 1,
+    };
+    expect(parseSave(JSON.stringify(newer))).toBeUndefined();
+    expect(parseSave('{"schemaVersion": 3, "coins"')).toBeUndefined();
+    expect(parseSave('[1, 2, 3]')).toBeUndefined();
+    expect(parseSave('null')).toBeUndefined();
+  });
+});
+
+describe('loadSave with a save it cannot read', () => {
+  it('keeps the unreadable text aside before a fresh profile replaces it', () => {
+    const newer = JSON.stringify({
+      ...defaultSave(),
+      schemaVersion: defaultSave().schemaVersion + 1,
+      coins: 999,
+    });
+    const store = memoryStore(newer);
+    expect(loadSave(store)).toEqual(defaultSave());
+    expect(store.data.get(UNREADABLE_KEY)).toBe(newer);
+  });
+
+  it('writes nothing aside when there is no save, or a good one', () => {
+    const empty = memoryStore();
+    loadSave(empty);
+    expect(empty.data.has(UNREADABLE_KEY)).toBe(false);
+    const good = memoryStore(JSON.stringify(defaultSave()));
+    loadSave(good);
+    expect(good.data.has(UNREADABLE_KEY)).toBe(false);
   });
 });
 

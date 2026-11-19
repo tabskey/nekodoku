@@ -5,7 +5,7 @@ import {
   useReducer,
   type ReactNode,
 } from 'react';
-import { loadSave, SAVE_KEY, writeSave } from '../storage/save';
+import { loadSave, parseSave, SAVE_KEY, writeSave } from '../storage/save';
 import { resolveLanguage, resolveTheme } from './options';
 import { ProfileContext, type ProfileValue } from './profileContext';
 import { profileReducer } from './profileReducer';
@@ -34,9 +34,12 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   // writing back the same text fires nothing, so the copies never ping-pong.
   useEffect(() => {
     const onStorage = (event: StorageEvent) => {
-      if (event.key === SAVE_KEY) {
-        dispatch({ type: 'importSave', save: loadSave() });
-      }
+      if (event.key !== SAVE_KEY || !event.newValue) return;
+      // A save this copy cannot read (from a newer version of the game) is
+      // left alone: replacing the profile with an empty one would save that
+      // empty profile over it.
+      const save = parseSave(event.newValue);
+      if (save) dispatch({ type: 'importSave', save });
     };
     window.addEventListener('storage', onStorage);
     return () => window.removeEventListener('storage', onStorage);
