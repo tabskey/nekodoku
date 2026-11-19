@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { noteFrequency, SONGS } from './songs';
+import { loopIndex, noteFrequency, SONGS } from './songs';
 
 describe('songs', () => {
   it('turns note names into frequencies', () => {
@@ -21,5 +21,21 @@ describe('songs', () => {
       );
       expect(new Set(lengths).size).toBe(1);
     }
+  });
+
+  it('has a note starting at the loop point in every voice', () => {
+    for (const song of Object.values(SONGS)) {
+      for (const voice of song.voices) {
+        if (song.loopFromBeat !== undefined) {
+          expect(() => loopIndex(voice, song.loopFromBeat!)).not.toThrow();
+        }
+      }
+    }
+    expect(() => loopIndex(SONGS.celebration.voices[0], 0.25)).toThrow();
+  });
+
+  it('reveals the cat in the celebration at 3.1 s, as the animation does', () => {
+    const { bpm, loopFromBeat = 0 } = SONGS.celebration;
+    expect((loopFromBeat * 60) / bpm).toBeCloseTo(3.1, 1);
   });
 });

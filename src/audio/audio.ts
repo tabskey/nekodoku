@@ -1,7 +1,7 @@
 // Plays the effects in sounds.ts and the songs in songs.ts with the Web
 // Audio API. One AudioContext, started on the player's first tap, because
 // browsers block audio before any interaction. Nothing here ever throws.
-import { noteFrequency, SONGS, type SongId } from './songs';
+import { loopIndex, noteFrequency, SONGS, type SongId } from './songs';
 import { EFFECTS, type Effect, type Note } from './sounds';
 
 let context: AudioContext | undefined;
@@ -67,11 +67,18 @@ const LOOKAHEAD_S = 0.4;
 const TICK_MS = 150;
 let musicTimer: number | undefined;
 
-/** Loops a song until stopMusic(). Silent while the page is hidden. */
-export function startMusic(id: SongId) {
+/**
+ * Loops a song until stopMusic(). Silent while the page is hidden. A song
+ * with an introduction plays it once, unless `skipIntro` starts at the loop.
+ */
+export function startMusic(id: SongId, skipIntro = false) {
   stopMusic();
   const song = SONGS[id];
   const beat = 60 / song.bpm;
+  // Where each voice goes back to when it reaches its end.
+  const loopAt = song.voices.map((voice) =>
+    song.loopFromBeat ? loopIndex(voice, song.loopFromBeat) : 0,
+  );
   const cursors = song.voices.map(() => ({ index: 0, time: 0 }));
   let playing = false;
   const tick = () => {
@@ -83,10 +90,10 @@ export function startMusic(id: SongId) {
     try {
       // Starting, or back from a pause: every voice restarts together.
       if (!playing) {
-        for (const cursor of cursors) {
-          cursor.index = 0;
+        cursors.forEach((cursor, v) => {
+          cursor.index = skipIntro ? loopAt[v] : 0;
           cursor.time = audio.currentTime + 0.05;
-        }
+        });
         playing = true;
       }
       song.voices.forEach((voice, v) => {
@@ -108,7 +115,8 @@ export function startMusic(id: SongId) {
             );
           }
           cursor.time += duration;
-          cursor.index = (cursor.index + 1) % voice.notes.length;
+          const next = cursor.index + 1;
+          cursor.index = next === voice.notes.length ? loopAt[v] : next;
         }
       });
     } catch {

@@ -12,7 +12,7 @@ interface LevelAudioOptions {
   music: boolean;
   /** A Boss level plays a tenser song. */
   boss: boolean;
-  /** The restoration is on screen: play its sweep and chime. */
+  /** The restoration is on screen: play its music, or its sweep and chime. */
   restoring: boolean;
 }
 
@@ -40,12 +40,19 @@ export function useLevelAudio(
     if (effect) play(effect);
   }, [state]);
 
-  // The restoration's sweep during the silhouette and its chime when the cat
-  // appears, at the animation's 50% and 86% of 3.6 s.
+  // The restoration: the celebration song, timed to the animation (the cat
+  // appears at 3.1 s), loops while the screen is open. With music off, the
+  // sweep and the chime play instead, at the animation's 50% and 86% of 3.6 s.
+  // Reduced motion shows the end at once, so it skips the build-up.
   const [restorationRun, setRestorationRun] = useState(0);
   useEffect(() => {
     if (!restoring) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (music) {
+      startMusic('celebration', still);
+      return stopMusic;
+    }
+    if (still) {
       play('chime');
       return;
     }
@@ -55,7 +62,7 @@ export function useLevelAudio(
       window.clearTimeout(sweep);
       window.clearTimeout(chime);
     };
-  }, [restoring, restorationRun]);
+  }, [restoring, restorationRun, music]);
 
   return {
     /**
@@ -66,7 +73,7 @@ export function useLevelAudio(
       play('help');
       afterHelp.current = changesBoard;
     },
-    /** The restoration plays again: replay its sounds. */
+    /** The restoration plays again: replay its music or sounds. */
     replayRestoration: () => setRestorationRun((run) => run + 1),
   };
 }

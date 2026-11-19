@@ -238,7 +238,7 @@ Sound effects are synthesized at runtime with the Web Audio API: short oscillato
 - `play()` does nothing when `options.sound` is off, when the context is not yet unlocked, or when the browser has no Web Audio. It never throws.
 - Reducers do not play sounds. A small effect in the page layer watches state transitions (a cat was placed, a life was lost, the level was won) and calls `play()`. For a level this is the `useLevelAudio` hook next to `GamePage`, which also starts the music and times the restoration's sounds; which sound a change makes is the pure, tested `levelSound`. This keeps `game/` and `state/` free of side effects and their tests silent.
 - Respect the system: no sound plays while the page is hidden.
-- Music is data too, in `src/audio/songs.ts`: each song is voices of `[note, beats]` at a tempo. `startMusic(song)` books notes a fraction of a second ahead on the audio clock and loops; `stopMusic()` ends it. The level page starts it while playing and stops it otherwise; `options.music` (save version 2) switches it off.
+- Music is data too, in `src/audio/songs.ts`: each song is voices of `[note, beats]` at a tempo. `startMusic(song)` books notes a fraction of a second ahead on the audio clock and loops; `stopMusic()` ends it. A song can have an introduction that plays once (`loopFromBeat`): the celebration song builds up for 6 beats, which at its tempo is the 3.1 s before the cat appears in the restoration, then loops. The level page starts it while playing and stops it otherwise; `options.music` (save version 2) switches it off.
 
 ## Testing
 

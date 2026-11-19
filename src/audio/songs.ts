@@ -16,15 +16,119 @@ export type SongNote = [string, number] | [string, number, string];
 export interface Song {
   bpm: number;
   voices: Voice[];
+  /**
+   * The beat the loop starts from. The notes before it play once, as an
+   * introduction; without it the whole song repeats. Every voice must have a
+   * note starting exactly there.
+   */
+  loopFromBeat?: number;
 }
 
-export type SongId = 'menu' | 'level' | 'boss';
+export type SongId = 'menu' | 'level' | 'boss' | 'celebration';
 
 // Eight eighth notes, half a beat each, for one bar of arpeggio.
 const bar = (...names: string[]): SongNote[] =>
   names.map((name) => [name, 0.5]);
 
 export const SONGS: Record<SongId, Song> = {
+  // The Boss restoration (see Restoration sequence in docs/DESIGN.md), timed
+  // to its 3.6 s: at 116 bpm beat 6 falls at 3.1 s, when the cat appears.
+  // Beats 0-6 build up (the ghost flies in, turns black, flickers three
+  // times), then a fanfare and a happy loop in C: C, G, Am, F.
+  celebration: {
+    bpm: 116,
+    loopFromBeat: 6,
+    voices: [
+      {
+        wave: 'triangle',
+        volume: 0.08,
+        notes: [
+          // A steady pulse on C, then G leading into the reveal.
+          ['C2', 1],
+          ['C2', 1],
+          ['C2', 1],
+          ['C2', 1],
+          ['G2', 1],
+          ['G2', 1],
+          ['C3', 1],
+          ['G2', 1],
+          ['C3', 1],
+          ['G2', 1],
+          ['G2', 1],
+          ['D3', 1],
+          ['G2', 1],
+          ['D3', 1],
+          ['A2', 1],
+          ['E3', 1],
+          ['A2', 1],
+          ['E3', 1],
+          ['F2', 1],
+          ['C3', 1],
+          ['F2', 1],
+          ['C3', 1],
+        ],
+      },
+      {
+        wave: 'triangle',
+        volume: 0.045,
+        notes: [
+          // The ghost flies in: a quick climb.
+          ...bar('C4', 'E4', 'G4', 'C5'),
+          // It turns black: two slow notes.
+          ['G4', 0.75],
+          ['B4', 0.75],
+          // The flicker: three short blips.
+          ['A5', 0.25],
+          ['-', 0.25],
+          ['A5', 0.25],
+          ['-', 0.25],
+          ['A5', 0.25],
+          ['-', 0.25],
+          // The last climb, into the reveal.
+          ['C5', 0.25],
+          ['E5', 0.25],
+          ['G5', 0.25],
+          ['B5', 0.25],
+          // The loop: sparkling arpeggios under the tune.
+          ...bar('E4', 'G4', 'C5', 'G4', 'E4', 'G4', 'C5', 'G4'),
+          ...bar('D4', 'G4', 'B4', 'G4', 'D4', 'G4', 'B4', 'G4'),
+          ...bar('E4', 'A4', 'C5', 'A4', 'E4', 'A4', 'C5', 'A4'),
+          ...bar('F4', 'A4', 'C5', 'A4', 'F4', 'A4', 'C5', 'A4'),
+        ],
+      },
+      {
+        wave: 'square',
+        volume: 0.035,
+        notes: [
+          // The tune waits for the reveal.
+          ['-', 6],
+          ['G4', 0.5],
+          ['C5', 0.5],
+          ['E5', 1],
+          ['G5', 1],
+          ['E5', 0.5],
+          ['G5', 0.5],
+          ['D5', 1],
+          ['B4', 0.5],
+          ['D5', 0.5],
+          ['G5', 1],
+          ['D5', 1],
+          ['C5', 0.5],
+          ['E5', 0.5],
+          ['A5', 1],
+          ['G5', 0.5],
+          ['E5', 0.5],
+          ['C5', 1],
+          ['A4', 0.5],
+          ['C5', 0.5],
+          ['F5', 1],
+          ['E5', 0.5],
+          ['D5', 0.5],
+          ['C5', 1],
+        ],
+      },
+    ],
+  },
   // Funky chill loop for the menu and the map: Dm7 and G7 back and forth,
   // a syncopated bass with octave pops, offbeat stabs, and a soft meow to
   // close every loop.
@@ -144,4 +248,14 @@ export function noteFrequency(name: string): number {
   if (!match) throw new Error(`Not a note: ${name}`);
   const semitones = SEMITONES[match[1]] + (Number(match[2]) - 4) * 12;
   return 440 * 2 ** (semitones / 12);
+}
+
+/** The index of the note of `voice` that starts exactly at `beat`. */
+export function loopIndex(voice: Voice, beat: number): number {
+  let at = 0;
+  for (let i = 0; i < voice.notes.length; i++) {
+    if (at === beat) return i;
+    at += voice.notes[i][1];
+  }
+  throw new Error(`No note starts at beat ${beat}`);
 }
