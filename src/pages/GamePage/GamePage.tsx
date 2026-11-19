@@ -334,6 +334,7 @@ function Level({
           name={text.catNames[worldCat(bossWorld)]}
           title={text.restoredTitle}
           message={text.restoredMessage(bossWorld)}
+          yay={text.restoredYay}
           catLabel={text.restoredCatLabel(text.catNames[worldCat(bossWorld)])}
           backLabel={text.backToMap}
           replayLabel={text.replayRestoration}

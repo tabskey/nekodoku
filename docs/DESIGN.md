@@ -46,10 +46,10 @@ All sprites are SVGs made of 1x1 rectangles on a pixel grid, with `shape-renderi
 
 | File | Grid | Use |
 | --- | --- | --- |
-| `cat-white.svg`, `cat-white-blink.svg` | 12x12 | Default cat (Mingau), eyes open and closed |
-| `cat-orange.svg`, `cat-orange-blink.svg` | 12x12 | Caramelo |
-| `cat-gray.svg`, `cat-gray-blink.svg` | 12x12 | Fumaça |
-| `cat-black.svg`, `cat-black-blink.svg` | 12x12 | Meia-noite |
+| `cat-white.svg`, `cat-white-blink.svg` | 12x12 | Default cat (Mingau, "Snowball" in English), eyes open and closed |
+| `cat-orange.svg`, `cat-orange-blink.svg` | 12x12 | Caramelo ("Caramel") |
+| `cat-gray.svg`, `cat-gray-blink.svg` | 12x12 | Fumaça ("Smoky") |
+| `cat-black.svg`, `cat-black-blink.svg` | 12x12 | Meia-noite ("Midnight") |
 | `cat-ghost.svg` | 12x12 | Silhouette for the progress strip and locked cats |
 | `cat-<color>-full.svg`, `cat-<color>-full-blink.svg` | 16x18 | Whole sitting cat, eyes open and closed, in the four colors |
 | `ghost-cat.svg` | 12x14 | The ghost that waits during a Boss |
@@ -83,6 +83,7 @@ Played when a Boss is beaten, over a full-screen neutral background (the cream c
 3. The silhouette flickers three times between the ghost's shape and the cat's shape.
 4. The silhouette of the whole cat, full body, holds for a moment, then the cat appears in full color, blinking.
 5. The cat's name, a line of text and the button to return to the map appear.
+6. With the cat, the party starts and loops while the screen stays open: golden sunburst rays centered on the cat turn slowly behind it (15 degrees in five steps, which repeats seamlessly), 36 squares of confetti in the zone colors fall in six hard steps per leg, swaying, six little plus-shaped sparkles twinkle around the cat, and a big cheer ("OBA!" or "YAY!", coral with a darker coral shadow) bounces 8 px above it. The background stays plain before step 4 so the black silhouette shows. With reduced motion the rays and the cheer stand still, and there is no confetti or sparkle. Decided by the owner.
 
 A silhouette is the same sprite with every pixel in one color (in CSS, `filter: brightness(0)` on the image). With reduced motion enabled, skip straight to step 5.
 

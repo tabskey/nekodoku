@@ -11,11 +11,11 @@ export const pt = {
     { title: 'Gatíssimo!', line: 'Esse tabuleiro foi moleza pra você.' },
   ],
   shopButton: 'Lojinha',
-  shopTitle: 'Loja',
-  todaysCats: 'Gatos de hoje',
+  shopTitle: 'Lojinha',
+  todaysCats: 'Chegaram hoje!',
   todaysCatsHint:
-    'Cada gato só pode ser comprado nos dias em que aparece aqui.',
-  noShopCats: 'Nenhum gato novo hoje.',
+    'Cada gatinho só dá as caras nos dias em que aparece aqui. Perdeu? Ele volta outro dia!',
+  noShopCats: 'Hoje não chegou nenhum gatinho novo. Volta amanhã!',
   collectionTitle: 'Gatinhos',
   collectionCount: (owned: number, total: number) =>
     `${owned} de ${total} gatinhos`,
@@ -24,11 +24,11 @@ export const pt = {
   toRescueLabel: 'Um gatinho ainda por resgatar num Boss',
   inShop: 'Na loja',
   inShopLabel: 'Um gatinho à venda na lojinha',
-  helpsTitle: 'Ajudas',
-  helpsHint: 'Compradas com moedas na hora de usar, durante a fase.',
-  revealInfo: 'Coloca um gato certo.',
+  helpsTitle: 'Ajudinhas',
+  helpsHint: 'Você paga com moedas só na hora do aperto, durante a fase.',
+  revealInfo: 'Um gatinho esperto vai direto pro lugar certo.',
   eraserInfo:
-    'Apaga os x que estão em casas de gato. Grátis se não houver nenhum.',
+    'Apaga os x que estão em casas de gatinho. É de graça se não tiver nenhum.',
   fish: (fish: number) => `${fish} peixes`,
   buyCat: (name: string, price: number) =>
     `Comprar ${name} por ${price} peixes`,
@@ -79,6 +79,7 @@ export const pt = {
   zoomIn: 'Aproximar',
   zoomOut: 'Ver tudo',
   zoomHint: 'Arraste com dois dedos pra mover o tabuleiro.',
+  restoredYay: 'OBA!',
   restoredTitle: 'Gatinho restaurado!',
   restoredMessage: (world: number) =>
     `O fantasminha do Mundo ${world} voltou a ser gatinho e entrou pra sua coleção.`,

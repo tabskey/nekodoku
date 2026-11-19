@@ -13,6 +13,14 @@
   background: var(--restore-bg);
   color: var(--text-on-light);
   text-align: center;
+  /* The rays and the confetti reach past the screen. */
+  overflow: hidden;
+  --rays: rgba(255, 201, 74, 0.3);
+}
+
+/* Everything in the flow sits above the confetti, which comes first. */
+.restoration > :not(.restoration-confetti) {
+  position: relative;
 }
 
 .restoration-stage {
@@ -42,7 +50,6 @@
 
 .restoration-text,
 .restoration-actions {
-  position: static;
   flex-direction: column;
   align-items: center;
   gap: 10px;
@@ -88,6 +95,76 @@
   font-size: 17px;
   text-decoration: underline;
   cursor: pointer;
+}
+
+/* The party starts when the cat appears; before it, the background stays
+   plain so the black silhouette shows. */
+.restoration-appear {
+  animation: restoration-show 3.6s steps(1) forwards;
+}
+
+/* The cat's spot: the same size as the stage, still, so the rays and the
+   sparkles stay put while the stage flies in. */
+.restoration-spot {
+  width: 128px;
+  height: 144px;
+}
+
+/* Sunburst rays centered on the cat, behind everything. The pattern repeats
+   every 15 degrees, so turning it 15 in five steps loops without a jump. */
+.restoration-rays {
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  width: 300vmax;
+  height: 300vmax;
+  margin: -150vmax 0 0 -150vmax;
+  background: repeating-conic-gradient(
+    var(--rays) 0 7.5deg,
+    transparent 7.5deg 15deg
+  );
+  animation:
+    restoration-show 3.6s steps(1) forwards,
+    restoration-spin 1.5s steps(5) infinite;
+}
+
+.restoration-sparkle {
+  position: absolute;
+  display: flex;
+}
+
+.restoration-twinkle {
+  animation: restoration-twinkle 0.8s steps(2) infinite;
+}
+
+/* The cheer, over the cat: it appears with the cat and bounces 8 px. */
+.restoration-yay {
+  margin: 0;
+  color: var(--primary);
+  font-family: var(--font-display);
+  font-size: 32px;
+  text-shadow: 4px 4px 0 var(--primary-shadow);
+  animation:
+    restoration-show 3.6s steps(1) forwards,
+    restoration-bounce 0.8s steps(2) infinite;
+}
+
+/* Confetti: squares falling in 6 hard steps per leg, swaying side to side. */
+.restoration-confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.restoration-confetti span {
+  position: absolute;
+  top: 0;
+  left: var(--x);
+  width: var(--size);
+  height: var(--size);
+  background: var(--color);
+  animation: restoration-fall var(--fall) steps(6) var(--delay) infinite both;
 }
 
 /* 1. From the corner to the center, growing to twice its size: 8 steps. */
@@ -175,6 +252,42 @@
   }
 }
 
+@keyframes restoration-spin {
+  to {
+    transform: rotate(15deg);
+  }
+}
+
+@keyframes restoration-twinkle {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes restoration-bounce {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes restoration-fall {
+  0% {
+    transform: translate(0, -24px);
+  }
+  25% {
+    transform: translate(10px, calc(25vh - 12px));
+  }
+  50% {
+    transform: translate(-6px, 50vh);
+  }
+  75% {
+    transform: translate(10px, 75vh);
+  }
+  100% {
+    transform: translate(0, calc(100vh + 24px));
+  }
+}
+
 @keyframes restoration-show {
   0% {
     opacity: 0;
@@ -185,12 +298,21 @@
   }
 }
 
-/* Reduced motion skips straight to the end: the cat, its name, the buttons. */
+/* Reduced motion skips straight to the end: the cat, its name, the buttons,
+   and the cheer and the rays standing still, with no confetti or sparkles. */
 @media (prefers-reduced-motion: reduce) {
   .restoration-move,
   .restoration-ghost,
   .restoration-silhouette,
-  .restoration-show {
+  .restoration-show,
+  .restoration-appear,
+  .restoration-rays,
+  .restoration-yay {
     animation: none;
+  }
+
+  .restoration-confetti,
+  .restoration-sparkle {
+    display: none;
   }
 }

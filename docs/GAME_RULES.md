@@ -99,7 +99,7 @@ Bought with coins at the moment of use. No per-level counters.
 - Each world has its own cat to restore. The cat starts as a little ghost; beating the world's Boss turns the ghost back into a cat and adds it to the player's collection.
 - The ghost and the world's scenery appear only on the Boss level, since each world has exactly one cat. Regular levels show neither.
 - During the Boss, the ghost floats at the top right of the screen, above the board, waiting for the player to finish.
-- Beating the Boss plays the restoration: the screen switches to a plain neutral background, the ghost moves to the center, turns into a black silhouette, the silhouette flickers into the shape of the cat, and the cat is revealed in full color, full body, with its name. The cat head is only the icon used on the board and menus; the reveal shows the whole cat. The neutral background is there so nothing competes with the cat.
+- Beating the Boss plays the restoration: the screen switches to a plain neutral background, the ghost moves to the center, turns into a black silhouette, the silhouette flickers into the shape of the cat, and the cat is revealed in full color, full body, with its name. The cat head is only the icon used on the board and menus; the reveal shows the whole cat. The background stays plain cream until the cat appears, so the black silhouette reads; then the party starts: golden sunburst rays turning slowly behind the cat, confetti falling, sparkles twinkling around it and a big cheer ("OBA!") bouncing above it, all in hard steps. Decided by the owner.
 - Other cats are exclusive to the shop and cost fish.
 - Each world is shown as a small board-style map: a path of tiles, one per level, ending at the Boss, with the world's cat waiting at the end as a silhouette until it is rescued.
 - The player's selected cat stands on the map tile of the current level. After a level is cleared, the cat walks along the path to the next tile, in the style of the world maps of classic platform games. Decided by the owner.
@@ -112,7 +112,7 @@ Bought with coins at the moment of use. No per-level counters.
 - Starting biomes **(proposed)**: meadow, forest, beach, river, graveyard, snow. The graveyard stays cute, not scary, in both modes.
 - Every biome has a palette for each time of day.
 - Decorations never sit on the path or touch a level tile, so the tiles and the cat always read clearly.
-- Starting set **(names proposed)**: Mingau (white, default), Caramelo (orange), Fumaça (gray), Meia-noite (black).
+- Starting set **(names proposed)**: Mingau (white, default), Caramelo (orange), Fumaça (gray), Meia-noite (black). Cat names are translated into English too, not kept in Portuguese: Snowball, Caramel, Smoky and Midnight, and Tricolor is Calico. Decided by the owner.
 
 ## Shop
 
