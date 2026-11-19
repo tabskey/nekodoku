@@ -37,7 +37,7 @@
   filter: drop-shadow(0 4px 0 var(--gold-shadow));
 }
 
-.clear-summary-ribbon p {
+.clear-summary .clear-summary-ribbon p {
   padding: 8px 12px;
   background: var(--gold);
   color: var(--text-on-light);
