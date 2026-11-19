@@ -114,20 +114,57 @@ export type CatBody = 'slim' | 'regular' | 'chubby';
 
 const BODIES: CatBody[] = ['slim', 'regular', 'chubby'];
 
-// TODO(design): when the final cat art lands (new palettes, body types or
-// named cats), update BODIES, GENERATED_PALETTES and NAMED_BODIES to match.
-// Changing them changes how already restored cats look, never which cats a
-// player owns.
-// Palettes the generated cats wear (proposed). 4 palettes and 3 bodies are
-// coprime, so the first 12 generated cats never repeat a look.
-const GENERATED_PALETTES = ['white', 'orange', 'gray', 'black'];
+// TODO(design): when the final cat art lands (new coats, eye colors, body
+// types or named cats), update BODIES, CAT_COATS, CAT_EYES and NAMED_BODIES to
+// match, and their colors in catSprites.ts. Changing them changes how already
+// restored cats look, never which cats a player owns.
+/** Fur patterns the generated cats wear (proposed). Colors live in catSprites.ts. */
+export const CAT_COATS = [
+  'white',
+  'cream',
+  'orange',
+  'gray',
+  'black',
+  'brown',
+  'tuxedo',
+  'grayTuxedo',
+  'orangeWhite',
+  'tortie',
+  'tortieWhite',
+  'chocolate',
+  'siamese',
+] as const;
+
+/** Eye colors of the generated cats (proposed). */
+export const CAT_EYES = ['blue', 'green', 'yellow', 'orange'] as const;
+
+export type CatCoat = (typeof CAT_COATS)[number];
+export type CatEyes = (typeof CAT_EYES)[number];
+
+// Coats that only come with some eye colors: Siamese eyes are always blue.
+const COAT_EYES: Partial<Record<CatCoat, readonly CatEyes[]>> = {
+  siamese: ['blue'],
+};
+
+// Every coat, eye and body combination, shuffled once with a fixed seed, so
+// generated cats never repeat a look until all of them are used.
+const GENERATED_LOOKS = shuffle(
+  CAT_COATS.flatMap((coat) =>
+    (COAT_EYES[coat] ?? CAT_EYES).flatMap((eyes) =>
+      BODIES.map((body) => ({ coat, eyes, body })),
+    ),
+  ),
+  createRng(0x6e656b6f),
+);
 
 // Bodies of the named cats, as in the "Tipos de corpo" artboard.
 const NAMED_BODIES: Record<string, CatBody> = { gray: 'slim', white: 'chubby' };
 
 export interface CatLook {
-  /** Key of the palette to draw the cat with. */
+  /** Key of the palette to draw a named cat with, or the coat of a generated one. */
   palette: string;
+  /** Eye color of a generated cat; named cats keep their palette's eyes. */
+  eyes?: CatEyes;
   body: CatBody;
   /** Place among the generated cats (0 for world 4's), to pick its name. */
   generated?: number;
@@ -140,9 +177,7 @@ export function catLook(id: string): CatLook {
     return { palette: id, body: NAMED_BODIES[id] ?? 'regular' };
   }
   const generated = world - NAMED_WORLD_CATS.length - 1;
-  return {
-    palette: GENERATED_PALETTES[generated % GENERATED_PALETTES.length],
-    body: BODIES[generated % BODIES.length],
-    generated,
-  };
+  const { coat, eyes, body } =
+    GENERATED_LOOKS[generated % GENERATED_LOOKS.length];
+  return { palette: coat, eyes, body, generated };
 }

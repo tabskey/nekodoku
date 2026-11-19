@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { generate } from './generator';
 import { SHOP_CATS } from './shop';
 import {
+  CAT_COATS,
+  CAT_EYES,
   catLook,
   levelConfig,
   startingCatCells,
@@ -111,13 +113,23 @@ describe('catLook', () => {
     expect(catLook('white').body).toBe('chubby');
   });
 
-  it('never repeats a look among the first 12 generated cats', () => {
-    const looks = new Set<string>();
-    for (let world = 4; world < 16; world++) {
-      const { palette, body } = catLook(worldCat(world));
-      looks.add(`${palette} ${body}`);
+  it('never repeats a look until every combination is used', () => {
+    const look = (world: number) => {
+      const { palette, eyes, body } = catLook(worldCat(world));
+      return `${palette} ${eyes} ${body}`;
+    };
+    // Siamese cats come in blue eyes only.
+    const total = ((CAT_COATS.length - 1) * CAT_EYES.length + 1) * 3;
+    const first = new Set(Array.from({ length: total }, (_, i) => look(i + 4)));
+    expect(first.size).toBe(total);
+    expect(look(4 + total)).toBe(look(4));
+  });
+
+  it('gives every Siamese cat blue eyes', () => {
+    for (let world = 4; world < 200; world++) {
+      const { palette, eyes } = catLook(worldCat(world));
+      if (palette === 'siamese') expect(eyes).toBe('blue');
     }
-    expect(looks.size).toBe(12);
   });
 
   it('numbers the generated cats from world 4', () => {

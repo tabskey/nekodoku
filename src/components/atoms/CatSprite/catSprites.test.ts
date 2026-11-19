@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { CAT_POSES } from './catSprites';
+import { catLook } from '../../../game/progression';
+import {
+  CAT_PALETTES,
+  CAT_POSES,
+  catPalette,
+  COAT_COLORS,
+  EYE_COLORS,
+} from './catSprites';
 
 describe('CAT_POSES', () => {
   it('fits every body and frame of a pose on the same canvas', () => {
@@ -30,5 +37,19 @@ describe('CAT_POSES', () => {
       expect(frames.closed.join()).not.toContain('eh');
       expect(frames.closed.join()).toContain('cc');
     }
+  });
+});
+
+describe('catPalette', () => {
+  it('gives a generated cat its coat and eye colors', () => {
+    const { palette, eyes } = catLook('w4');
+    expect(catPalette('w4')).toEqual({
+      ...COAT_COLORS[palette as keyof typeof COAT_COLORS],
+      ...EYE_COLORS[eyes!],
+    });
+  });
+
+  it('keeps a named cat on its own palette', () => {
+    expect(catPalette('black')).toBe(CAT_PALETTES.black);
   });
 });

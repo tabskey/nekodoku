@@ -1,4 +1,9 @@
-import { catLook, type CatBody } from '../../../game/progression';
+import {
+  catLook,
+  type CatBody,
+  type CatCoat,
+  type CatEyes,
+} from '../../../game/progression';
 
 // Cat sprite data: one pixel map shared by every cat, plus one palette per cat.
 // Each character in the map is a role; the palette says which color that role gets.
@@ -354,7 +359,149 @@ export function silhouettePalette(color: string): CatPalette {
   };
 }
 
+type Eyes = Pick<CatPalette, 'eye' | 'shine'>;
+
+/** Colors of each generated cat's coat: every role but the eyes. Placeholders. */
+export const COAT_COLORS: Record<CatCoat, Omit<CatPalette, keyof Eyes>> = {
+  white: {
+    outline: '#a79cc0',
+    fur: '#ffffff',
+    patch: '#e6dff0',
+    ear: PINK_EAR,
+    nose: PINK_NOSE,
+    muzzle: '#ffffff',
+    lid: DARK_EYE,
+  },
+  cream: {
+    outline: '#c49a6c',
+    fur: '#f6dfb8',
+    patch: '#e8c38f',
+    ear: PINK_EAR,
+    nose: PINK_NOSE,
+    muzzle: '#fff8ec',
+    lid: DARK_EYE,
+  },
+  orange: {
+    outline: '#b5611f',
+    fur: '#f6a04d',
+    patch: '#d9772b',
+    ear: PINK_EAR,
+    nose: PINK_NOSE,
+    muzzle: '#fff1dc',
+    lid: DARK_EYE,
+  },
+  gray: {
+    outline: '#6b6683',
+    fur: '#a7a3b8',
+    patch: '#7f7a94',
+    ear: PINK_EAR,
+    nose: PINK_NOSE,
+    muzzle: '#d9d6e3',
+    lid: DARK_EYE,
+  },
+  black: {
+    outline: '#352b4d',
+    fur: '#4a3f66',
+    patch: '#3a3052',
+    ear: '#8f6f9c',
+    nose: PINK_NOSE,
+    muzzle: '#5a4e78',
+    lid: '#a79cc0',
+  },
+  brown: {
+    outline: '#6b4226',
+    fur: '#9c6b45',
+    patch: '#7d5234',
+    ear: PINK_EAR,
+    nose: PINK_NOSE,
+    muzzle: '#e8cfb0',
+    lid: DARK_EYE,
+  },
+  // Tuxedos: the muzzle role also paints the chest and paws, so a white
+  // muzzle on dark fur is the tuxedo with no extra pixel map.
+  tuxedo: {
+    outline: '#352b4d',
+    fur: '#4a3f66',
+    patch: '#3a3052',
+    ear: '#8f6f9c',
+    nose: PINK_NOSE,
+    muzzle: '#ffffff',
+    lid: '#a79cc0',
+  },
+  grayTuxedo: {
+    outline: '#4f4a66',
+    fur: '#7f7a94',
+    patch: '#66617c',
+    ear: PINK_EAR,
+    nose: PINK_NOSE,
+    muzzle: '#ffffff',
+    lid: DARK_EYE,
+  },
+  orangeWhite: {
+    outline: '#b5611f',
+    fur: '#f6a04d',
+    patch: '#d9772b',
+    ear: PINK_EAR,
+    nose: PINK_NOSE,
+    muzzle: '#ffffff',
+    lid: DARK_EYE,
+  },
+  // Tortoiseshell: black with orange in the patch and muzzle roles, so the
+  // forehead spots, muzzle, chest and paws come out orange.
+  tortie: {
+    outline: '#352b4d',
+    fur: '#4a3f66',
+    patch: '#f39a45',
+    ear: '#8f6f9c',
+    nose: PINK_NOSE,
+    muzzle: '#e0803a',
+    lid: '#a79cc0',
+  },
+  // Tortoiseshell with white: orange spots, white muzzle, chest and paws.
+  tortieWhite: {
+    outline: '#352b4d',
+    fur: '#4a3f66',
+    patch: '#f39a45',
+    ear: '#8f6f9c',
+    nose: PINK_NOSE,
+    muzzle: '#ffffff',
+    lid: '#a79cc0',
+  },
+  chocolate: {
+    outline: '#3f2117',
+    fur: '#6e3f2c',
+    patch: '#58301f',
+    ear: '#c48a8a',
+    nose: PINK_NOSE,
+    muzzle: '#8a5640',
+    lid: '#e8cfb0',
+  },
+  // Siamese: cream fur with dark points. The ear, patch and muzzle roles make
+  // the dark ears, mask and paws.
+  siamese: {
+    outline: '#8a6a52',
+    fur: '#f6ead6',
+    patch: '#6b4a3a',
+    ear: '#5a3d30',
+    nose: '#5a3d30',
+    muzzle: '#6b4a3a',
+    lid: DARK_EYE,
+  },
+};
+
+/** Colors of each generated cat's eyes. Placeholders. */
+export const EYE_COLORS: Record<CatEyes, Eyes> = {
+  blue: { eye: '#3b7dd8', shine: '#ffffff' },
+  green: { eye: '#2f8f5b', shine: '#ffffff' },
+  yellow: { eye: '#e8b923', shine: '#fff6d6' },
+  orange: { eye: '#e8742a', shine: '#fff1dc' },
+};
+
 /** The palette for a saved cat id, falling back to the default cat. */
 export function catPalette(id: string): CatPalette {
-  return CAT_PALETTES[catLook(id).palette as CatId] ?? CAT_PALETTES.white;
+  const { palette, eyes } = catLook(id);
+  if (eyes) {
+    return { ...COAT_COLORS[palette as CatCoat], ...EYE_COLORS[eyes] };
+  }
+  return CAT_PALETTES[palette as CatId] ?? CAT_PALETTES.white;
 }
