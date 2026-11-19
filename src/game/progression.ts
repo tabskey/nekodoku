@@ -133,6 +133,9 @@ export const CAT_COATS = [
   'tortieWhite',
   'chocolate',
   'siamese',
+  'siameseBlue',
+  'siameseChocolate',
+  'siameseRed',
 ] as const;
 
 /** Eye colors of the generated cats (proposed). */
@@ -144,6 +147,9 @@ export type CatEyes = (typeof CAT_EYES)[number];
 // Coats that only come with some eye colors: Siamese eyes are always blue.
 const COAT_EYES: Partial<Record<CatCoat, readonly CatEyes[]>> = {
   siamese: ['blue'],
+  siameseBlue: ['blue'],
+  siameseChocolate: ['blue'],
+  siameseRed: ['blue'],
 };
 
 // Every coat, eye and body combination, shuffled once with a fixed seed, so

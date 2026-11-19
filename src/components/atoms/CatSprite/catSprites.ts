@@ -477,7 +477,8 @@ export const COAT_COLORS: Record<CatCoat, Omit<CatPalette, keyof Eyes>> = {
     lid: '#e8cfb0',
   },
   // Siamese: cream fur with dark points. The ear, patch and muzzle roles make
-  // the dark ears, mask and paws.
+  // the dark ears, mask and paws. 'siamese' is the seal point; the others are
+  // named after their point color.
   siamese: {
     outline: '#8a6a52',
     fur: '#f6ead6',
@@ -485,6 +486,33 @@ export const COAT_COLORS: Record<CatCoat, Omit<CatPalette, keyof Eyes>> = {
     ear: '#5a3d30',
     nose: '#5a3d30',
     muzzle: '#6b4a3a',
+    lid: DARK_EYE,
+  },
+  siameseBlue: {
+    outline: '#6b6683',
+    fur: '#f2f0f5',
+    patch: '#7f7a94',
+    ear: '#66617c',
+    nose: '#66617c',
+    muzzle: '#7f7a94',
+    lid: DARK_EYE,
+  },
+  siameseChocolate: {
+    outline: '#9c7a5c',
+    fur: '#fbf1e2',
+    patch: '#9c6b45',
+    ear: '#8a5a3a',
+    nose: '#c48a8a',
+    muzzle: '#9c6b45',
+    lid: DARK_EYE,
+  },
+  siameseRed: {
+    outline: '#c9875a',
+    fur: '#fff3e2',
+    patch: '#e8894a',
+    ear: '#d9772b',
+    nose: PINK_NOSE,
+    muzzle: '#e8894a',
     lid: DARK_EYE,
   },
 };
