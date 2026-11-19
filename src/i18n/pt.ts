@@ -110,6 +110,14 @@ export const pt = {
       ? `Ganhou ${coins} moedas e ${fish} peixes`
       : `Ganhou ${coins} moedas`,
   noReward: 'Sem recompensa: para ganhar de novo, supere seu recorde.',
+  // The win streak: levels cleared for the first time in a row, with no loss.
+  streakBanner: (count: number, percent: number, max: boolean) =>
+    `Sequência: ${count}${percent > 100 ? ` · x${(percent / 100).toFixed(2).replace('.', ',')}${max ? ' máx.' : ''}` : ''}`,
+  streakLabel: (count: number, percent: number) =>
+    `${count} ${count === 1 ? 'vitória seguida' : 'vitórias seguidas'}${percent > 100 ? `, ganhos x${(percent / 100).toFixed(2).replace('.', ',')}` : ''}`,
+  streakStep: (percent: number) => `+${percent}%`,
+  multiplier: (percent: number) =>
+    `x${(percent / 100).toFixed(2).replace('.', ',')}`,
   optionsButton: 'Opções',
   optionsTitle: 'Opções',
   languageLegend: 'Como o gatinho fala?',
@@ -146,6 +154,15 @@ export const pt = {
   confirmImport: 'Sim, trocar',
   cancel: 'Deixa pra lá',
   imported: 'Pronto! Seu progresso voltou pra casa.',
+  resetTitle: 'Recomeçar do zero',
+  resetHint:
+    'Apaga as fases, moedas, peixes, gatinhos e a sequência deste aparelho. Suas opções ficam como estão.',
+  resetButton: 'Apagar progresso',
+  resetWarning:
+    'Tem certeza? Os gatinhos vão sentir sua falta! Isso não dá pra desfazer. Quer copiar um código de backup antes?',
+  resetBackup: 'Copiar backup antes',
+  resetConfirm: 'Sim, apagar tudo',
+  resetDone: 'Pronto! Tudo zerado. Bora começar de novo?',
   rulesButton: 'Regras',
   rulesTitle: 'Regras',
   rules: [

@@ -1,32 +1,19 @@
-import { useState, type CSSProperties } from 'react';
+import { useState } from 'react';
 import ghostUrl from '../../../assets/ghost-cat.svg';
 import { Button } from '../../atoms/Button/Button';
 import { CatSprite } from '../../atoms/CatSprite/CatSprite';
 import type { CatPalette } from '../../atoms/CatSprite/catSprites';
+import { Confetti } from '../../atoms/Confetti/Confetti';
+import {
+  ClearSummary,
+  type ClearSummaryProps,
+} from '../../molecules/ClearSummary/ClearSummary';
 import { PixelRects } from '../../atoms/PixelRects/PixelRects';
 import './Restoration.css';
 
 // The party that starts when the cat appears (3.1 s into the animation):
-// confetti falling and sparkles twinkling, placed by formulas so the screen
-// is the same every time.
-const CONFETTI_COLORS = [
-  'var(--zone-0)',
-  'var(--zone-1)',
-  'var(--zone-2)',
-  'var(--zone-3)',
-  'var(--zone-4)',
-  'var(--zone-5)',
-  'var(--primary)',
-  'var(--gold)',
-];
-
-const CONFETTI = Array.from({ length: 36 }, (_, i) => ({
-  x: ((i * 29) % 97) + 1,
-  size: 6 + (i % 3) * 2,
-  color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-  fall: 3 + ((i * 7) % 5) * 0.5,
-  delay: 3.1 + ((i * 13) % 17) * 0.2,
-}));
+// confetti falling and sparkles twinkling around the cat's spot.
+const CONFETTI_START_S = 3.1;
 
 // A little plus sign, 3x3 sprite pixels, drawn at 4x around the cat's spot.
 const SPARKLE = ['.o.', 'ooo', '.o.'];
@@ -47,6 +34,8 @@ interface RestorationProps {
   message: string;
   /** The big cheer over the cat, e.g. "YAY!". */
   yay: string;
+  /** What the Boss paid and the win streak, once the profile has it. */
+  summary?: ClearSummaryProps;
   /** Spoken name of the revealed cat. */
   catLabel: string;
   backLabel: string;
@@ -66,6 +55,7 @@ export function Restoration({
   title,
   message,
   yay,
+  summary,
   catLabel,
   backLabel,
   replayLabel,
@@ -83,22 +73,7 @@ export function Restoration({
       aria-modal="true"
       aria-label={title}
     >
-      <div className="restoration-confetti" aria-hidden="true">
-        {CONFETTI.map((piece, i) => (
-          <span
-            key={i}
-            style={
-              {
-                '--x': `${piece.x}%`,
-                '--size': `${piece.size}px`,
-                '--color': piece.color,
-                '--fall': `${piece.fall}s`,
-                '--delay': `${piece.delay}s`,
-              } as CSSProperties
-            }
-          />
-        ))}
-      </div>
+      <Confetti startSeconds={CONFETTI_START_S} />
       <p className="restoration-yay" aria-hidden="true">
         {yay}
       </p>
@@ -162,6 +137,11 @@ export function Restoration({
         <p className="restoration-name">{name}</p>
         <p>{message}</p>
       </div>
+      {summary && (
+        <div className="restoration-show restoration-summary">
+          <ClearSummary {...summary} />
+        </div>
+      )}
       <div className="restoration-show restoration-actions">
         <Button onClick={onBack}>{backLabel}</Button>
         <button

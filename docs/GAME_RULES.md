@@ -37,6 +37,7 @@ The Options screen lets the player change:
 - **Mode:** night (dark) or day (light). The default follows the device.
 - **Sound effects:** on or off, on by default.
 - **Auto-mark:** on or off, off by default.
+- **Clear progress:** a red button, behind an in-page confirmation that offers a "Copy backup first" button (the code is shown in a box to copy by hand when the copy is blocked), erases the levels, coins, fish, cats, records and win streak of this device and keeps the options. It is not shown in the Options opened from inside a level. Decided by the owner.
 - **Backup code:** export and import (see Saving).
 - **About:** a screen about the game and its author: who made it, why, and how to get in touch. Written by the owner. Decided by the owner.
 
@@ -88,6 +89,8 @@ Bought with coins at the moment of use. No per-level counters.
 - Nothing costs real money and there are no ads.
 - Coins buy helps. Fish buy shop cats.
 - Reward for clearing a level: 40 coins and 2 fish **(proposed)**. Boss levels give a larger prize **(proposed)**.
+- **Win streak (proposed, `STREAK_STEPS` in `src/game/rewards.ts`):** each level won in a row, a new one or a replay, with no loss in between, adds one to the streak, and losing a level (all 3 lives) starts it over. Leaving a level does not. At 2, 4, 8 and 10 wins in a row, the coins and fish a clear pays go up by 5%, 10%, 15% and 20%, the most; each amount is rounded to the nearest, so a small amount like 2 fish only moves when the bonus is large enough. A replay that pays nothing (it did not beat the best score) still counts as a win for the streak, and one that pays coins gets the bonus. The streak is saved with the profile. It never gives more than 20%, so it never shouts. Decided by the owner.
+- **Win screen:** a dark veil, confetti, a cat-flavored message, the score, what the clear paid with the streak bonus beside each amount in another color (like "100 +5"), the streak as a ribbon over a path of beads with its steps and bonuses, and the Next level button in the middle of the screen. A Boss beaten for the first time shows the restoration instead, which also shows what the Boss paid and the streak. Decided by the owner.
 
 ## Cats
 

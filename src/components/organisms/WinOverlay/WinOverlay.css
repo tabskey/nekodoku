@@ -1,0 +1,78 @@
+/* Over the page, like the lost screen: the veil comes in at once, and only
+   the button takes taps. */
+.win-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--veil-text);
+  pointer-events: none;
+  /* The streak path's colors on the veil. */
+  --bonus-color: var(--gold);
+  --meter-empty: #4a3b63;
+}
+
+.win-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--veil);
+  opacity: 0.75;
+  animation: win-overlay-in 0.4s steps(2) both;
+}
+
+.win-overlay-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 0 24px;
+  text-align: center;
+  animation: win-overlay-in 0.2s steps(2) 0.2s both;
+}
+
+.win-overlay-panel p {
+  margin: 0;
+}
+
+.win-overlay-title {
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-size: var(--display-large);
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.win-overlay-line {
+  margin-top: 4px;
+  font-size: 18px;
+}
+
+.win-overlay-score {
+  font-family: var(--font-display);
+  font-size: var(--display-small);
+}
+
+.win-overlay-panel .button {
+  pointer-events: auto;
+  min-width: 220px;
+  min-height: 56px;
+  text-transform: uppercase;
+}
+
+/* From nothing to the style's own value. */
+@keyframes win-overlay-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .win-overlay::before,
+  .win-overlay-panel {
+    animation: none;
+  }
+}

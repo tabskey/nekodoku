@@ -3,15 +3,18 @@ import { Switch } from '../../components/atoms/Switch/Switch';
 import { ChoiceGroup } from '../../components/molecules/ChoiceGroup/ChoiceGroup';
 import { useText } from '../../i18n/useText';
 import { useOptions } from '../../state/profileContext';
+import { ResetSection } from './ResetSection';
 import { BackupSection } from './BackupSection';
 import './OptionsPage.css';
 
 interface OptionsPageProps {
   onBack: () => void;
+  /** False inside a level: erasing the progress then would leave it half done. */
+  canReset?: boolean;
 }
 
 /** Language, mode, sound, auto-mark and the backup code. Changes apply at once. */
-export function OptionsPage({ onBack }: OptionsPageProps) {
+export function OptionsPage({ onBack, canReset = true }: OptionsPageProps) {
   const text = useText();
   const { options, setOption } = useOptions();
 
@@ -56,6 +59,7 @@ export function OptionsPage({ onBack }: OptionsPageProps) {
         onChange={(autoMark) => setOption('autoMark', autoMark)}
       />
       <BackupSection />
+      {canReset && <ResetSection />}
       <Button onClick={onBack}>{text.back}</Button>
     </main>
   );

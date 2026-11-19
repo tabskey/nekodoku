@@ -1,0 +1,97 @@
+/* A path of beads, one 24 px column per win, with the line behind them. The
+   colors come from the screen it is on: --meter-empty and --bonus-color. */
+.streak-meter {
+  position: relative;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  width: 240px;
+  height: 24px;
+  margin-bottom: 20px;
+}
+
+/* From the middle of the first column to the middle of the last. */
+.streak-meter-track {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  top: 10px;
+  height: 4px;
+  background: var(--meter-empty, var(--button));
+}
+
+.streak-meter-fill {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+}
+
+/* A bead: a 10 px square with its corners cut, so it reads as a dot. */
+.streak-meter-bead {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  background: var(--meter-empty, var(--button));
+  clip-path: polygon(
+    2px 0,
+    calc(100% - 2px) 0,
+    100% 2px,
+    100% calc(100% - 2px),
+    calc(100% - 2px) 100%,
+    2px 100%,
+    0 calc(100% - 2px),
+    0 2px
+  );
+}
+
+.streak-meter-bead-filled {
+  background: var(--primary);
+}
+
+/* A step: a 24 px square with the wins that reach it, or a check once there. */
+.streak-meter-node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--meter-empty, var(--button));
+  color: var(--veil-text);
+  font-family: var(--font-display);
+  font-size: 10px;
+}
+
+.streak-meter-node-filled {
+  background: var(--gold);
+  color: var(--text-on-light);
+}
+
+/* The next step to reach blinks, like a sparkle on it. */
+.streak-meter-node-next {
+  animation: streak-meter-blink 0.8s steps(2) infinite;
+}
+
+.streak-meter-label {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  translate: -50% 0;
+  color: var(--bonus-color, var(--gold));
+  font-family: var(--font-body);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+@keyframes streak-meter-blink {
+  50% {
+    box-shadow: 0 0 0 3px var(--gold);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .streak-meter-node-next {
+    animation: none;
+    box-shadow: 0 0 0 3px var(--gold);
+  }
+}

@@ -82,6 +82,11 @@ describe('isSaveData', () => {
     expect(isSaveData(null)).toBe(false);
     expect(isSaveData({ ...defaultSave(), schemaVersion: 99 })).toBe(false);
     expect(isSaveData({ ...defaultSave(), levelsCleared: 1.5 })).toBe(false);
+    expect(isSaveData({ ...defaultSave(), winStreak: -1 })).toBe(false);
+    expect(
+      isSaveData({ ...defaultSave(), winStreak: MAX_LEVELS_CLEARED + 1 }),
+    ).toBe(false);
+    expect(isSaveData({ ...defaultSave(), winStreak: 7 })).toBe(true);
     expect(
       isSaveData({ ...defaultSave(), levelsCleared: MAX_LEVELS_CLEARED }),
     ).toBe(true);
@@ -119,6 +124,15 @@ describe('migrate', () => {
       fish: 0,
       renamed: 5,
     });
+  });
+
+  it('adds the win streak, at none, to a version 2 save', () => {
+    const old: Record<string, unknown> = {
+      ...defaultSave(),
+      schemaVersion: 2,
+    };
+    delete old.winStreak;
+    expect(migrate(old)).toEqual(defaultSave());
   });
 
   it('adds the music switch, on, to a version 1 save', () => {

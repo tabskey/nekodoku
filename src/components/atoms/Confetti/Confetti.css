@@ -1,0 +1,41 @@
+/* Squares falling in 6 hard steps per leg, swaying side to side. */
+.confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.confetti span {
+  position: absolute;
+  top: 0;
+  left: var(--x);
+  width: var(--size);
+  height: var(--size);
+  background: var(--color);
+  animation: confetti-fall var(--fall) steps(6) var(--delay) infinite both;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translate(0, -24px);
+  }
+  25% {
+    transform: translate(10px, calc(25vh - 12px));
+  }
+  50% {
+    transform: translate(-6px, 50vh);
+  }
+  75% {
+    transform: translate(10px, 75vh);
+  }
+  100% {
+    transform: translate(0, calc(100vh + 24px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti {
+    display: none;
+  }
+}

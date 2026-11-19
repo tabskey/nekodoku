@@ -1,12 +1,16 @@
 // Everything that outlives a level. Saved after every action by
 // ProfileProvider. See "State" in docs/ARCHITECTURE.md.
 import { levelConfig, worldCat } from '../game/progression';
-import { clearReward } from '../game/rewards';
+import { clearResult } from '../game/rewards';
 import { shopCat } from '../game/shop';
-import type { Options, SaveData } from '../storage/save';
+import { defaultSave, type Options, type SaveData } from '../storage/save';
 
 export type ProfileAction =
   | { type: 'levelCleared'; level: number; score: number; seconds: number }
+  /** Erases the progress and starts over; the options stay as they are. */
+  | { type: 'resetProgress' }
+  /** A level was lost: the win streak starts over. */
+  | { type: 'levelLost' }
   | { type: 'spendCoins'; amount: number }
   | { type: 'buyCat'; id: string }
   | { type: 'selectCat'; id: string }
@@ -25,7 +29,13 @@ export function profileReducer(
       const { level, score, seconds } = action;
       const { size, world, isBoss } = levelConfig(level);
       const best = profile.bestScores[level];
-      const reward = clearReward(level, score, profile.levelsCleared, best);
+      const { reward, streak } = clearResult(
+        level,
+        score,
+        profile.levelsCleared,
+        best,
+        profile.winStreak,
+      );
       const bestTime = profile.bestTimes[size];
       // Beating a Boss restores the world's cat into the collection.
       const restored = isBoss ? worldCat(world) : undefined;
@@ -37,6 +47,7 @@ export function profileReducer(
         ...profile,
         ownedCats,
         levelsCleared: Math.max(profile.levelsCleared, level),
+        winStreak: streak,
         coins: profile.coins + reward.coins,
         fish: profile.fish + reward.fish,
         bestScores: {
@@ -50,6 +61,12 @@ export function profileReducer(
         },
       };
     }
+
+    case 'resetProgress':
+      return { ...defaultSave(), options: profile.options };
+
+    case 'levelLost':
+      return profile.winStreak === 0 ? profile : { ...profile, winStreak: 0 };
 
     case 'spendCoins':
       if (action.amount > profile.coins) return profile;

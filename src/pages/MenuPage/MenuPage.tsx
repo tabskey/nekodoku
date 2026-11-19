@@ -3,8 +3,10 @@ import { Button } from '../../components/atoms/Button/Button';
 import { CatSprite } from '../../components/atoms/CatSprite/CatSprite';
 import { catPalette } from '../../components/atoms/CatSprite/catSprites';
 import { CurrencyBadge } from '../../components/atoms/CurrencyBadge/CurrencyBadge';
+import { StreakBadge } from '../../components/atoms/StreakBadge/StreakBadge';
 import { SpeechBubble } from '../../components/atoms/SpeechBubble/SpeechBubble';
 import { levelConfig, worldLength, worldStart } from '../../game/progression';
+import { streakPercent } from '../../game/rewards';
 import { formatTime } from '../../i18n/formatTime';
 import { useText } from '../../i18n/useText';
 import { useProfile } from '../../state/profileContext';
@@ -59,6 +61,20 @@ export function MenuPage({
   return (
     <main className="menu-page">
       <div className="menu-page-balance">
+        {profile.winStreak > 0 && (
+          <StreakBadge
+            count={profile.winStreak}
+            bonus={
+              streakPercent(profile.winStreak) > 100
+                ? text.multiplier(streakPercent(profile.winStreak))
+                : undefined
+            }
+            label={text.streakLabel(
+              profile.winStreak,
+              streakPercent(profile.winStreak),
+            )}
+          />
+        )}
         <CurrencyBadge
           amount={profile.coins}
           label={text.coins(profile.coins)}

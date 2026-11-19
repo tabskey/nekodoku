@@ -98,6 +98,12 @@ export const en: Text = {
       ? `You earned ${coins} coins and ${fish} fish`
       : `You earned ${coins} coins`,
   noReward: 'No reward: beat your best score to earn again.',
+  streakBanner: (count, percent, max) =>
+    `Win streak: ${count}${percent > 100 ? ` · x${(percent / 100).toFixed(2)}${max ? ' max' : ''}` : ''}`,
+  streakLabel: (count, percent) =>
+    `${count} ${count === 1 ? 'win' : 'wins'} in a row${percent > 100 ? `, rewards x${(percent / 100).toFixed(2)}` : ''}`,
+  streakStep: (percent) => `+${percent}%`,
+  multiplier: (percent) => `x${(percent / 100).toFixed(2)}`,
   optionsButton: 'Options',
   optionsTitle: 'Options',
   languageLegend: 'How does the cat talk?',
@@ -132,6 +138,15 @@ export const en: Text = {
   confirmImport: 'Yes, swap it',
   cancel: 'Never mind',
   imported: 'Done! Your progress is back home.',
+  resetTitle: 'Start over',
+  resetHint:
+    'Erases the levels, coins, fish, cats and streak on this device. Your options stay as they are.',
+  resetButton: 'Clear progress',
+  resetWarning:
+    'Are you sure? The cats will miss you! This cannot be undone. Want to copy a backup code first?',
+  resetBackup: 'Copy backup first',
+  resetConfirm: 'Yes, erase everything',
+  resetDone: 'Done! All clean. Ready to start again?',
   rulesButton: 'Rules',
   rulesTitle: 'Rules',
   rules: [

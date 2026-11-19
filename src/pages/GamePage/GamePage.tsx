@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
-import { Button } from '../../components/atoms/Button/Button';
 import { CatSprite } from '../../components/atoms/CatSprite/CatSprite';
-import { CurrencyBadge } from '../../components/atoms/CurrencyBadge/CurrencyBadge';
 import {
   catPalette,
   silhouettePalette,
@@ -17,6 +15,8 @@ import { ProgressStrip } from '../../components/molecules/ProgressStrip/Progress
 import { Board } from '../../components/organisms/Board/Board';
 import { OptionsPage } from '../OptionsPage/OptionsPage';
 import { useLevelAudio } from './useLevelAudio';
+import type { ClearSummaryProps } from '../../components/molecules/ClearSummary/ClearSummary';
+import { WinOverlay } from '../../components/organisms/WinOverlay/WinOverlay';
 import { LostOverlay } from '../../components/organisms/LostOverlay/LostOverlay';
 import { Restoration } from '../../components/organisms/Restoration/Restoration';
 import { RulesPopover } from '../../components/organisms/RulesPopover/RulesPopover';
@@ -26,7 +26,7 @@ import {
   startingCatCells,
   worldCat,
 } from '../../game/progression';
-import type { Reward } from '../../game/rewards';
+import { STREAK_STEPS, type Reward } from '../../game/rewards';
 import { LIVES_PER_LEVEL } from '../../game/scoring';
 import type { SolvedPuzzle } from '../../game/types';
 import { formatTime } from '../../i18n/formatTime';
@@ -48,6 +48,12 @@ interface GamePageProps {
   onCleared: (score: number, seconds: number) => void;
   /** What the win paid, once the profile has it. */
   reward?: Reward;
+  /** The part of `reward` that came from the win streak. */
+  bonus?: Reward;
+  /** The win streak after the win, the bonus it paid and whether it is the most. */
+  streak?: { count: number; percent: number; max: boolean };
+  /** Called once when the level is lost: the win streak starts over. */
+  onLost: () => void;
   onNextLevel: () => void;
   onOpenMenu: () => void;
   /** Leaves the level for the world map, after a Boss's restoration. */
@@ -126,7 +132,9 @@ export function GamePage({ level, onOpenMenu, ...levelProps }: GamePageProps) {
 
   return (
     <>
-      {optionsOpen && <OptionsPage onBack={() => setOptionsOpen(false)} />}
+      {optionsOpen && (
+        <OptionsPage onBack={() => setOptionsOpen(false)} canReset={false} />
+      )}
       <main className="game-page" hidden={optionsOpen}>
         <header className="game-page-header">
           <button
@@ -190,6 +198,9 @@ function Level({
   onCleared,
   onNextLevel,
   reward,
+  bonus,
+  streak,
+  onLost,
   paused,
   bossWorld,
   restores,
@@ -226,6 +237,42 @@ function Level({
     boss: bossWorld !== undefined,
     restoring: state.status === 'won' && restores,
   });
+
+  // What the clear paid and the win streak, shown on the win screen and on
+  // the Boss restoration once the profile has them.
+  const summary: ClearSummaryProps | undefined =
+    reward && streak
+      ? {
+          coins: reward.coins - (bonus?.coins ?? 0),
+          coinsBonus: bonus?.coins ?? 0,
+          fish: reward.fish - (bonus?.fish ?? 0),
+          fishBonus: bonus?.fish ?? 0,
+          rewardLabel: text.reward(reward.coins, reward.fish),
+          noReward: text.noReward,
+          streak: {
+            count: streak.count,
+            steps: STREAK_STEPS.map((step) => ({
+              wins: step.wins,
+              label: text.streakStep(step.percent),
+            })),
+            label: text.streakLabel(streak.count, streak.percent),
+            banner: text.streakBanner(streak.count, streak.percent, streak.max),
+          },
+        }
+      : undefined;
+
+  // Report a loss once too, so the win streak starts over; trying again and
+  // losing again is a new loss.
+  const lossReported = useRef(false);
+  useEffect(() => {
+    if (state.status !== 'lost') {
+      lossReported.current = false;
+      return;
+    }
+    if (lossReported.current) return;
+    lossReported.current = true;
+    onLost();
+  }, [state.status, onLost]);
 
   // Report the win to the profile exactly once, even if this re-renders.
   const reported = useRef(false);
@@ -335,6 +382,7 @@ function Level({
           title={text.restoredTitle}
           message={text.restoredMessage(bossWorld)}
           yay={text.restoredYay}
+          summary={summary}
           catLabel={text.restoredCatLabel(text.catNames[worldCat(bossWorld)])}
           backLabel={text.backToMap}
           replayLabel={text.replayRestoration}
@@ -342,16 +390,15 @@ function Level({
           onReplay={audio.replayRestoration}
         />
       )}
-      {state.status === 'won' && (
-        <div className="game-page-end">
-          <div role="status">
-            <p className="game-page-title">{wonMessage.title}</p>
-            <p className="game-page-line">{wonMessage.line}</p>
-          </div>
-          <p className="game-page-score">{text.finalScore(state.score)}</p>
-          {reward && <RewardLine reward={reward} />}
-          <Button onClick={onNextLevel}>{text.nextLevel}</Button>
-        </div>
+      {state.status === 'won' && !restores && summary && (
+        <WinOverlay
+          title={wonMessage.title}
+          line={wonMessage.line}
+          score={text.finalScore(state.score)}
+          summary={summary}
+          nextLabel={text.nextLevel}
+          onNext={onNextLevel}
+        />
       )}
       {state.status === 'lost' && (
         <LostOverlay
@@ -362,25 +409,6 @@ function Level({
         />
       )}
     </>
-  );
-}
-
-function RewardLine({ reward }: { reward: Reward }) {
-  const text = useText();
-  if (reward.coins === 0 && reward.fish === 0) {
-    return <p className="game-page-status">{text.noReward}</p>;
-  }
-  return (
-    <p
-      className="game-page-reward"
-      role="img"
-      aria-label={text.reward(reward.coins, reward.fish)}
-    >
-      <CurrencyBadge amount={reward.coins} prefix="+" />
-      {reward.fish > 0 && (
-        <CurrencyBadge amount={reward.fish} currency="fish" prefix="+" />
-      )}
-    </p>
   );
 }
 

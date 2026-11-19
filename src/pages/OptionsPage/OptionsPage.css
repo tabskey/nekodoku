@@ -67,3 +67,46 @@
   margin: 0;
   color: var(--danger-text);
 }
+
+.reset-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reset-section h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.reset-section-hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.reset-section-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: var(--panel);
+}
+
+.reset-section-confirm p {
+  margin: 0;
+  color: var(--danger-text);
+}
+
+/* What the copy said, in the normal text color, not the warning's. */
+.reset-section-confirm .reset-section-note {
+  min-height: 1.2em;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.reset-section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}

@@ -23,3 +23,9 @@
   box-shadow: 0 4px 0 var(--button-shadow);
   color: var(--button-text);
 }
+
+.button-danger {
+  background: var(--danger);
+  box-shadow: 0 4px 0 var(--danger-shadow);
+  color: var(--danger-on);
+}

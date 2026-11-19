@@ -14,7 +14,8 @@
   gap: 8px;
 }
 
-.menu-page-balance .currency-badge {
+.menu-page-balance .currency-badge,
+.menu-page-balance .streak-badge {
   padding: 10px 12px;
   background: var(--panel);
 }

@@ -15,6 +15,8 @@ export interface Options {
 export interface SaveData {
   schemaVersion: number;
   levelsCleared: number;
+  /** Levels cleared for the first time in a row, with no loss in between. */
+  winStreak: number;
   coins: number;
   fish: number;
   ownedCats: string[];
@@ -45,6 +47,7 @@ export function defaultSave(): SaveData {
   return {
     schemaVersion: SCHEMA_VERSION,
     levelsCleared: 0,
+    winStreak: 0,
     coins: 0,
     fish: 0,
     ownedCats: ['white'],
@@ -85,6 +88,8 @@ export function isSaveData(value: unknown): value is SaveData {
     save.schemaVersion === SCHEMA_VERSION &&
     isCount(save.levelsCleared) &&
     (save.levelsCleared as number) <= MAX_LEVELS_CLEARED &&
+    isCount(save.winStreak) &&
+    (save.winStreak as number) <= MAX_LEVELS_CLEARED &&
     isCount(save.coins) &&
     isCount(save.fish) &&
     Array.isArray(save.ownedCats) &&

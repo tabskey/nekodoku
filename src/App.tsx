@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { setSoundEnabled, startMusic, stopMusic } from './audio/audio';
-import { clearReward, type Reward } from './game/rewards';
+import { clearResult, MAX_STREAK_PERCENT, type Reward } from './game/rewards';
 import { GamePage } from './pages/GamePage/GamePage';
 import { MenuPage } from './pages/MenuPage/MenuPage';
 import { WorldPage } from './pages/WorldPage/WorldPage';
@@ -32,6 +32,10 @@ export function App() {
   const [lastClear, setLastClear] = useState<{
     level: number;
     reward: Reward;
+    /** The part of the reward that came from the win streak. */
+    bonus: Reward;
+    /** The win streak after the clear, and the bonus it paid. */
+    streak: { count: number; percent: number };
   }>();
   // The level just won, so the cat walks on from it the next time the map
   // opens. Cleared once the map has shown the walk.
@@ -50,13 +54,19 @@ export function App() {
 
   function handleCleared(score: number, seconds: number) {
     // Same rule the profile applies, read before the profile changes.
-    const reward = clearReward(
+    const { reward, bonus, streak, percent } = clearResult(
       level,
       score,
       profile.levelsCleared,
       profile.bestScores[level],
+      profile.winStreak,
     );
-    setLastClear({ level, reward });
+    setLastClear({
+      level,
+      reward,
+      bonus,
+      streak: { count: streak, percent },
+    });
     dispatch({ type: 'levelCleared', level, score, seconds });
   }
 
@@ -108,6 +118,16 @@ export function App() {
       onSpendCoins={(amount) => dispatch({ type: 'spendCoins', amount })}
       onCleared={handleCleared}
       reward={lastClear?.level === level ? lastClear.reward : undefined}
+      bonus={lastClear?.level === level ? lastClear.bonus : undefined}
+      streak={
+        lastClear?.level === level
+          ? {
+              ...lastClear.streak,
+              max: lastClear.streak.percent >= MAX_STREAK_PERCENT,
+            }
+          : undefined
+      }
+      onLost={() => dispatch({ type: 'levelLost' })}
       onNextLevel={() => setLevel(level + 1)}
       onOpenMenu={() => {
         setWalkFrom(lastClear?.level === level ? level : undefined);

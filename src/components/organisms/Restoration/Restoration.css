@@ -8,7 +8,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 28px;
+  gap: 16px;
   padding: 24px;
   background: var(--restore-bg);
   color: var(--text-on-light);
@@ -16,10 +16,13 @@
   /* The rays and the confetti reach past the screen. */
   overflow: hidden;
   --rays: rgba(255, 201, 74, 0.3);
+  /* The streak path's colors on cream. */
+  --bonus-color: #9a5a00;
+  --meter-empty: #cdbf9f;
 }
 
 /* Everything in the flow sits above the confetti, which comes first. */
-.restoration > :not(.restoration-confetti) {
+.restoration > :not(.confetti) {
   position: relative;
 }
 
@@ -49,6 +52,7 @@
 }
 
 .restoration-text,
+.restoration-summary,
 .restoration-actions {
   flex-direction: column;
   align-items: center;
@@ -148,23 +152,6 @@
   animation:
     restoration-show 3.6s steps(1) forwards,
     restoration-bounce 0.8s steps(2) infinite;
-}
-
-/* Confetti: squares falling in 6 hard steps per leg, swaying side to side. */
-.restoration-confetti {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.restoration-confetti span {
-  position: absolute;
-  top: 0;
-  left: var(--x);
-  width: var(--size);
-  height: var(--size);
-  background: var(--color);
-  animation: restoration-fall var(--fall) steps(6) var(--delay) infinite both;
 }
 
 /* 1. From the corner to the center, growing to twice its size: 8 steps. */
@@ -270,24 +257,6 @@
   }
 }
 
-@keyframes restoration-fall {
-  0% {
-    transform: translate(0, -24px);
-  }
-  25% {
-    transform: translate(10px, calc(25vh - 12px));
-  }
-  50% {
-    transform: translate(-6px, 50vh);
-  }
-  75% {
-    transform: translate(10px, 75vh);
-  }
-  100% {
-    transform: translate(0, calc(100vh + 24px));
-  }
-}
-
 @keyframes restoration-show {
   0% {
     opacity: 0;
@@ -311,7 +280,6 @@
     animation: none;
   }
 
-  .restoration-confetti,
   .restoration-sparkle {
     display: none;
   }

@@ -70,7 +70,15 @@ Cats come in two poses. The head is the icon: it is what appears on the board, i
 - The scenery is an 85x18 pixel strip (sky, stars, moon, two layers of hills, ground) built from a pixel map with six roles. Each world supplies a six-color palette, the same way cats do. The mockup shows three: teal, rose and gold.
 - Draw both from data in the app (pixel map plus palette), like `CatSprite`, so a new world needs only a new palette.
 
-### Lost level
+### Win screen
+
+When a level is won (a Boss beaten for the first time shows the restoration instead), a plum veil (`--veil`, 75%) comes over the page, confetti falls (the same as in the restoration), and in the middle of the screen: the cat-flavored title in gold, the friendly line, the score, then what the clear paid, each amount in the text color and its win-streak bonus in gold beside it ("100 +5", coins and fish), the streak and the Next level button. Only the button takes taps; the header stays reachable. With reduced motion there is no confetti and nothing animates.
+
+The streak, shared with the restoration, is a gold ribbon with stepped ends ("Sequência: 4 · x1,10", with "máx." at the most) over a path of beads: one position of 24 px per win up to 10, joined by a line that fills in coral as the streak grows. The positions that are plain wins are 10 px beads; the steps where a bonus starts (2, 4, 8 and 10 wins) are 24 px squares showing their wins, turning gold with a check once reached, with their bonus (+5%, +10%, +15%, +20%) under them. The next step blinks. Past 10 wins the path stays full.
+
+On the menu, a flame with the streak and its multiplier sits beside the coins and fish while the streak is above zero. Decided by the owner.
+
+### Lost level### Lost level
 
 When the last life is lost, a dark plum veil (`--veil`, 60%) comes over the page and stays until the player tries again, in two steps. After 0.4 s the ghost appears in the middle of the screen over a flat pixel shadow, floats up 143 px in 13 hard steps (whole pixels) with a slow 8 px sway, and fades out in five opacity steps, while the message (a cat-flavored title and a friendly line, one of four pairs picked from the time on the clock, so repeated losses do not read the same) and the Try again button show in the middle of the screen, just below where the ghost stood. The veil makes the pale ghost stand out on any zone color and draws the eye to the button. Only the button takes taps: the header stays reachable under the veil. With reduced motion there is no ghost and nothing animates. The fade is stepped, not smooth, to stay pixel art. Decided by the owner.
 
@@ -83,7 +91,7 @@ Played when a Boss is beaten, over a full-screen neutral background (the cream c
 3. The silhouette flickers three times between the ghost's shape and the cat's shape.
 4. The silhouette of the whole cat, full body, holds for a moment, then the cat appears in full color, blinking.
 5. The cat's name, a line of text and the button to return to the map appear.
-6. With the cat, the party starts and loops while the screen stays open: golden sunburst rays centered on the cat turn slowly behind it (15 degrees in five steps, which repeats seamlessly), 36 squares of confetti in the zone colors fall in six hard steps per leg, swaying, six little plus-shaped sparkles twinkle around the cat, and a big cheer ("OBA!" or "YAY!", coral with a darker coral shadow) bounces 8 px above it. The background stays plain before step 4 so the black silhouette shows. With reduced motion the rays and the cheer stand still, and there is no confetti or sparkle. Decided by the owner.
+6. With the cat, what the Boss paid shows between the text and the buttons: the coins and fish with the streak bonus beside each, and the win streak as in the Win screen, in darker colors for the cream background. The party starts and loops while the screen stays open: golden sunburst rays centered on the cat turn slowly behind it (15 degrees in five steps, which repeats seamlessly), 36 squares of confetti in the zone colors fall in six hard steps per leg, swaying, six little plus-shaped sparkles twinkle around the cat, and a big cheer ("OBA!" or "YAY!", coral with a darker coral shadow) bounces 8 px above it. The background stays plain before step 4 so the black silhouette shows. With reduced motion the rays and the cheer stand still, and there is no confetti or sparkle. Decided by the owner.
 
 A silhouette is the same sprite with every pixel in one color (in CSS, `filter: brightness(0)` on the image). With reduced motion enabled, skip straight to step 5.
 
@@ -131,7 +139,7 @@ Gold text is the one accent that changes: the coin yellow is unreadable on a lig
 
 The black silhouette of the restoration sequence needs a light backdrop in both modes, so that screen stays on the cream background even in night mode.
 
-Button depth is a 4 px bottom shadow in a darker shade of the button's own color: `#cdbf9f` under cream, `#c9553a` under coral, `#d99a1c` under gold, `#3a9c8b` under teal.
+Button depth is a 4 px bottom shadow in a darker shade of the button's own color: `#cdbf9f` under cream, `#c9553a` under coral, `#d99a1c` under gold, `#3a9c8b` under teal, and `#a4262a` under the red button (`#e5383b`, white text) that erases the progress.
 
 Secondary buttons (cards, helps, shop actions, the level's round buttons) use their own tokens, `--button`, `--button-shadow` and `--button-text`. By day they are white on the cream page. At night they are a raised lilac, `#4a3b63` with a `#352b4d` shadow and cream text, so they sit quietly on the plum the way the white ones do on cream, and the coral Play stays the one that stands out. The chosen option in a choice group is teal at night (white by day), like a switch that is on. The cards behind each cat in the shop and the collection (`--cat-tile`) are a mid lilac at night, `#7d6d9f` with dark text, so dark cats stay visible without the card glowing; by day they keep the panel color. Decided by the owner.
 

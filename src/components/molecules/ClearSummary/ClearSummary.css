@@ -1,0 +1,55 @@
+.clear-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.clear-summary p {
+  margin: 0;
+}
+
+.clear-summary-reward {
+  display: flex;
+  gap: 24px;
+}
+
+.clear-summary-amount {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* The streak bonus beside an amount, in another color. */
+.clear-summary-bonus {
+  color: var(--bonus-color, var(--gold));
+  font-family: var(--font-display);
+  font-size: var(--display-small);
+}
+
+.clear-summary-none {
+  font-size: 18px;
+}
+
+/* A gold ribbon with stepped ends; the shadow is on the outside, because a
+   clip-path would cut it. */
+.clear-summary-ribbon {
+  filter: drop-shadow(0 4px 0 var(--gold-shadow));
+}
+
+.clear-summary-ribbon p {
+  padding: 8px 20px;
+  background: var(--gold);
+  color: var(--text-on-light);
+  font-family: var(--font-display);
+  font-size: var(--display-small);
+  text-transform: uppercase;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    calc(100% - 4px) 50%,
+    100% 100%,
+    0 100%,
+    4px 50%
+  );
+}
