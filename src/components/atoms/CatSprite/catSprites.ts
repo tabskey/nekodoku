@@ -515,6 +515,35 @@ export const COAT_COLORS: Record<CatCoat, Omit<CatPalette, keyof Eyes>> = {
     muzzle: '#e8894a',
     lid: DARK_EYE,
   },
+  // Tabbies: a strong patch color draws the "M" on the forehead. Stripes on
+  // the body need patch pixels in the body maps.
+  brownTabby: {
+    outline: '#5a3a22',
+    fur: '#b08257',
+    patch: '#4a2e1a',
+    ear: PINK_EAR,
+    nose: PINK_NOSE,
+    muzzle: '#ead7bd',
+    lid: DARK_EYE,
+  },
+  silverTabby: {
+    outline: '#4f4a66',
+    fur: '#d4d2dc',
+    patch: '#3f3a52',
+    ear: PINK_EAR,
+    nose: PINK_NOSE,
+    muzzle: '#f2f0f5',
+    lid: DARK_EYE,
+  },
+  orangeTabby: {
+    outline: '#8f4513',
+    fur: '#f6a04d',
+    patch: '#a8520f',
+    ear: PINK_EAR,
+    nose: PINK_NOSE,
+    muzzle: '#fff1dc',
+    lid: DARK_EYE,
+  },
 };
 
 /** Colors of each generated cat's eyes. Placeholders. */

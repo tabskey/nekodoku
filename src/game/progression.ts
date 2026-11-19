@@ -136,6 +136,9 @@ export const CAT_COATS = [
   'siameseBlue',
   'siameseChocolate',
   'siameseRed',
+  'brownTabby',
+  'silverTabby',
+  'orangeTabby',
 ] as const;
 
 /** Eye colors of the generated cats (proposed). */
