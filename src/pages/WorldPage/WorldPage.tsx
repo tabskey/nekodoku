@@ -213,6 +213,7 @@ export function WorldPage({
                   <CatSprite
                     palette={catPalette(profile.selectedCat)}
                     pose="walk"
+                    body={catLook(profile.selectedCat).body}
                     pixelSize={3}
                     walking={walking}
                   />

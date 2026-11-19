@@ -1,12 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { FULL_BODIES } from './catSprites';
+import { CAT_POSES } from './catSprites';
 
-describe('FULL_BODIES', () => {
-  it('fits every body and frame on the same 16x18 canvas', () => {
-    for (const frames of Object.values(FULL_BODIES)) {
-      for (const rows of [frames.open, frames.closed, frames.happy]) {
-        expect(rows).toHaveLength(frames.height);
-        for (const row of rows) expect(row).toHaveLength(frames.width);
+describe('CAT_POSES', () => {
+  it('fits every body and frame of a pose on the same canvas', () => {
+    for (const bodies of Object.values(CAT_POSES)) {
+      for (const frames of Object.values(bodies)) {
+        const all = [frames.open, frames.closed, frames.happy];
+        if (frames.step) all.push(frames.step);
+        for (const rows of all) {
+          expect(rows).toHaveLength(frames.height);
+          for (const row of rows) expect(row).toHaveLength(frames.width);
+        }
       }
     }
   });
@@ -14,8 +18,17 @@ describe('FULL_BODIES', () => {
   it('sinks the chubby head one row lower than the regular one', () => {
     const firstRow = (rows: string[]) =>
       rows.findIndex((row) => row.includes('o'));
-    expect(firstRow(FULL_BODIES.chubby.open)).toBe(
-      firstRow(FULL_BODIES.regular.open) + 1,
-    );
+    for (const pose of ['full', 'walk'] as const) {
+      expect(firstRow(CAT_POSES[pose].chubby.open)).toBe(
+        firstRow(CAT_POSES[pose].regular.open) + 1,
+      );
+    }
+  });
+
+  it('closes the side-view eye on every walking body', () => {
+    for (const frames of Object.values(CAT_POSES.walk)) {
+      expect(frames.closed.join()).not.toContain('eh');
+      expect(frames.closed.join()).toContain('cc');
+    }
   });
 });

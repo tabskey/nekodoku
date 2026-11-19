@@ -145,9 +145,73 @@ const WALK_APART = [
   '..ob..ob..ob..ob',
   '..oo..oo..oo..oo',
 ];
-// The side view has one eye, in row 8.
+
+// Slim side view: taller thin tail, narrow body, five rows of legs.
+const SLIM_WALK_TOP = [
+  '................',
+  '................',
+  '................',
+  '................',
+  '..o.....o...o...',
+  '.obo...obo.obo..',
+  '.obo...obbobbbo.',
+  '.obo...obbbbbbbo',
+  '.obo...obbbbehbo',
+  '.obo...obbbbbwwn',
+  '..oboooobbbwwwo.',
+  '..obbbbbbbbbbo..',
+  '..obbbbbbbbbbo..',
+];
+const SLIM_WALK_TOGETHER = [
+  ...SLIM_WALK_TOP,
+  '..ob.ob..ob.ob..',
+  '..ob.ob..ob.ob..',
+  '..ob.ob..ob.ob..',
+  '..ob.ob..ob.ob..',
+  '..oo.oo..oo.oo..',
+];
+const SLIM_WALK_APART = [
+  ...SLIM_WALK_TOP,
+  '..ob.ob..ob.ob..',
+  '..ob.ob..ob.ob..',
+  '..ob..obob..ob..',
+  '.ob..ob..ob..ob.',
+  '.oo..oo..oo..oo.',
+];
+
+// Chubby side view: head one row lower, wide round body, two rows of legs.
+const CHUBBY_WALK_TOP = [
+  '................',
+  '................',
+  '................',
+  '................',
+  '................',
+  '........o...o...',
+  '.......obo.obo..',
+  '.......obbobbbo.',
+  '.o.....obbbbbbbo',
+  'obo....obbbbehbo',
+  'obo....obbbbbwwn',
+  '.obooooobbbwwwo.',
+  '.obbbbbbbbbbbbo.',
+  'obbbbbbbbbbbbbbo',
+  'obbbbbbbbbbbbbbo',
+  '.obbbbbbbbbbbbo.',
+];
+const CHUBBY_WALK_TOGETHER = [
+  ...CHUBBY_WALK_TOP,
+  '..ob.ob..ob.ob..',
+  '..oo.oo..oo.oo..',
+];
+const CHUBBY_WALK_APART = [
+  ...CHUBBY_WALK_TOP,
+  '.ob..ob..ob..ob.',
+  '.oo..oo..oo..oo.',
+];
+
+// The side view has one eye, the only "eh" in the map.
 function closeSideEye(rows: string[]): string[] {
-  return rows.map((row, y) => (y === 8 ? row.replace('eh', 'cc') : row));
+  return rows.map((row) => row.replace('eh', 'cc'));
 }
 
 export type CatPose = 'head' | 'full' | 'walk';
@@ -173,32 +237,39 @@ function fullBody(body: CatBody): PoseFrames {
   };
 }
 
-/** The 'full' pose frames for each body type. */
-export const FULL_BODIES: Record<CatBody, PoseFrames> = {
-  slim: fullBody('slim'),
-  regular: fullBody('regular'),
-  chubby: fullBody('chubby'),
+function walk(together: string[], apart: string[]): PoseFrames {
+  return {
+    open: together,
+    closed: closeSideEye(together),
+    happy: together,
+    step: apart,
+    width: 16,
+    height: FULL_HEIGHT,
+  };
+}
+
+const HEAD: PoseFrames = {
+  open: OPEN_EYES,
+  closed: CLOSED_EYES,
+  happy: HAPPY_EYES,
+  width: 12,
+  height: 12,
 };
 
-// 'head' is the icon used on the board, HUD and map.
+// 'head' is the icon used on the board, HUD and map, the same for every body.
 // 'full' is the whole cat, used in the restoration reveal and the collection.
-export const CAT_POSES: Record<CatPose, PoseFrames> = {
-  head: {
-    open: OPEN_EYES,
-    closed: CLOSED_EYES,
-    happy: HAPPY_EYES,
-    width: 12,
-    height: 12,
+// 'walk' is the cat moving along the world map.
+export const CAT_POSES: Record<CatPose, Record<CatBody, PoseFrames>> = {
+  head: { slim: HEAD, regular: HEAD, chubby: HEAD },
+  full: {
+    slim: fullBody('slim'),
+    regular: fullBody('regular'),
+    chubby: fullBody('chubby'),
   },
-  full: FULL_BODIES.regular,
-  // 'walk' is the cat moving along the world map.
   walk: {
-    open: WALK_TOGETHER,
-    closed: closeSideEye(WALK_TOGETHER),
-    happy: WALK_TOGETHER,
-    step: WALK_APART,
-    width: 16,
-    height: 18,
+    slim: walk(SLIM_WALK_TOGETHER, SLIM_WALK_APART),
+    regular: walk(WALK_TOGETHER, WALK_APART),
+    chubby: walk(CHUBBY_WALK_TOGETHER, CHUBBY_WALK_APART),
   },
 };
 
