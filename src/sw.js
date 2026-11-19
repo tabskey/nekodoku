@@ -12,6 +12,8 @@ self.addEventListener('install', (event) => {
 // copy of the game is closed, so a running game never loses the chunks it was
 // built with. The page can ask for it earlier, from Options, outside a level.
 self.addEventListener('message', (event) => {
+  // Only pages of this site can ask; check where the message came from.
+  if (event.origin !== self.location.origin) return;
   if (event.data === 'skip') self.skipWaiting();
 });
 
