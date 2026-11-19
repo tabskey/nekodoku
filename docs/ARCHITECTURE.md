@@ -147,6 +147,7 @@ interface LevelState {
 interface SaveData {
   schemaVersion: number;
   levelsCleared: number;
+  winStreak: number; // levels won in a row with no loss, version 3
   coins: number;
   fish: number;
   ownedCats: string[];
@@ -207,7 +208,7 @@ Reducers call into `game/` for decisions and contain no rule logic of their own.
 ## Persistence
 
 - One key, `nekodoku.save`, holding `SaveData` as JSON.
-- `schemaVersion` starts at 1. Any change to the shape adds a migration function in `storage/migrations.ts`; never read an old save without migrating it. Version 2 added `options.music`, on by default.
+- `schemaVersion` starts at 1. Any change to the shape adds a migration function in `storage/migrations.ts`; never read an old save without migrating it. Version 2 added `options.music`, on by default. Version 3 added `winStreak`, starting at none: levels won in a row, new or replayed, with no loss in between (see Win streak in `docs/GAME_RULES.md`).
 - The profile is saved after every profile action. A level in progress is never saved, by design: `LevelState` lives only in memory and is discarded when the level is closed (see `docs/GAME_RULES.md`).
 - Reads and writes are wrapped in `try/catch`. If storage is unavailable the game still runs with an in-memory profile.
 - Two copies of the game can be open on one device (the installed app and a browser tab share storage). When one saves, the others get the browser's `storage` event and reload the profile, so a copy left open never overwrites newer progress with its old one. The listener ignores a save it cannot read (one from a newer version), and a save that cannot be read at load is first copied to `nekodoku.save.unreadable` before a fresh profile replaces it, so an older copy of the game never wipes a newer save.
