@@ -18,11 +18,15 @@ export const pt = {
   noShopCats: 'Hoje não chegou nenhum gatinho novo. Volta amanhã!',
   collectionTitle: 'Gatinhos',
   collectionCount: (owned: number, total: number) =>
-    `${owned} de ${total} gatinhos`,
-  unknownCat: '???',
-  toRescue: 'Resgatar',
+    owned === total
+      ? `Turminha completa! ${total} gatinhos`
+      : `${owned} de ${total} gatinhos na sua turminha`,
+  collectionHint:
+    'Toque num gatinho pra ele te acompanhar pelo mapa. Os escurinhos ainda estão escondidos!',
+  unknownCat: 'Quem será?',
+  toRescue: 'Espera resgate',
   toRescueLabel: 'Um gatinho ainda por resgatar num Boss',
-  inShop: 'Na loja',
+  inShop: 'Na lojinha',
   inShopLabel: 'Um gatinho à venda na lojinha',
   helpsTitle: 'Ajudinhas',
   helpsHint: 'Você paga com moedas só na hora do aperto, durante a fase.',
@@ -34,10 +38,10 @@ export const pt = {
     `Comprar ${name} por ${price} peixes`,
   soldOut: 'Esgotado',
   soldOutLabel: (name: string) => `${name}: esgotado, já é seu`,
-  useCat: 'Usar',
-  inUse: 'Em uso',
-  useCatLabel: (name: string) => `Usar ${name}`,
-  inUseLabel: (name: string) => `${name}, em uso`,
+  useCat: 'Escolher',
+  inUse: 'Escolhido!',
+  useCatLabel: (name: string) => `Escolher ${name}`,
+  inUseLabel: (name: string) => `${name}, escolhido`,
   catNames: {
     white: 'Mingau',
     orange: 'Caramelo',

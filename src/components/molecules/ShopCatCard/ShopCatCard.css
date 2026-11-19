@@ -21,9 +21,12 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-width: 96px;
+  /* Full width of the card, and two lines when a label is longer. */
+  align-self: stretch;
   min-height: 44px;
-  padding: 0 12px;
+  padding: 6px 12px;
+  line-height: 1.5;
+  text-align: center;
   border: none;
   background: var(--button);
   box-shadow: 0 4px 0 var(--button-shadow);

@@ -32,6 +32,7 @@ export function CollectionPage({ onBack }: CollectionPageProps) {
       <header>
         <h1>{text.collectionTitle}</h1>
         <p>{text.collectionCount(profile.ownedCats.length, all.length)}</p>
+        <p>{text.collectionHint}</p>
       </header>
       <ul className="collection-page-grid">
         {all.map((id) => {

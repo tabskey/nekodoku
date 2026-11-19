@@ -16,11 +16,16 @@ export const en: Text = {
     'Each cat only shows up on certain days. Missed one? It comes back another day!',
   noShopCats: 'No new cats today. Come back tomorrow!',
   collectionTitle: 'Cats',
-  collectionCount: (owned, total) => `${owned} of ${total} cats`,
-  unknownCat: '???',
-  toRescue: 'Rescue',
+  collectionCount: (owned, total) =>
+    owned === total
+      ? `Squad complete! All ${total} cats`
+      : `${owned} of ${total} cats in your squad`,
+  collectionHint:
+    'Tap a cat to bring it along on the map. The dark ones are still hiding!',
+  unknownCat: 'Who is it?',
+  toRescue: 'Needs rescue',
   toRescueLabel: 'A cat still to rescue at a Boss',
-  inShop: 'In shop',
+  inShop: 'In the shop',
   inShopLabel: 'A cat on sale in the shop',
   helpsTitle: 'Little helpers',
   helpsHint: 'Pay with coins only when things get tough, during a level.',
@@ -30,10 +35,10 @@ export const en: Text = {
   buyCat: (name, price) => `Buy ${name} for ${price} fish`,
   soldOut: 'Sold out',
   soldOutLabel: (name) => `${name}: sold out, it is yours`,
-  useCat: 'Use',
-  inUse: 'In use',
-  useCatLabel: (name) => `Use ${name}`,
-  inUseLabel: (name) => `${name}, in use`,
+  useCat: 'Choose',
+  inUse: 'Chosen!',
+  useCatLabel: (name) => `Choose ${name}`,
+  inUseLabel: (name) => `${name}, chosen`,
   // Cat names are translated, not kept in Portuguese: each one says what the
   // cat looks like (Mingau is the soft white default, Fumaça is smoke gray).
   catNames: {
