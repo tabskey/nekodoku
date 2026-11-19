@@ -2,7 +2,7 @@ import { useState } from 'react';
 import ghostUrl from '../../../assets/ghost-cat.svg';
 import { Button } from '../../atoms/Button/Button';
 import { CatSprite } from '../../atoms/CatSprite/CatSprite';
-import type { CatPalette } from '../../atoms/CatSprite/catSprites';
+import type { CatBody, CatPalette } from '../../atoms/CatSprite/catSprites';
 import { PixelIcon } from '../../atoms/PixelIcon/PixelIcon';
 import { Confetti } from '../../atoms/Confetti/Confetti';
 import {
@@ -29,6 +29,7 @@ const SPARKLES = [
 interface RestorationProps {
   /** The restored cat's colors. */
   palette: CatPalette;
+  body: CatBody;
   name: string;
   title: string;
   message: string;
@@ -51,6 +52,7 @@ interface RestorationProps {
  */
 export function Restoration({
   palette,
+  body,
   name,
   title,
   message,
@@ -111,6 +113,7 @@ export function Restoration({
             <CatSprite
               palette={palette}
               pose="full"
+              body={body}
               pixelSize={8}
               blink={false}
             />
@@ -119,6 +122,7 @@ export function Restoration({
             <CatSprite
               palette={palette}
               pose="full"
+              body={body}
               pixelSize={8}
               label={catLabel}
             />

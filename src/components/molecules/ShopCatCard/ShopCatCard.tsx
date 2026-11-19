@@ -1,6 +1,10 @@
 import type { ReactNode } from 'react';
 import { CatSprite } from '../../atoms/CatSprite/CatSprite';
-import type { CatPalette, CatPose } from '../../atoms/CatSprite/catSprites';
+import type {
+  CatBody,
+  CatPalette,
+  CatPose,
+} from '../../atoms/CatSprite/catSprites';
 import './ShopCatCard.css';
 
 interface ShopCatCardProps {
@@ -14,6 +18,8 @@ interface ShopCatCardProps {
   selected?: boolean;
   /** 'head' in the shop (default); 'full' in the collection. */
   pose?: CatPose;
+  /** Body type of the 'full' pose. */
+  body?: CatBody;
   /** Set to false for a static sprite, such as a silhouette. */
   blink?: boolean;
   onAction: () => void;
@@ -28,12 +34,19 @@ export function ShopCatCard({
   disabled,
   selected = false,
   pose = 'head',
+  body,
   blink = true,
   onAction,
 }: ShopCatCardProps) {
   return (
     <li className={`shop-cat-card${selected ? ' shop-cat-card-selected' : ''}`}>
-      <CatSprite palette={palette} pose={pose} pixelSize={4} blink={blink} />
+      <CatSprite
+        palette={palette}
+        pose={pose}
+        body={body}
+        pixelSize={4}
+        blink={blink}
+      />
       <span className="shop-cat-card-name">{name}</span>
       <button
         type="button"

@@ -5,6 +5,7 @@ import { CurrencyBadge } from '../../components/atoms/CurrencyBadge/CurrencyBadg
 import { ShopCatCard } from '../../components/molecules/ShopCatCard/ShopCatCard';
 import { ERASER_COST, REVEAL_COST } from '../../game/helps';
 import { dailyRotation } from '../../game/shop';
+import { catName } from '../../i18n/catName';
 import { useText } from '../../i18n/useText';
 import { useProfile } from '../../state/profileContext';
 import './ShopPage.css';
@@ -28,7 +29,7 @@ export function ShopPage({ onBack }: ShopPageProps) {
   const text = useText();
   const { profile, dispatch } = useProfile();
   const rotation = dailyRotation(today());
-  const name = (id: string) => text.catNames[id] ?? id;
+  const name = (id: string) => catName(text, id);
 
   return (
     <main className="shop-page">

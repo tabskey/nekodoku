@@ -100,11 +100,49 @@ export function startingCatCells(
   return shuffle(puzzle.solution, createRng(level)).slice(0, count);
 }
 
-// Placeholder world cats (proposed): the world-cat palettes in turn, until
-// each world has its own generated cat. World cats are never sold.
-const WORLD_CATS = ['orange', 'gray', 'black'];
+// Worlds 1 to 3 restore the named cats; every later world restores a generated
+// cat with the id `w<world>`. Ids stay plain strings, so the save keeps its
+// shape. World cats are never sold.
+const NAMED_WORLD_CATS = ['orange', 'gray', 'black'];
 
 /** The cat restored by beating `world`'s Boss. */
 export function worldCat(world: number): string {
-  return WORLD_CATS[(world - 1) % WORLD_CATS.length];
+  return NAMED_WORLD_CATS[world - 1] ?? `w${world}`;
+}
+
+export type CatBody = 'slim' | 'regular' | 'chubby';
+
+const BODIES: CatBody[] = ['slim', 'regular', 'chubby'];
+
+// TODO(design): when the final cat art lands (new palettes, body types or
+// named cats), update BODIES, GENERATED_PALETTES and NAMED_BODIES to match.
+// Changing them changes how already restored cats look, never which cats a
+// player owns.
+// Palettes the generated cats wear (proposed). 4 palettes and 3 bodies are
+// coprime, so the first 12 generated cats never repeat a look.
+const GENERATED_PALETTES = ['white', 'orange', 'gray', 'black'];
+
+// Bodies of the named cats, as in the "Tipos de corpo" artboard.
+const NAMED_BODIES: Record<string, CatBody> = { gray: 'slim', white: 'chubby' };
+
+export interface CatLook {
+  /** Key of the palette to draw the cat with. */
+  palette: string;
+  body: CatBody;
+  /** Place among the generated cats (0 for world 4's), to pick its name. */
+  generated?: number;
+}
+
+/** How the cat with a saved id looks. */
+export function catLook(id: string): CatLook {
+  const world = Number(/^w(\d+)$/.exec(id)?.[1]);
+  if (!(world > NAMED_WORLD_CATS.length)) {
+    return { palette: id, body: NAMED_BODIES[id] ?? 'regular' };
+  }
+  const generated = world - NAMED_WORLD_CATS.length - 1;
+  return {
+    palette: GENERATED_PALETTES[generated % GENERATED_PALETTES.length],
+    body: BODIES[generated % BODIES.length],
+    generated,
+  };
 }

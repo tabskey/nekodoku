@@ -5,7 +5,12 @@ import { catPalette } from '../../components/atoms/CatSprite/catSprites';
 import { CurrencyBadge } from '../../components/atoms/CurrencyBadge/CurrencyBadge';
 import { StreakBadge } from '../../components/atoms/StreakBadge/StreakBadge';
 import { SpeechBubble } from '../../components/atoms/SpeechBubble/SpeechBubble';
-import { levelConfig, worldLength, worldStart } from '../../game/progression';
+import {
+  catLook,
+  levelConfig,
+  worldLength,
+  worldStart,
+} from '../../game/progression';
 import { streakPercent } from '../../game/rewards';
 import { formatTime } from '../../i18n/formatTime';
 import { useText } from '../../i18n/useText';
@@ -96,6 +101,7 @@ export function MenuPage({
           <CatSprite
             palette={catPalette(profile.selectedCat)}
             pose="full"
+            body={catLook(profile.selectedCat).body}
             pixelSize={7}
             label={text.selectedCat}
           />

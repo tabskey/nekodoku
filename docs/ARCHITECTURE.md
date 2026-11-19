@@ -150,7 +150,7 @@ interface SaveData {
   winStreak: number; // levels won in a row with no loss, version 3
   coins: number;
   fish: number;
-  ownedCats: string[];
+  ownedCats: string[]; // palette ids, or w<world> for a generated world cat
   selectedCat: string;
   bestTimes: Record<number, number>; // board size -> seconds
   bestScores: Record<number, number>; // level -> best score, for replay rewards

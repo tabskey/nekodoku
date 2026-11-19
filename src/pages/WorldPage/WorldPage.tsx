@@ -10,6 +10,7 @@ import {
   type TileState,
 } from '../../components/molecules/WorldPath/WorldPath';
 import {
+  catLook,
   levelConfig,
   worldCat,
   worldLength,
@@ -107,6 +108,7 @@ export function WorldPage({
         <CatSprite
           palette={catPalette(worldCat(world))}
           pose="full"
+          body={catLook(worldCat(world)).body}
           pixelSize={3}
         />
       ) : (
