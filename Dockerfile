@@ -1,6 +1,6 @@
 # Local development only. GitHub Pages does not use this image; see
 # "Local container" in docs/ARCHITECTURE.md.
-FROM node:24-alpine
+FROM node:26-alpine
 
 WORKDIR /app
 # Run as the image's unprivileged "node" user, not root.
