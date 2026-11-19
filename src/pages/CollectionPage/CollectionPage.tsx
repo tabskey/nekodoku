@@ -1,11 +1,12 @@
 import { Button } from '../../components/atoms/Button/Button';
 import {
-  CAT_PALETTES,
   catPalette,
   silhouettePalette,
 } from '../../components/atoms/CatSprite/catSprites';
 import { ShopCatCard } from '../../components/molecules/ShopCatCard/ShopCatCard';
-import { shopCat } from '../../game/shop';
+import { catLook, levelConfig, worldCat } from '../../game/progression';
+import { SHOP_CATS, shopCat } from '../../game/shop';
+import { catName } from '../../i18n/catName';
 import { useText } from '../../i18n/useText';
 import { useProfile } from '../../state/profileContext';
 import './CollectionPage.css';
@@ -24,8 +25,13 @@ interface CollectionPageProps {
 export function CollectionPage({ onBack }: CollectionPageProps) {
   const text = useText();
   const { profile, dispatch } = useProfile();
-  const all = Object.keys(CAT_PALETTES);
-  const name = (id: string) => text.catNames[id] ?? id;
+  // The starting cat, the shop cats, then one cat per world reached so far.
+  const currentWorld = levelConfig(profile.levelsCleared + 1).world;
+  const worldCats = Array.from({ length: currentWorld }, (_, i) =>
+    worldCat(i + 1),
+  );
+  const all = ['white', ...SHOP_CATS.map((cat) => cat.id), ...worldCats];
+  const name = (id: string) => catName(text, id);
 
   return (
     <main className="collection-page">
@@ -45,6 +51,7 @@ export function CollectionPage({ onBack }: CollectionPageProps) {
                 name={text.unknownCat}
                 palette={SILHOUETTE}
                 pose="full"
+                body={catLook(id).body}
                 blink={false}
                 actionContent={inShop ? text.inShop : text.toRescue}
                 actionLabel={inShop ? text.inShopLabel : text.toRescueLabel}
@@ -60,6 +67,7 @@ export function CollectionPage({ onBack }: CollectionPageProps) {
               name={name(id)}
               palette={catPalette(id)}
               pose="full"
+              body={catLook(id).body}
               actionContent={inUse ? text.inUse : text.useCat}
               actionLabel={
                 inUse ? text.inUseLabel(name(id)) : text.useCatLabel(name(id))

@@ -1,3 +1,5 @@
+import { catLook, type CatBody } from '../../../game/progression';
+
 // Cat sprite data: one pixel map shared by every cat, plus one palette per cat.
 // Each character in the map is a role; the palette says which color that role gets.
 
@@ -91,7 +93,7 @@ const CHUBBY_BODY = [
   '..oooooooooooo..',
 ];
 
-export type CatBody = 'slim' | 'regular' | 'chubby';
+export type { CatBody };
 
 const BODIES: Record<CatBody, string[]> = {
   slim: SLIM_BODY,
@@ -283,5 +285,5 @@ export function silhouettePalette(color: string): CatPalette {
 
 /** The palette for a saved cat id, falling back to the default cat. */
 export function catPalette(id: string): CatPalette {
-  return CAT_PALETTES[id as CatId] ?? CAT_PALETTES.white;
+  return CAT_PALETTES[catLook(id).palette as CatId] ?? CAT_PALETTES.white;
 }

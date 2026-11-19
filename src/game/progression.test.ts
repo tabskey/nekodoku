@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { generate } from './generator';
 import { SHOP_CATS } from './shop';
 import {
+  catLook,
   levelConfig,
   startingCatCells,
   worldLength,
@@ -94,5 +95,38 @@ describe('worldCat', () => {
       expect(shopIds).not.toContain(worldCat(world));
     }
     expect(worldCat(1)).toBe(worldCat(1));
+  });
+
+  it('gives worlds past the named cats a generated cat of their own', () => {
+    expect(worldCat(3)).toBe('black');
+    expect(worldCat(4)).toBe('w4');
+    expect(worldCat(250)).toBe('w250');
+  });
+});
+
+describe('catLook', () => {
+  it('draws a named cat with its own palette', () => {
+    expect(catLook('orange')).toEqual({ palette: 'orange', body: 'regular' });
+    expect(catLook('gray').body).toBe('slim');
+    expect(catLook('white').body).toBe('chubby');
+  });
+
+  it('never repeats a look among the first 12 generated cats', () => {
+    const looks = new Set<string>();
+    for (let world = 4; world < 16; world++) {
+      const { palette, body } = catLook(worldCat(world));
+      looks.add(`${palette} ${body}`);
+    }
+    expect(looks.size).toBe(12);
+  });
+
+  it('numbers the generated cats from world 4', () => {
+    expect(catLook('w4').generated).toBe(0);
+    expect(catLook('w30').generated).toBe(26);
+  });
+
+  it('treats a hand-edited id as a named cat', () => {
+    expect(catLook('w2').generated).toBeUndefined();
+    expect(catLook('w').generated).toBeUndefined();
   });
 });

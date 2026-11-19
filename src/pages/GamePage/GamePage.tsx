@@ -22,6 +22,7 @@ import { Restoration } from '../../components/organisms/Restoration/Restoration'
 import { RulesPopover } from '../../components/organisms/RulesPopover/RulesPopover';
 import { helpCost, type Help } from '../../game/helps';
 import {
+  catLook,
   levelConfig,
   startingCatCells,
   worldCat,
@@ -30,6 +31,7 @@ import { STREAK_STEPS, type Reward } from '../../game/rewards';
 import { LIVES_PER_LEVEL } from '../../game/scoring';
 import type { SolvedPuzzle } from '../../game/types';
 import { formatTime } from '../../i18n/formatTime';
+import { catName } from '../../i18n/catName';
 import { useText } from '../../i18n/useText';
 import { createLevel, levelReducer } from '../../state/levelReducer';
 import { useLevelTimer } from '../../state/useLevelTimer';
@@ -365,12 +367,13 @@ function Level({
       {state.status === 'won' && restores && bossWorld !== undefined && (
         <Restoration
           palette={catPalette(worldCat(bossWorld))}
-          name={text.catNames[worldCat(bossWorld)]}
+          body={catLook(worldCat(bossWorld)).body}
+          name={catName(text, worldCat(bossWorld))}
           title={text.restoredTitle}
           message={text.restoredMessage(bossWorld)}
           yay={text.restoredYay}
           summary={summary}
-          catLabel={text.restoredCatLabel(text.catNames[worldCat(bossWorld)])}
+          catLabel={text.restoredCatLabel(catName(text, worldCat(bossWorld)))}
           backLabel={text.backToMap}
           replayLabel={text.replayRestoration}
           onBack={onOpenMap}
