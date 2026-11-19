@@ -1,4 +1,4 @@
-# Weekly update PRs; they run through the Deploy workflow's checks like any PR.
+# Update PRs; they run through the Deploy workflow's checks like any PR.
 version: 2
 updates:
   - package-ecosystem: npm
@@ -12,8 +12,13 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
+    groups:
+      # One PR for every action, major versions included: they live in one
+      # file and are checked together, instead of one PR per action.
+      actions:
+        patterns: ['*']
   - package-ecosystem: docker
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
