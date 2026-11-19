@@ -107,19 +107,40 @@ export function isSaveData(value: unknown): value is SaveData {
   );
 }
 
+/** Where a save that could not be read is kept, before a new profile replaces it. */
+export const UNREADABLE_KEY = `${SAVE_KEY}.unreadable`;
+
+/**
+ * A SaveData from stored text: migrated and checked. Nothing when it cannot be
+ * read: damaged, not a save, or from a newer version of the game.
+ */
+export function parseSave(raw: string): SaveData | undefined {
+  try {
+    const save = migrate(JSON.parse(raw));
+    return isSaveData(save) ? save : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 /**
  * Reads the profile. Migrates an older save, and falls back to a fresh
- * profile when there is none, it is unreadable, or storage is unavailable.
+ * profile when there is none, it cannot be read, or storage is unavailable. A
+ * save that cannot be read is copied aside first, because the fresh profile
+ * is about to be saved over it (an older copy of the game opening a save
+ * from a newer one would otherwise wipe it).
  */
 export function loadSave(store = browserStore()): SaveData {
   try {
     const raw = store?.getItem(SAVE_KEY);
     if (!raw) return defaultSave();
-    const save = migrate(JSON.parse(raw));
-    return isSaveData(save) ? save : defaultSave();
+    const save = parseSave(raw);
+    if (save) return save;
+    store?.setItem(UNREADABLE_KEY, raw);
   } catch {
-    return defaultSave();
+    // Storage blocked or full: the game runs on with a fresh profile.
   }
+  return defaultSave();
 }
 
 /** Writes the profile. Returns false when storage is unavailable or full. */

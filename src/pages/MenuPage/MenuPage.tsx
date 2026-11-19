@@ -9,6 +9,7 @@ import { levelConfig, worldLength, worldStart } from '../../game/progression';
 import { streakPercent } from '../../game/rewards';
 import { formatTime } from '../../i18n/formatTime';
 import { useText } from '../../i18n/useText';
+import { useUpdateReady } from '../../pwa/update';
 import { useProfile } from '../../state/profileContext';
 import './MenuPage.css';
 
@@ -41,6 +42,7 @@ export function MenuPage({
   const length = worldLength(world);
   const bossSize = levelConfig(first + length - 1).size;
   const bestTime = profile.bestTimes[size];
+  const updateReady = useUpdateReady();
   // The cat's words: one at random on opening, and another every few seconds.
   const [hello, setHello] = useState(() =>
     Math.floor(Math.random() * text.catHellos.length),
@@ -152,8 +154,19 @@ export function MenuPage({
         <Button variant="card" onClick={onOpenCollection}>
           {text.catsButton}
         </Button>
-        <Button variant="card" onClick={onOpenOptions}>
+        <Button
+          variant="card"
+          onClick={onOpenOptions}
+          aria-label={
+            updateReady
+              ? `${text.optionsButton}: ${text.updateTitle}`
+              : undefined
+          }
+        >
           {text.optionsButton}
+          {updateReady && (
+            <span className="menu-page-update-dot" aria-hidden="true" />
+          )}
         </Button>
       </nav>
       {bestTime !== undefined && (

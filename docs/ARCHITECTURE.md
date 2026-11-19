@@ -44,7 +44,7 @@ If URL routes are ever added, use `HashRouter` (`/#/world/2`) or copy `index.htm
 
 The app is a PWA. `public/manifest.webmanifest` and the icons in `public/icons/` make it installable; the icons are placeholders scaled from a cat head by whole multiples.
 
-The service worker is hand-written in `src/sw.js`, with no plugin. After each build, a small plugin in `vite.config.ts` lists every file in `dist/`, fills that list and a cache name (a hash of the build) into the worker and writes `dist/sw.js`. On install the worker caches every file, so the game plays offline from the first visit, the puzzle worker chunk included. It answers every request from the cache first, and on activate it deletes caches from older builds. It does not call `skipWaiting`: a new build takes over only once every open copy of the game is closed. The worker is registered in `main.tsx` in production builds only.
+The service worker is hand-written in `src/sw.js`, with no plugin. After each build, a small plugin in `vite.config.ts` lists every file in `dist/`, fills that list and a cache name (a hash of the build) into the worker and writes `dist/sw.js`. On install the worker caches every file, so the game plays offline from the first visit, the puzzle worker chunk included. It answers every request from the cache first, and on activate it deletes caches from older builds. It does not call `skipWaiting` on its own: a new build takes over only once every open copy of the game is closed, which on a phone can take weeks. So `src/pwa/update.ts` watches for a version waiting, and Options shows "Update the game" (with a dot on the menu's Options button) until the player takes it. The page sends the worker a `'skip'` message, then reloads when the new version has taken over. The button is not shown in the Options opened from inside a level, because the reload would lose the game. The worker is registered by `registerServiceWorker()` in `main.tsx`, in production builds only.
 
 ### Local container
 
@@ -77,6 +77,7 @@ src/
   pages/         MenuPage, WorldPage, GamePage, ShopPage, CollectionPage, OptionsPage
   i18n/          pt.ts, en.ts and the useText hook
   audio/         sound effects synthesized with the Web Audio API
+  pwa/           service worker registration and the update offer
   assets/        SVG sprites
   sw.js          service worker template, filled in at build time
 public/          manifest.webmanifest and icons/
@@ -209,7 +210,7 @@ Reducers call into `game/` for decisions and contain no rule logic of their own.
 - `schemaVersion` starts at 1. Any change to the shape adds a migration function in `storage/migrations.ts`; never read an old save without migrating it. Version 2 added `options.music`, on by default.
 - The profile is saved after every profile action. A level in progress is never saved, by design: `LevelState` lives only in memory and is discarded when the level is closed (see `docs/GAME_RULES.md`).
 - Reads and writes are wrapped in `try/catch`. If storage is unavailable the game still runs with an in-memory profile.
-- Two copies of the game can be open on one device (the installed app and a browser tab share storage). When one saves, the others get the browser's `storage` event and reload the profile, so a copy left open never overwrites newer progress with its old one.
+- Two copies of the game can be open on one device (the installed app and a browser tab share storage). When one saves, the others get the browser's `storage` event and reload the profile, so a copy left open never overwrites newer progress with its old one. The listener ignores a save it cannot read (one from a newer version), and a save that cannot be read at load is first copied to `nekodoku.save.unreadable` before a fresh profile replaces it, so an older copy of the game never wipes a newer save.
 - A save, or a backup code, with more than 10,000 levels cleared is rejected as invalid (`MAX_LEVELS_CLEARED`): finding a level's world walks the worlds one by one, and a hand-edited huge count would freeze the game on every launch.
 - Data lasts until the browser's site data is cleared. iOS Safari may also clear it for sites not opened for a while unless the app is installed to the home screen, which is why the PWA install and the backup code both matter.
 

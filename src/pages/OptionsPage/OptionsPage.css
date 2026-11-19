@@ -110,3 +110,23 @@
   flex-wrap: wrap;
   gap: 12px;
 }
+
+/* The update offer: a panel on top, so it is the first thing seen. */
+.update-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: var(--panel);
+}
+
+.update-section h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.update-section-hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}

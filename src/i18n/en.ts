@@ -147,6 +147,9 @@ export const en: Text = {
   resetBackup: 'Copy backup first',
   resetConfirm: 'Yes, erase everything',
   resetDone: 'Done! All clean. Ready to start again?',
+  updateTitle: 'New version!',
+  updateHint: 'A new version of the game is ready. Your progress stays saved.',
+  updateButton: 'Update the game',
   rulesButton: 'Rules',
   rulesTitle: 'Rules',
   rules: [

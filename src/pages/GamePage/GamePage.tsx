@@ -133,7 +133,7 @@ export function GamePage({ level, onOpenMenu, ...levelProps }: GamePageProps) {
   return (
     <>
       {optionsOpen && (
-        <OptionsPage onBack={() => setOptionsOpen(false)} canReset={false} />
+        <OptionsPage onBack={() => setOptionsOpen(false)} inLevel />
       )}
       <main className="game-page" hidden={optionsOpen}>
         <header className="game-page-header">
