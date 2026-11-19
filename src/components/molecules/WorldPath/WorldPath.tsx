@@ -5,6 +5,7 @@ import {
   type CSSProperties,
   type ReactNode,
 } from 'react';
+import { SpeechBubble } from '../../atoms/SpeechBubble/SpeechBubble';
 import { decorations } from './decorations';
 import type { MapPalette } from './mapPalettes';
 import type { WorldRoute } from '../../../game/biomes';
@@ -47,6 +48,12 @@ interface WorldPathProps {
   catFrom?: number;
   /** Called while the cat stands on `catAt`. */
   onArrive?: () => void;
+  /** What the cat says in a speech bubble above it, while it stands still. */
+  bubble?: string;
+  /** Called when the cat is tapped. It covers the tile's top, so its tile opens from the strip left below. */
+  onCatTap?: () => void;
+  /** Spoken name of the tap on the cat, e.g. "Pet your cat". */
+  catLabel?: string;
 }
 
 // Time for the cat to move from one dot to the next.
@@ -54,6 +61,10 @@ const DOT_MS = 70;
 // The 48x54 cat stands centered on the dot, its feet just below it.
 const CAT_HALF_WIDTH = 24;
 const CAT_FEET = 48;
+// The speech bubble: its bottom sits 58 px over the cat's feet, and it is
+// kept within 75 px of the map's sides (half its widest).
+const BUBBLE_GAP = 58;
+const BUBBLE_HALF = 75;
 
 /** The map of one world: its levels along a winding path, ending at its Boss. */
 export function WorldPath({
@@ -68,6 +79,9 @@ export function WorldPath({
   catAt = 0,
   catFrom = catAt,
   onArrive,
+  bubble,
+  onCatTap,
+  catLabel,
 }: WorldPathProps) {
   const { width, height, points, tilePoints, decor } = useMemo(() => {
     const layout = pathLayout(tiles.length, route);
@@ -209,6 +223,45 @@ export function WorldPath({
           >
             {cat(stand.at !== target)}
           </div>
+        )}
+        {cat && onCatTap && stand.at === target && (
+          <button
+            type="button"
+            className="world-path-pet"
+            aria-label={catLabel}
+            style={{
+              left: catPoint.x - CAT_HALF_WIDTH,
+              top: catPoint.y - CAT_FEET,
+            }}
+            onClick={onCatTap}
+          />
+        )}
+        {cat && bubble && stand.at === target && (
+          <SpeechBubble
+            tail="down"
+            role="status"
+            className="world-path-say"
+            style={
+              {
+                left: Math.min(
+                  Math.max(catPoint.x, BUBBLE_HALF),
+                  width - BUBBLE_HALF,
+                ),
+                top: catPoint.y - BUBBLE_GAP,
+                // How far the tail moves back under the cat when the bubble
+                // had to stay inside the map.
+                '--shift': `${
+                  catPoint.x -
+                  Math.min(
+                    Math.max(catPoint.x, BUBBLE_HALF),
+                    width - BUBBLE_HALF,
+                  )
+                }px`,
+              } as CSSProperties
+            }
+          >
+            {bubble}
+          </SpeechBubble>
         )}
       </div>
     </div>

@@ -50,20 +50,24 @@ export const pt = {
     calico: 'Tricolor',
   } as Record<string, string>,
   appName: 'Nekodoku',
-  tagline: 'Um gatinho por linha, coluna e cor.',
-  play: 'Jogar',
+  tagline: 'Um gatinho por linha, coluna e cor... e ninguém encostando!',
+  play: 'Bora jogar!',
   worldLevel: (world: number, level: number) =>
     `Mundo ${world} · fase ${level}`,
-  worldBoss: (world: number) => `Mundo ${world} · Boss`,
-  towardBoss: 'Rumo ao Boss',
+  worldBoss: (world: number) => `Mundo ${world} · o Boss te espera!`,
+  towardBoss: 'Rumo ao Boss!',
   bossInfo: (size: number) =>
-    `Boss do mundo: tabuleiro ${size}x${size} e um gatinho pra resgatar.`,
+    `No fim, um tabuleiro ${size}x${size} e um fantasminha esperando pra voltar a ser gatinho!`,
   catsButton: 'Gatinhos',
   bestTime: (size: number, time: string) =>
-    `Recorde no ${size}x${size}: ${time}`,
-  mapHint: 'Toque numa fase liberada pra o gatinho andar até ela.',
-  playLevel: (level: number) => `Jogar fase ${level}`,
-  playBoss: 'Enfrentar o chefe',
+    `Recorde no ${size}x${size}: ${time}. Dá pra bater?`,
+  mapHint:
+    'Toque numa fase liberada e o gatinho vai andando até ela. Toque de novo pra entrar!',
+  // What the cat says when you tap its head on the map, one at a time.
+  mapSays: ['Miau!', 'Vamos!', 'Por aqui!', 'Bora!', 'Cócegas!', 'Hihi!'],
+  petCat: 'Fazer carinho no gatinho',
+  playLevel: (level: number) => `Bora pra fase ${level}!`,
+  playBoss: 'Bora enfrentar o Boss!',
   menuButton: 'Menu',
   worldPath: (world: number) => `Caminho do mundo ${world}`,
   tileLabel: (level: number, state: 'cleared' | 'current' | 'locked') =>
@@ -71,12 +75,20 @@ export const pt = {
   bossTile: 'BOSS',
   bossTileLabel: (state: 'cleared' | 'current' | 'locked') =>
     `Chefe: ${{ cleared: 'vencido', current: 'atual', locked: 'bloqueado' }[state]}`,
-  selectedCat: 'Seu gato',
+  selectedCat: 'Seu gatinho',
+  // What the cat says in its speech bubble on the menu, one at a time.
+  catHellos: [
+    'Oi!',
+    'Miau!',
+    'Bem-vindo de volta!',
+    'Ronc ronc...',
+    'Bora brincar?',
+  ],
   previousWorld: 'Mundo anterior',
   nextWorld: 'Próximo mundo',
   worldDots: (world: number, total: number) => `Mundo ${world} de ${total}`,
   lockedWorld: (previous: number) =>
-    `Vença o Chefe do Mundo ${previous} para abrir.`,
+    `Shh, esse mundo ainda tá dormindo. Vença o Boss do Mundo ${previous} pra acordar!`,
   bestScoreNote: (score: number) => `recorde ${score}`,
   worldLabel: (world: number) => `Mundo ${world}`,
   boss: 'Chefe',

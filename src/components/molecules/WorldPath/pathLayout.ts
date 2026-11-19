@@ -9,9 +9,10 @@ import type { WorldRoute } from '../../../game/biomes';
 // Distance between two dots; the cat moves one dot per step.
 export const DOT_PX = 12;
 const WIDTH = 288;
-// Room above the top row for the Boss's cat, and below the bottom row for
-// the best-score note.
-const TOP_PX = 60;
+// Room above the top row for the Boss's cat and for the speech bubble of a cat
+// standing on the Boss tile (37 px tall, 58 px above the cat's feet), and
+// below the bottom row for the best-score note.
+const TOP_PX = 96;
 const BOTTOM_PX = 48;
 
 interface Cell {

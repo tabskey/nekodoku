@@ -11,14 +11,14 @@ The canvas is private to the owner. The first two rows are the night mode; the t
 
 | Artboard | What it shows |
 | --- | --- |
-| Menu inicial | Logo, the selected cat (to be shown in full body, facing the player), play button, path to the next Boss, links to shop, cats and options |
+| Menu inicial | Logo, the selected cat (to be shown in full body, facing the player, saying something in a pixel speech bubble in the top right corner of its card, made after the mockup: "Oi!", "Miau!", "Bem-vindo de volta!"... one at random on opening, and another every 7 seconds), play button, path to the next Boss, links to shop, cats and options |
 | Boss 12x12 | The largest board, playable: 12 zones (three of them striped), the world's scenery strip above the board with the ghost cat waiting at the top right, and the restoration sequence when the Boss is beaten. A Tweak switches the scenery between three world palettes |
 | Tipos de corpo | The three body types (slim, regular, chubby) under the same head, each in a different color and as a black silhouette, on the 16x20 canvas |
 | Mapa da praia (diurno) | The beach biome in day mode, to compare biomes: sand ground, sea with foam and waves along the right edge, palm trees, starfish and shells, a wooden-brown path and a different path layout. Same walking cat and tiles as the main map |
 | Trocar de mundo (arrastar) | The world map with world switching: swipe the map sideways (or use the arrows beside the title) to move between World 1 (cleared: every tile done with its best score, the restored cat beside the Boss), World 2 (in progress: ghost waiting at the Boss) and World 3 (locked overlay). Dots under the title show the current world |
 | Opções | Options screen, interactive: language (Portuguese or English, switches the screen's text live), mode (device, night, day, switches the screen's colors live), sound effects and auto-mark switches, backup code (create shows a sample code; use shows the paste field) and the button to About |
 | Sobre | About the game: who made it, why it exists and contact links (GitHub, LinkedIn, e-mail). All personal text is a placeholder for the owner to fill in |
-| Mapa do mundo | Interactive world map in the style of classic platform-game maps: winding path of dots, level tiles (cleared, open, locked), the Boss tile with the ghost beside it, and the selected cat walking tile to tile in a two-frame side-view cycle. Tapping an open tile makes the cat walk there; a demo button simulates clearing the current level |
+| Mapa do mundo | Interactive world map in the style of classic platform-game maps: winding path of dots, level tiles (cleared, open, locked), the Boss tile with the ghost beside it, and the selected cat walking tile to tile in a two-frame side-view cycle. Tapping the cat makes it say something in a pixel speech bubble (the same bubble as the menu's) for about 2.5 s, made after the mockup. Tapping an open tile makes the cat walk there; a demo button simulates clearing the current level |
 | Jogo (fase 5x5) | A playable 5x5 level: lives, score, timer, coins, silhouette strip, rules popover, Reveal and Eraser |
 | Lojinha | Shop cats priced in fish, a progress-locked cat, helps priced in coins |
 | Assets base | Sprites, zone colors, interface colors and typefaces |

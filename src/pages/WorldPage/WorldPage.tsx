@@ -18,6 +18,7 @@ import {
 import { worldRoute, worldScene } from '../../game/biomes';
 import { useText } from '../../i18n/useText';
 import { useProfile } from '../../state/profileContext';
+import { useCatSays } from '../../state/useCatSays';
 import './WorldPage.css';
 
 // A horizontal drag longer than this changes world (see Board input in
@@ -53,6 +54,8 @@ export function WorldPage({
   const length = worldLength(world);
   const scene = worldScene(world);
   const route = useMemo(() => worldRoute(world), [world]);
+  // Tapping the cat's head makes it say something for a moment.
+  const { said, say, hush } = useCatSays(text.mapSays);
   // The tile tapped: the cat walks there. A second tap on it opens the level
   // once the cat stands on it.
   const [destination, setDestination] = useState<number>();
@@ -74,6 +77,7 @@ export function WorldPage({
     setDestination(undefined);
     setOpening(false);
     setWalkStart(undefined);
+    hush();
   }
   function handleUp(event: PointerEvent<HTMLElement>) {
     if (swipeStart.current === undefined) return;
@@ -193,6 +197,7 @@ export function WorldPage({
           seed={world}
           route={route}
           onSelect={(i) => {
+            hush();
             if (i === catTile) setOpening(true);
             else {
               setDestination(i);
@@ -211,6 +216,9 @@ export function WorldPage({
                   />
                 )
           }
+          bubble={said}
+          onCatTap={say}
+          catLabel={text.petCat}
           catAt={catTile}
           catFrom={catFrom}
           onArrive={() => {

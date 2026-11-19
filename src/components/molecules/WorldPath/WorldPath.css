@@ -181,3 +181,20 @@
 .world-path-cat-left {
   transform: scaleX(-1);
 }
+
+/* An invisible tap area over the whole cat, 48x54. */
+.world-path-pet {
+  position: absolute;
+  width: 48px;
+  height: 54px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Centered over the cat, with its bottom edge at the point; taps go through. */
+.world-path-say {
+  translate: -50% -100%;
+  pointer-events: none;
+}

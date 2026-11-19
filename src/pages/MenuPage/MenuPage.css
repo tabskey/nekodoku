@@ -41,15 +41,26 @@
   text-align: center;
 }
 
+.menu-page-cat-wrap {
+  position: relative;
+  align-self: center;
+}
+
 .menu-page-cat {
   display: flex;
-  align-self: center;
   align-items: center;
   justify-content: center;
   width: 200px;
   height: 200px;
   background: var(--cat-card);
   box-shadow: 8px 8px 0 var(--cat-card-shadow);
+}
+
+.menu-page-bubble {
+  /* Inside the card's top right corner, just above the cat's right ear, with
+     its bottom edge fixed so a longer message grows upward, not over the cat. */
+  right: 6px;
+  bottom: calc(100% - 36px);
 }
 
 .menu-page-play {

@@ -1,12 +1,17 @@
+import { useEffect, useState } from 'react';
 import { Button } from '../../components/atoms/Button/Button';
 import { CatSprite } from '../../components/atoms/CatSprite/CatSprite';
 import { catPalette } from '../../components/atoms/CatSprite/catSprites';
 import { CurrencyBadge } from '../../components/atoms/CurrencyBadge/CurrencyBadge';
+import { SpeechBubble } from '../../components/atoms/SpeechBubble/SpeechBubble';
 import { levelConfig, worldLength, worldStart } from '../../game/progression';
 import { formatTime } from '../../i18n/formatTime';
 import { useText } from '../../i18n/useText';
 import { useProfile } from '../../state/profileContext';
 import './MenuPage.css';
+
+// How long the cat keeps one thing to say.
+const HELLO_MS = 7000;
 
 // Past this many tiles the Boss strip drops the level numbers, which no
 // longer fit.
@@ -34,6 +39,22 @@ export function MenuPage({
   const length = worldLength(world);
   const bossSize = levelConfig(first + length - 1).size;
   const bestTime = profile.bestTimes[size];
+  // The cat's words: one at random on opening, and another every few seconds.
+  const [hello, setHello] = useState(() =>
+    Math.floor(Math.random() * text.catHellos.length),
+  );
+  useEffect(() => {
+    const total = text.catHellos.length;
+    const timer = window.setInterval(
+      // Always a different one: skip 1 to total - 1 places ahead.
+      () =>
+        setHello(
+          (h) => (h + 1 + Math.floor(Math.random() * (total - 1))) % total,
+        ),
+      HELLO_MS,
+    );
+    return () => window.clearInterval(timer);
+  }, [text.catHellos.length]);
 
   return (
     <main className="menu-page">
@@ -52,13 +73,19 @@ export function MenuPage({
         <h1>{text.appName}</h1>
         <p>{text.tagline}</p>
       </header>
-      <div className="menu-page-cat">
-        <CatSprite
-          palette={catPalette(profile.selectedCat)}
-          pose="full"
-          pixelSize={7}
-          label={text.selectedCat}
-        />
+      <div className="menu-page-cat-wrap">
+        <div className="menu-page-cat">
+          <CatSprite
+            palette={catPalette(profile.selectedCat)}
+            pose="full"
+            pixelSize={7}
+            label={text.selectedCat}
+          />
+        </div>
+        {/* The cat says hello, in the top right corner of its card. */}
+        <SpeechBubble className="menu-page-bubble">
+          {text.catHellos[hello % text.catHellos.length]}
+        </SpeechBubble>
       </div>
       <button type="button" className="menu-page-play" onClick={onOpenWorld}>
         <span className="menu-page-play-label">{text.play}</span>

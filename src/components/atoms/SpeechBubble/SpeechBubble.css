@@ -1,0 +1,58 @@
+/* The drop-shadow follows the notched shape, with no blur. The bubble bobs
+   like the ghost does. */
+.speech-bubble {
+  position: absolute;
+  width: max-content;
+  max-width: 150px;
+  color: var(--card);
+  filter: drop-shadow(0 4px 0 var(--card-shadow));
+  animation: float 1.6s steps(2) infinite;
+}
+
+.speech-bubble p {
+  margin: 0;
+  padding: 10px 14px;
+  background: var(--card);
+  color: var(--text-on-light);
+  font-family: var(--font-display);
+  font-size: var(--display-small);
+  line-height: 1.4;
+  text-align: center;
+  text-transform: uppercase;
+  clip-path: polygon(
+    4px 0,
+    calc(100% - 4px) 0,
+    calc(100% - 4px) 4px,
+    100% 4px,
+    100% calc(100% - 4px),
+    calc(100% - 4px) calc(100% - 4px),
+    calc(100% - 4px) 100%,
+    4px 100%,
+    4px calc(100% - 4px),
+    0 calc(100% - 4px),
+    0 4px,
+    4px 4px
+  );
+}
+
+.speech-bubble-tail {
+  position: absolute;
+  bottom: -8px;
+  display: block;
+}
+
+.speech-bubble-left .speech-bubble-tail {
+  left: 12px;
+}
+
+/* Under the middle of the bubble, moved by --shift when the bubble had to
+   stay inside its area. */
+.speech-bubble-down .speech-bubble-tail {
+  left: calc(50% + var(--shift, 0px) - 6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .speech-bubble {
+    animation: none;
+  }
+}
