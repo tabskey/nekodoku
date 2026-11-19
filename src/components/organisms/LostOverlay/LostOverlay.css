@@ -1,0 +1,145 @@
+/* Over the page, ignoring taps except on the button. Timings: the veil comes
+   in at once, the ghost and the button show after 0.4 s (the last heart's
+   shake is done), the ghost floats for 2.6 s. All in hard steps, no easing,
+   to stay pixel art. */
+.lost-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* The dark veil, so the pale ghost and the button stand out on any zone
+   color. It stays until the player tries again. */
+.lost-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--veil);
+  opacity: 0.6;
+  animation: lost-overlay-in 0.4s steps(2) both;
+}
+
+.lost-overlay-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 0 24px;
+}
+
+/* Reserves the ghost's space, so the button does not move while it rises. */
+.lost-overlay-ghost {
+  height: 128px;
+}
+
+.lost-overlay-fade {
+  animation: lost-overlay-fade 2.6s 0.4s both;
+}
+
+/* Up 143 px in 13 steps of 11 px, whole pixels. */
+.lost-overlay-rise {
+  animation: lost-overlay-rise 2.6s steps(13) 0.4s both;
+}
+
+/* A slow sway, 0, 4, 8, 4 px. */
+.lost-overlay-sway {
+  display: flex;
+  animation: lost-overlay-sway 1.2s steps(2) infinite;
+}
+
+/* The shadow stays on the ground while the ghost rises, tucked under its feet. */
+.lost-overlay-shadow {
+  display: block;
+  margin: -8px auto 0;
+  color: var(--veil-shadow);
+  opacity: 0.7;
+}
+
+.lost-overlay-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  pointer-events: auto;
+  animation: lost-overlay-in 0.2s steps(2) 0.4s both;
+}
+
+.lost-overlay-title,
+.lost-overlay-line {
+  margin: 0;
+  color: var(--veil-text);
+  text-align: center;
+}
+
+.lost-overlay-title {
+  font-family: var(--font-display);
+  font-size: var(--display-large);
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.lost-overlay-line {
+  margin-top: 8px;
+  font-size: 18px;
+}
+
+.lost-overlay-actions .button {
+  min-width: 220px;
+  min-height: 56px;
+  text-transform: uppercase;
+}
+
+/* From nothing to the style's own value. */
+@keyframes lost-overlay-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes lost-overlay-rise {
+  to {
+    transform: translateY(-143px);
+  }
+}
+
+@keyframes lost-overlay-sway {
+  50% {
+    transform: translateX(8px);
+  }
+}
+
+/* Appears at once, holds, then fades out in five steps. */
+@keyframes lost-overlay-fade {
+  0% {
+    opacity: 0;
+    animation-timing-function: steps(1, start);
+  }
+  8% {
+    opacity: 1;
+  }
+  30% {
+    opacity: 1;
+    animation-timing-function: steps(5, end);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Reduced motion: no ghost and no animation; the veil, the message and the
+   button are shown at once. */
+@media (prefers-reduced-motion: reduce) {
+  .lost-overlay-ghost {
+    display: none;
+  }
+
+  .lost-overlay::before,
+  .lost-overlay-actions {
+    animation: none;
+  }
+}

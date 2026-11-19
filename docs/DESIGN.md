@@ -72,7 +72,7 @@ Cats come in two poses. The head is the icon: it is what appears on the board, i
 
 ### Lost level
 
-When the last life is lost, the ghost appears in the middle of the screen over a flat pixel shadow, floats up 143 px in 13 hard steps (whole pixels) with a slow 8 px sway, and fades out in five opacity steps, about 2.6 s after a 0.4 s pause. A plum veil at 50% fades in and out with it, so the pale ghost shows on any zone color. It never blocks a tap, and with reduced motion it is not shown. The fade is stepped, not smooth, to stay pixel art. Decided by the owner.
+When the last life is lost, a dark plum veil (`--veil`, 60%) comes over the page and stays until the player tries again, in two steps. After 0.4 s the ghost appears in the middle of the screen over a flat pixel shadow, floats up 143 px in 13 hard steps (whole pixels) with a slow 8 px sway, and fades out in five opacity steps, while the message (a cat-flavored title and a friendly line, one of four pairs picked from the time on the clock, so repeated losses do not read the same) and the Try again button show in the middle of the screen, just below where the ghost stood. The veil makes the pale ghost stand out on any zone color and draws the eye to the button. Only the button takes taps: the header stays reachable under the veil. With reduced motion there is no ghost and nothing animates. The fade is stepped, not smooth, to stay pixel art. Decided by the owner.
 
 ### Restoration sequence
 

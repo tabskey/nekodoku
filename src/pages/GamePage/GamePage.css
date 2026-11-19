@@ -85,6 +85,26 @@
   color: var(--text-muted);
 }
 
+/* The win message: a gold title and a friendly line, centered. */
+.game-page-title,
+.game-page-line {
+  margin: 0;
+  text-align: center;
+}
+
+.game-page-title {
+  color: var(--gold-text);
+  font-family: var(--font-display);
+  font-size: var(--display-large);
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.game-page-line {
+  margin-top: 4px;
+  color: var(--text-muted);
+}
+
 .game-page-helps {
   display: flex;
   flex-wrap: wrap;

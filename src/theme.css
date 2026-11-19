@@ -60,6 +60,11 @@
   --cat-card-shadow: #c98594;
   /* Behind the restoration, cream in both modes for the black silhouette. */
   --restore-bg: #f6ecd4;
+  /* Over the page when a level is lost: a plum veil, with cream text and a
+     darker shadow, the same in both modes so the pale ghost always shows. */
+  --veil: #2a1f3d;
+  --veil-text: #f6ecd4;
+  --veil-shadow: #120c20;
   /* The x of a rejected cat, on a zone color in both modes. */
   --mistake: #b3261e;
 

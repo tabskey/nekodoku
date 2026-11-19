@@ -3,7 +3,13 @@
 export const pt = {
   levelLabel: (level: number) => `Fase ${level}`,
   loading: 'Preparando o tabuleiro…',
-  won: 'Resolvido!',
+  // A title and a line, one pair shown at random for each won level.
+  wonMessages: [
+    { title: 'Miau-ravilha!', line: 'Cada gatinho no seu cantinho.' },
+    { title: 'Ronrom garantido!', line: 'Os gatinhos adoraram o tabuleiro.' },
+    { title: 'Patinhas pro alto!', line: 'Ninguém encostou em ninguém.' },
+    { title: 'Gatíssimo!', line: 'Esse tabuleiro foi moleza pra você.' },
+  ],
   shopButton: 'Lojinha',
   shopTitle: 'Loja',
   todaysCats: 'Gatos de hoje',
@@ -133,7 +139,22 @@ export const pt = {
   eraser: 'Borracha',
   helpLabel: (name: string, cost: number) =>
     cost === 0 ? `${name}, grátis` : `${name}, ${cost} moedas`,
-  lost: 'Acabaram as vidas.',
+  // A title and a line, one pair shown at random for each lost level.
+  lostMessages: [
+    {
+      title: 'Miau... sem vidas!',
+      line: 'Os gatinhos foram tirar uma soneca.',
+    },
+    { title: 'Ops, escorregou!', line: 'Até gato cai de pé... às vezes.' },
+    {
+      title: 'Os gatinhos fugiram!',
+      line: 'Mas eles voltam se você chamar de novo.',
+    },
+    {
+      title: 'Fim das vidas!',
+      line: 'Respira, faz um carinho e tenta outra vez.',
+    },
+  ],
   retry: 'Tentar de novo',
   lives: (lives: number) => (lives === 1 ? '1 vida' : `${lives} vidas`),
   score: (score: number) => `${score} pontos`,

@@ -17,7 +17,7 @@ import { ProgressStrip } from '../../components/molecules/ProgressStrip/Progress
 import { Board } from '../../components/organisms/Board/Board';
 import { OptionsPage } from '../OptionsPage/OptionsPage';
 import { useLevelAudio } from './useLevelAudio';
-import { LostGhost } from '../../components/organisms/LostGhost/LostGhost';
+import { LostOverlay } from '../../components/organisms/LostOverlay/LostOverlay';
 import { Restoration } from '../../components/organisms/Restoration/Restoration';
 import { RulesPopover } from '../../components/organisms/RulesPopover/RulesPopover';
 import { helpCost, type Help } from '../../game/helps';
@@ -214,6 +214,13 @@ function Level({
   const canZoom = puzzle.size >= ZOOM_FROM_SIZE;
   const [zoomed, setZoomed] = useState(false);
   const playing = state.status === 'playing';
+  // A different message from time to time: the clock stops at the end of the
+  // level, so it is steady while the message is shown, and needs no random
+  // number.
+  const lostMessage =
+    text.lostMessages[state.elapsedSeconds % text.lostMessages.length];
+  const wonMessage =
+    text.wonMessages[state.elapsedSeconds % text.wonMessages.length];
   const audio = useLevelAudio(state, {
     music: options.music,
     boss: bossWorld !== undefined,
@@ -336,20 +343,22 @@ function Level({
       )}
       {state.status === 'won' && (
         <div className="game-page-end">
-          <p className="game-page-status">{text.won}</p>
+          <div role="status">
+            <p className="game-page-title">{wonMessage.title}</p>
+            <p className="game-page-line">{wonMessage.line}</p>
+          </div>
           <p className="game-page-score">{text.finalScore(state.score)}</p>
           {reward && <RewardLine reward={reward} />}
           <Button onClick={onNextLevel}>{text.nextLevel}</Button>
         </div>
       )}
-      {state.status === 'lost' && <LostGhost />}
       {state.status === 'lost' && (
-        <div className="game-page-end">
-          <p className="game-page-status">{text.lost}</p>
-          <Button onClick={() => dispatch({ type: 'restart' })}>
-            {text.retry}
-          </Button>
-        </div>
+        <LostOverlay
+          title={lostMessage.title}
+          line={lostMessage.line}
+          retryLabel={text.retry}
+          onRetry={() => dispatch({ type: 'restart' })}
+        />
       )}
     </>
   );

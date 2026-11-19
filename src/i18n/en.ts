@@ -3,7 +3,12 @@ import type { Text } from './pt';
 export const en: Text = {
   levelLabel: (level) => `Level ${level}`,
   loading: 'Getting the board ready…',
-  won: 'Solved!',
+  wonMessages: [
+    { title: 'Purr-fect!', line: 'Every cat in its cozy corner.' },
+    { title: 'Purring loudly!', line: 'The cats loved the board.' },
+    { title: 'Paws up!', line: 'Nobody touched anybody.' },
+    { title: 'Cat-tastic!', line: 'That board was a piece of cake.' },
+  ],
   shopButton: 'Shop',
   shopTitle: 'Shop',
   todaysCats: "Today's cats",
@@ -125,7 +130,18 @@ export const en: Text = {
   eraser: 'Eraser',
   helpLabel: (name, cost) =>
     cost === 0 ? `${name}, free` : `${name}, ${cost} coins`,
-  lost: 'Out of lives.',
+  lostMessages: [
+    { title: 'Meow... out of lives!', line: 'The cats went off for a nap.' },
+    { title: 'Oops, slipped!', line: 'Cats land on their feet... sometimes.' },
+    {
+      title: 'The cats ran away!',
+      line: 'They will come back if you call again.',
+    },
+    {
+      title: 'Out of lives!',
+      line: 'Take a breath, give a pet and try again.',
+    },
+  ],
   retry: 'Try again',
   lives: (lives) => (lives === 1 ? '1 life' : `${lives} lives`),
   score: (score) => `${score} points`,
