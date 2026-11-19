@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
   CAT_POSES,
-  FULL_BODIES,
   ROLE_BY_CHAR,
   type CatBody,
   type CatPalette,
@@ -13,7 +12,7 @@ interface CatSpriteProps {
   palette: CatPalette;
   /** 'head' is the icon (default); 'full' is the whole sitting cat; 'walk' is the side view on the map. */
   pose?: CatPose;
-  /** Body type of the 'full' pose. The head and walk poses are the same for every body. */
+  /** Body type of the 'full' and 'walk' poses. The head is the same for every body. */
   body?: CatBody;
   /** Size of one sprite pixel in CSS pixels. The head is 12x12 sprite pixels, the full cat 16x18. */
   pixelSize?: number;
@@ -101,7 +100,7 @@ export function CatSprite({
   const closed = useBlink(blink);
   const showHappy = useHappy(happy);
   const stepping = useStep(walking);
-  const frames = pose === 'full' ? FULL_BODIES[body] : CAT_POSES[pose];
+  const frames = CAT_POSES[pose][body];
   const rows =
     stepping && frames.step
       ? frames.step
