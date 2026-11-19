@@ -55,12 +55,18 @@ export function applyUpdate() {
   waiting.postMessage('skip');
 }
 
-function subscribe(listener: () => void) {
+/** Calls `listener` when a new version starts waiting. Returns how to stop. */
+export function subscribeToUpdate(listener: () => void) {
   listeners.add(listener);
   return () => listeners.delete(listener);
 }
 
+/** True while a new version of the game is waiting to take over. */
+export function isUpdateReady(): boolean {
+  return waiting !== undefined;
+}
+
 /** True while a new version of the game is ready to take over. */
 export function useUpdateReady(): boolean {
-  return useSyncExternalStore(subscribe, () => waiting !== undefined);
+  return useSyncExternalStore(subscribeToUpdate, isUpdateReady);
 }
