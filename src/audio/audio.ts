@@ -84,6 +84,9 @@ export function startMusic(id: SongId, skipIntro = false) {
   const tick = () => {
     const audio = ready();
     if (!audio) {
+      // A song that plays once is over if the page was hidden meanwhile:
+      // starting it again on return would replay an accent that no longer fits.
+      if (song.once && playing) stopMusic();
       playing = false;
       return;
     }

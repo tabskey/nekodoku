@@ -11,8 +11,9 @@ import './OptionsPage.css';
 interface OptionsPageProps {
   onBack: () => void;
   /**
-   * True when opened from inside a level: erasing the progress or reloading
-   * for an update then would lose the game in progress, so those are not shown.
+   * True when opened from inside a level: erasing the progress, importing a
+   * backup or reloading for an update would change the profile or lose the game
+   * in progress, so those are not shown.
    */
   inLevel?: boolean;
 }
@@ -63,7 +64,7 @@ export function OptionsPage({ onBack, inLevel = false }: OptionsPageProps) {
         checked={options.autoMark}
         onChange={(autoMark) => setOption('autoMark', autoMark)}
       />
-      <BackupSection />
+      <BackupSection canImport={!inLevel} />
       {!inLevel && <ResetSection />}
       <Button onClick={onBack}>{text.back}</Button>
     </main>

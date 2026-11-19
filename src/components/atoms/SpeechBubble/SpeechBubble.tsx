@@ -1,12 +1,12 @@
 import type { HTMLAttributes } from 'react';
-import { PixelRects } from '../PixelRects/PixelRects';
+import { PixelIcon } from '../PixelIcon/PixelIcon';
 import './SpeechBubble.css';
 
 // The tails, in sprite pixels drawn at 4x: 'left' is a wedge pointing down
 // and to the left, 'down' a small arrow pointing straight down.
 const TAILS = {
-  left: { rows: ['ooo', 'oo.', 'o..'], width: 12, height: 12 },
-  down: { rows: ['ooo', '.o.'], width: 12, height: 8 },
+  left: ['ooo', 'oo.', 'o..'],
+  down: ['ooo', '.o.'],
 };
 
 interface SpeechBubbleProps extends HTMLAttributes<HTMLDivElement> {
@@ -25,26 +25,17 @@ export function SpeechBubble({
   children,
   ...rest
 }: SpeechBubbleProps) {
-  const { rows, width, height } = TAILS[tail];
   return (
     <div
       className={`speech-bubble speech-bubble-${tail} ${className}`}
       {...rest}
     >
       <p>{children}</p>
-      <svg
+      <PixelIcon
         className="speech-bubble-tail"
-        viewBox={`0 0 3 ${rows.length}`}
-        width={width}
-        height={height}
-        shapeRendering="crispEdges"
-        aria-hidden="true"
-      >
-        <PixelRects
-          rows={rows}
-          colorOf={(char) => (char === 'o' ? 'currentColor' : undefined)}
-        />
-      </svg>
+        rows={TAILS[tail]}
+        pixelSize={4}
+      />
     </div>
   );
 }

@@ -12,8 +12,15 @@ const COLORS = [
   'var(--gold)',
 ];
 
-// 36 squares, placed by formulas so the screen is the same every time.
-const PIECES = Array.from({ length: 36 }, (_, i) => ({
+// Phones with 4 cores or fewer get half the confetti. A guess at "weak", since
+// the browser cannot say; the party looks the same with fewer squares.
+const WEAK_PHONE =
+  typeof navigator !== 'undefined' &&
+  navigator.hardwareConcurrency > 0 &&
+  navigator.hardwareConcurrency <= 4;
+
+// Squares placed by formulas, so the screen is the same every time.
+const PIECES = Array.from({ length: WEAK_PHONE ? 18 : 36 }, (_, i) => ({
   x: ((i * 29) % 97) + 1,
   size: 6 + (i % 3) * 2,
   color: COLORS[i % COLORS.length],

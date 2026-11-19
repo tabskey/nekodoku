@@ -3,12 +3,12 @@ import ghostUrl from '../../../assets/ghost-cat.svg';
 import { Button } from '../../atoms/Button/Button';
 import { CatSprite } from '../../atoms/CatSprite/CatSprite';
 import type { CatPalette } from '../../atoms/CatSprite/catSprites';
+import { PixelIcon } from '../../atoms/PixelIcon/PixelIcon';
 import { Confetti } from '../../atoms/Confetti/Confetti';
 import {
   ClearSummary,
   type ClearSummaryProps,
 } from '../../molecules/ClearSummary/ClearSummary';
-import { PixelRects } from '../../atoms/PixelRects/PixelRects';
 import './Restoration.css';
 
 // The party that starts when the cat appears (3.1 s into the animation):
@@ -86,22 +86,15 @@ export function Restoration({
             style={{ left: spot.x, top: spot.y }}
             aria-hidden="true"
           >
-            <svg
+            <PixelIcon
               className="restoration-twinkle"
               style={{
                 animationDelay: `${i * 0.15}s`,
                 color: i % 2 ? 'var(--gold)' : 'var(--primary)',
               }}
-              viewBox="0 0 3 3"
-              width={12}
-              height={12}
-              shapeRendering="crispEdges"
-            >
-              <PixelRects
-                rows={SPARKLE}
-                colorOf={(char) => (char === 'o' ? 'currentColor' : undefined)}
-              />
-            </svg>
+              rows={SPARKLE}
+              pixelSize={4}
+            />
           </span>
         ))}
         <div className="restoration-stage restoration-move">

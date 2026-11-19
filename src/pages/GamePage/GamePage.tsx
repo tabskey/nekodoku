@@ -4,7 +4,7 @@ import {
   catPalette,
   silhouettePalette,
 } from '../../components/atoms/CatSprite/catSprites';
-import { PixelRects } from '../../components/atoms/PixelRects/PixelRects';
+import { PixelIcon } from '../../components/atoms/PixelIcon/PixelIcon';
 import { Scenery } from '../../components/atoms/Scenery/Scenery';
 import { bossScenery } from '../../components/atoms/Scenery/sceneries';
 import ghostUrl from '../../assets/ghost-cat.svg';
@@ -100,23 +100,6 @@ const MAGNIFIER = [
   '.......oo',
 ];
 
-function PixelIcon({ rows, drawn = 'o' }: { rows: string[]; drawn?: string }) {
-  return (
-    <svg
-      viewBox={`0 0 ${rows[0].length} ${rows.length}`}
-      width={rows[0].length * 2}
-      height={rows.length * 2}
-      shapeRendering="crispEdges"
-      aria-hidden="true"
-    >
-      <PixelRects
-        rows={rows}
-        colorOf={(char) => (drawn.includes(char) ? 'currentColor' : undefined)}
-      />
-    </svg>
-  );
-}
-
 /** One level, from loading to solved. */
 export function GamePage({ level, onOpenMenu, ...levelProps }: GamePageProps) {
   const text = useText();
@@ -163,7 +146,7 @@ export function GamePage({ level, onOpenMenu, ...levelProps }: GamePageProps) {
             aria-label={text.optionsButton}
             onClick={() => setOptionsOpen(true)}
           >
-            <PixelIcon rows={GEAR} />
+            <PixelIcon rows={GEAR} pixelSize={2} />
           </button>
         </header>
         <RulesPopover
@@ -370,7 +353,11 @@ function Level({
               aria-pressed={zoomed}
               onClick={() => setZoomed((z) => !z)}
             >
-              <PixelIcon rows={MAGNIFIER} drawn={zoomed ? 'o' : 'ov'} />
+              <PixelIcon
+                rows={MAGNIFIER}
+                pixelSize={2}
+                drawn={zoomed ? 'o' : 'ov'}
+              />
             </button>
           )}
         </div>

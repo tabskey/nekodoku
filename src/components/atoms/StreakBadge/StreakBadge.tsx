@@ -1,4 +1,4 @@
-import { PixelRects } from '../PixelRects/PixelRects';
+import { PixelIcon } from '../PixelIcon/PixelIcon';
 import './StreakBadge.css';
 
 // A flame, 7x9 sprite pixels drawn at 2x. Placeholder art.
@@ -27,18 +27,7 @@ interface StreakBadgeProps {
 export function StreakBadge({ count, bonus, label }: StreakBadgeProps) {
   return (
     <span className="streak-badge" role="img" aria-label={label}>
-      <svg
-        viewBox="0 0 7 9"
-        width={14}
-        height={18}
-        shapeRendering="crispEdges"
-        aria-hidden="true"
-      >
-        <PixelRects
-          rows={FLAME}
-          colorOf={(char) => (char === 'o' ? 'currentColor' : undefined)}
-        />
-      </svg>
+      <PixelIcon rows={FLAME} pixelSize={2} />
       <span aria-hidden="true">{count}</span>
       {bonus && (
         <span className="streak-badge-bonus" aria-hidden="true">

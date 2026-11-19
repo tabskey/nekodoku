@@ -121,9 +121,11 @@
   z-index: -1;
   left: 50%;
   top: 50%;
-  width: 300vmax;
-  height: 300vmax;
-  margin: -150vmax 0 0 -150vmax;
+  /* 200vmax reaches the corners from the cat's spot, in portrait and in
+     landscape, with a bit less than half the area of 300vmax to paint. */
+  width: 200vmax;
+  height: 200vmax;
+  margin: -100vmax 0 0 -100vmax;
   background: repeating-conic-gradient(
     var(--rays) 0 7.5deg,
     transparent 7.5deg 15deg
